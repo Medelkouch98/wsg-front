@@ -1,0 +1,168 @@
+<ng-container
+  *ngIf="{
+    reglements: reglements$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.reglements?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.reglements?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.reglements.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="date_reglement">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="date_reglement">
+              {{ 'gestion.reglements.dateReglement' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.reglements.dateReglement' | translate }}
+              </span>
+              {{ element.date_reglement | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="numero_cloture_caisse">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="numero_cloture_caisse"
+            >
+              {{ 'gestion.reglements.numeroClotureCaisse' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.reglements.numeroClotureCaisse' | translate }}
+              </span>
+              {{ element.numero_cloture_caisse }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="mode_reglement_id">
+            <mat-header-cell
+              *matHeaderCellDef
+            >
+              {{ 'commun.typeDeReglement' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="text-center">
+              <span class="header-label">
+                {{ 'commun.typeDeReglement' | translate }}
+              </span>
+              <ng-container
+                *ngIf="
+                  modesReglementsSelector
+                  | getElementFromResource : element?.mode_reglement_id
+                  | async as modeReglement
+                "
+              >
+                {{ modeReglement?.code }} - {{ modeReglement?.libelle }}
+              </ng-container>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="facture">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.numFacture' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.numFacture' | translate }}
+              </span>
+              <mat-chip-set>
+                <mat-chip
+                  *ngFor="let facture of element?.factures.slice(0, NUMBER_OF_FACTURES_TO_SHOW)"
+                >
+                  {{ facture?.numero_facture }}
+                </mat-chip>
+                <mat-chip *ngIf="element?.factures.length>NUMBER_OF_FACTURES_TO_SHOW"
+                          [matTooltip]="getTooltipText(element?.factures.slice(NUMBER_OF_FACTURES_TO_SHOW))">
+                  {{'commun.plusOthers' | translate : { value : element?.factures.length-NUMBER_OF_FACTURES_TO_SHOW } }}
+                </mat-chip>
+              </mat-chip-set>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="client">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nom_client">
+              {{ 'commun.nomClient' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="text-center">
+              <span class="header-label">
+                {{ 'commun.nomClient' | translate }}
+              </span>
+              {{ element?.client_nom }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="reference">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="reference">
+              {{ 'commun.reference' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.reference' | translate }}
+              </span>
+              {{ element?.reference }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="montant">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="montant">
+              {{ 'commun.montant' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.montant' | translate }}
+              </span>
+              {{ element?.montant | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary" (click)="edit(element)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn"
+                  *ngIf="{
+                    dateReglement: element?.date_reglement | date : 'dd/MM/yyyy',
+                    libelleReglement: (modesReglementsSelector
+                                    | getElementFromResource : element?.mode_reglement_id
+                                    | async)?.libelle,
+                    montant : element?.montant | number : DECIMAL_NUMBER_PIPE_FORMAT
+                  } as params"
+                  (click)="delete(
+                    element,
+                    params?.dateReglement,
+                    params.libelleReglement,
+                    params.montant
+                  )">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            class="cursor-default"
+            *matRowDef="let row; columns: columns"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.reglements?.meta.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.reglements?.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

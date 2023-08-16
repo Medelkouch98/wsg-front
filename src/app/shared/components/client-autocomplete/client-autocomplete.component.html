@@ -1,0 +1,22 @@
+<mat-form-field appFieldControlLabel>
+  <mat-label>{{ label }}</mat-label>
+  <input
+    matInput
+    [matAutocomplete]="auto"
+    [formControl]="clientControl"
+    (input)="onInputChange($event.target.value)"
+  />
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    [displayWith]="displayFnDefaultValues"
+    (opened)="onOpenAutoComplete()"
+  >
+    <mat-option *ngIf="message?.length > 0">{{ message }}</mat-option>
+    <mat-option *ngIf="isLoading">
+      {{ 'commun.loading' | translate }}
+    </mat-option>
+    <mat-option *ngFor="let option of searchClientList" [value]="option">
+      {{ displayFnDefaultValues(option) }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

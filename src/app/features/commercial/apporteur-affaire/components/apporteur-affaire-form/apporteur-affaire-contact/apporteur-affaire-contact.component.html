@@ -1,0 +1,242 @@
+<div class="flex flex-col gap-2.5">
+  <div class="flex justify-end" *ngIf="(isReadOnly$ | async) === false">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addNewRow()"
+      [disabled]="!!(contactToEdit || isNewRow)"
+    >
+      {{ 'commun.ajouter' | translate }}
+    </button>
+  </div>
+  <form
+    [formGroup]="contactForm"
+    appMarkRequiredFormControlAsDirty
+    [updateRequiredStatus$]="updateRequiredStatus$"
+  >
+    <ng-container formArrayName="contacts">
+      <div class="responsive-table editable-table">
+        <mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="civilite">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="civilite_id">
+              {{ 'commun.civilite' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.civilite' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{
+                  (element.controls.civilite_id.value | civilite | async)
+                    ?.libelle_complet
+                }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <mat-select
+                  formControlName="civilite_id"
+                  panelClass="lg:w-40 lg:absolute"
+                >
+                  <mat-option
+                    *ngFor="let civilite of civilite$ | async"
+                    [value]="civilite.id"
+                  >
+                    {{ civilite.libelle_complet }}
+                  </mat-option>
+                  <mat-option
+                    *ngIf="
+                      element | civilite : element.value.civilite_id | async
+                    "
+                    [value]="
+                      (element | civilite : element.value.civilite_id | async)
+                        ?.id
+                    "
+                  >
+                    {{
+                      (element | civilite : element.value.civilite_id | async)
+                        ?.libelle_complet
+                    }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nom">
+              {{ 'commun.name' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.name' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.nom.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="nom" />
+                <mat-error>
+                  {{ element.controls.nom.errors | error }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="prenom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prenom">
+              {{ 'commun.prenom' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.prenom' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.prenom.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="prenom" />
+                <mat-error>
+                  {{ element.controls.prenom.errors | error }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="fonction">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="fonction">
+              {{ 'commun.function' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.function' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.fonction.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="fonction" />
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="telephonefixe">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="fixe">
+              {{ 'commun.teleFix' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.teleFix' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.fixe.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="fixe" />
+                <mat-error>
+                  {{ element.controls.fixe.errors | error : 'phone' }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="mobile">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="mobile">
+              {{ 'commun.mobile' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" [formGroup]="element">
+              <span class="header-label">
+                {{ 'commun.mobile' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.mobile.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="mobile" />
+                <mat-error>
+                  {{ element.controls.mobile.errors | error : 'phone' }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="email">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="email"
+              class="flex-[1_1_10%]"
+            >
+              {{ 'commun.email' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              [formGroup]="element"
+              class="flex-[1_1_10%]"
+            >
+              <span class="header-label">
+                {{ 'commun.email' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.email.value }}
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input matInput formControlName="email" />
+                <mat-error>
+                  {{ element.controls.email.errors | error : 'email' }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <button
+                mat-icon-button
+                matTooltip="Save Changes"
+                (click)="saveRow(element, i)"
+                [disabled]="!!element.invalid"
+                *ngIf="!!element.controls.isEditable.value"
+                color="primary"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                *ngIf="!!element.controls.isEditable.value"
+                (click)="cancelChanges(element, i)"
+              >
+                <mat-icon>cancel</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                *ngIf="!element.controls.isEditable.value"
+                (click)="editRow(element, i)"
+                matTooltip="Edit"
+                color="primary"
+                [disabled]="!!(contactToEdit || isNewRow)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                color="warn"
+                *ngIf="!element.controls.isEditable.value"
+                (click)="openDeleteConfirmationDialog(element, i)"
+                [disabled]="!!(contactToEdit || isNewRow)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: columns"></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="dataSource?.data.length > MIN_PAGE_SIZE_OPTIONS"
+        ></mat-paginator>
+      </div>
+    </ng-container>
+  </form>
+</div>

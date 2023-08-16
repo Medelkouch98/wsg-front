@@ -1,0 +1,70 @@
+@use '../variable' as *;
+
+/*******************
+Mat card
+*******************/
+
+.mat-mdc-card {
+  box-shadow: 0 5px 20px rgb(0 0 0 / 5%) !important;
+  margin: 10px;
+  padding: 0 !important;
+  border-radius: $radius;
+
+  &.text-white {
+    small {
+      color: rgb(255 255 255 / 70%) !important;
+    }
+  }
+
+  .mat-mdc-card-content {
+    font-size: 1rem;
+    line-height: 23px;
+    padding: 24px;
+  }
+
+  .mat-mdc-card-image {
+    width: calc(100% + 0px);
+    margin: 0;
+  }
+
+  .mat-mdc-card-header {
+    padding: 12px;
+    border-radius: $radius $radius 0 0;
+
+    .mat-mdc-card-title {
+      margin-bottom: 2px;
+      font-size: 20px;
+    }
+
+    .mat-mdc-card-subtitle,
+    .mat-mdc-card-subtitle:not(:first-child) {
+      margin-bottom: 0;
+      margin-top: 0;
+      font-size: 14px;
+    }
+
+    &.text-white {
+      .mat-mdc-card-title {
+        color: $white;
+      }
+
+      small,
+      .mat-mdc-card-subtitle {
+        color: rgb(255 255 255 / 70%) !important;
+      }
+    }
+  }
+
+  .mat-mdc-card-title {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+
+  .mat-mdc-card-subtitle {
+    margin-bottom: 20px;
+  }
+
+  .mat-mdc-card-actions {
+    margin: 0 !important;
+  }
+}

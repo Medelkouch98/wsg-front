@@ -1,0 +1,95 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="searchForm" class="flex flex-col">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.numImprime' | translate }}
+          </mat-label>
+          <input
+            matInput
+            formControlName="numero_liasse"
+            appFormControlNumberOnly
+          />
+          <mat-error>
+            {{ searchForm.controls.numero_liasse.errors | error }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.etatCarton.label' | translate }}
+          </mat-label>
+          <mat-select formControlName="carton_ferme">
+            <mat-option
+              *ngFor="let etat of etatCartonsLiasses | keyvalue"
+              [value]="etat.value"
+            >
+              {{ 'qualite.imprimes.etatCarton.' + etat.key | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.mois' | translate }}
+          </mat-label>
+          <mat-select formControlName="mois">
+            <mat-option [value]="-1">
+              {{ 'commun.all' | translate }}
+            </mat-option>
+            <mat-option *ngFor="let row of mois" [value]="row">
+              {{ 'commun.months.' + row | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'commun.year' | translate }}
+          </mat-label>
+          <mat-select formControlName="annee">
+            <mat-option [value]="-1">
+              {{ 'commun.all' | translate }}
+            </mat-option>
+            <mat-option *ngFor="let row of annees" [value]="row">
+              {{ row }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.etatImprimes.label' | translate }}
+          </mat-label>
+          <mat-select formControlName="etat">
+            <mat-option
+              *ngFor="let etat of etatLiasses | keyvalue"
+              [value]="etat.value"
+            >
+              {{ 'qualite.imprimes.etatImprimes.' + etat.key | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearch()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

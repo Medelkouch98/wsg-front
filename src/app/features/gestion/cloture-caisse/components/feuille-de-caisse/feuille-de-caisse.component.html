@@ -1,0 +1,50 @@
+<ng-container
+  *ngIf="{
+    feuilleDeCaisse: feuilleDeCaisse$ | async
+  } as _"
+>
+  <mat-card *ngIf="_.feuilleDeCaisse">
+    <mat-card-header class="justify-center">
+      <mat-card-title>
+        {{
+          'gestion.clotureCaisse.titreFeuilleDeCaisse'
+            | translate
+              : {
+                  dateDebut: _.feuilleDeCaisse.date_debut | date : 'dd/MM/yyyy',
+                  dateFin: _.feuilleDeCaisse.date_fin | date : 'dd/MM/yyyy',
+                  numCaisse: _.feuilleDeCaisse.id,
+                  utilisateur: _.feuilleDeCaisse.realise_par
+                }
+        }}
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <div class="m-2" *ngIf="_.feuilleDeCaisse">
+    <mat-accordion multi>
+      <!--activités non facturés-->
+      <app-activites-factures
+        [activiteFactures]="_.feuilleDeCaisse.activite_factures"
+        [detailFactures]="_.feuilleDeCaisse.detail_factures"
+      ></app-activites-factures>
+      <!--activités non facturés-->
+      <app-activites-non-factures
+        [activiteNonFactures]="_.feuilleDeCaisse.activite_non_factures"
+        [detailNonFactures]="_.feuilleDeCaisse.detail_non_factures"
+      ></app-activites-non-factures>
+      <!--saisie des encaissement-->
+      <app-saisie-des-encaissements
+        [feuilleDeCaisse]="_.feuilleDeCaisse"
+      ></app-saisie-des-encaissements>
+      <!--sortie de caisse-->
+      <app-sortie-de-caisse
+        [sortiesCaisse]="_.feuilleDeCaisse.sorties_caisse"
+      ></app-sortie-de-caisse>
+      <!--factures encaissées-->
+      <app-factures-encaisses
+        [facturesRegles]="_.feuilleDeCaisse.factures_regles"
+        [facturesNonRegles]="_.feuilleDeCaisse.factures_non_regles"
+      ></app-factures-encaisses>
+    </mat-accordion>
+  </div>
+</ng-container>

@@ -1,0 +1,92 @@
+<div mat-dialog-title>
+  {{
+    (data.compteur
+      ? 'qualite.compteurs.ajouterUneJustificationEtUneAction'
+      : 'qualite.compteurs.ajouterUneJustificationEtUneActionATousLesControles'
+    ) | translate
+  }}
+</div>
+
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-accordion>
+      <!--formulaire de justification-->
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{
+              'qualite.compteurs.ajouterUneJustification'
+                | translate
+                | uppercase
+            }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-optional-dropdown
+          formControlName="justification"
+          [data]="compteurJustifications$ | async"
+          [mainTitle]="'qualite.compteurs.justification'"
+          [subTitle]="subTitle"
+          (onSelectionChange)="justificationChange($event)"
+        ></app-optional-dropdown>
+      </mat-expansion-panel>
+
+      <!--formulaire des actions-->
+      <mat-expansion-panel *ngIf="!!form.value.justification?.id">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{
+              'qualite.compteurs.ajouterUneActionCorrectiveEtUneActionPreventive'
+                | translate
+                | uppercase
+            }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="form.controls.actions">
+          <app-optional-dropdown
+            formControlName="action_corrective"
+            [data]="actionsCorrectives$ | async"
+            [mainTitle]="'qualite.compteurs.actionCorrective'"
+            [subTitle]="subTitle"
+          ></app-optional-dropdown>
+          <app-optional-dropdown
+            formControlName="action_preventive"
+            [data]="actionsPreventives$ | async"
+            [mainTitle]="'qualite.compteurs.actionPreventive'"
+            [subTitle]="subTitle"
+          ></app-optional-dropdown>
+        </form>
+      </mat-expansion-panel>
+
+      <!--formulaire d'upload de documents-->
+      <mat-expansion-panel *ngIf="!!form.value.justification?.id">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ 'qualite.compteurs.ajouterUnDocument' | translate | uppercase }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-upload-files formControlName="fichiers"></app-upload-files>
+
+        <app-download-files
+          *ngIf="data.compteur?.fichiers"
+          [files]="fileNamesFromAttachments(data.compteur?.fichiers)"
+          (download)="downloadAttachment(data.compteur?.fichiers[$event])"
+          (delete)="deleteAttachment(data.compteur?.fichiers[$event]?.id)"
+        ></app-download-files>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+</div>
+
+<div mat-dialog-actions class="justify-center">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="form.invalid"
+    (click)="handleSave()"
+  >
+    {{ 'commun.save' | translate }}
+  </button>
+  <button mat-raised-button mat-dialog-close="">
+    {{ 'commun.cancel' | translate }}
+  </button>
+</div>

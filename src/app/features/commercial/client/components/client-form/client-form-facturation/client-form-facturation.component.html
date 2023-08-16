@@ -1,0 +1,142 @@
+<div class="flex flex-col gap-y-5">
+  <div class="border-b pb-2.5 text-slate-300">
+    <h6 class="font-medium uppercase text-black">
+      {{ 'client.facturation' | translate }}
+    </h6>
+  </div>
+
+  <form [formGroup]="facturationForm" appMarkRequiredFormControlAsDirty>
+    <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5">
+      <mat-form-field appFieldControlLabel>
+        <mat-label>{{ 'commun.echeance' | translate }}</mat-label>
+        <mat-select formControlName="echeance_id">
+          <mat-option
+            *ngFor="let echeance of echeance$ | async"
+            [value]="echeance.id"
+          >
+            {{ echeance.libelle }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'client.modePaiementNegocie' | translate }}
+        </mat-label>
+        <mat-select formControlName="mode_reglement_id">
+          <mat-option
+            *ngFor="let mode of modeReglementNegocie$ | async"
+            [value]="mode.id"
+          >
+            {{ mode.code }} - {{ mode.libelle }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appFieldControlLabel>
+        <mat-label>{{ 'commun.tvaIntra' | translate }}</mat-label>
+        <input matInput formControlName="tva_intracommunautaire" />
+        <mat-error>
+          {{
+            facturationForm.controls.tva_intracommunautaire.errors
+              | error : 'alphanum'
+          }}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appFieldControlLabel>
+        <mat-label>{{ 'client.compteComptable' | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="compte_comptable"
+          appFormControlNumberOnly
+        />
+        <mat-error>
+          {{ facturationForm.controls.compte_comptable.errors | error }}
+        </mat-error>
+      </mat-form-field>
+      <mat-radio-group formControlName="facture_multipv_unitaire">
+        <mat-label>
+          {{ 'client.typeFacturation' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="true">
+          {{ 'client.multiPv' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="false">
+          {{ 'client.controleParControle' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <mat-radio-group formControlName="facture_releve"
+                       *ngIf="!facturationForm.controls.facture_multipv_unitaire.value">
+        <mat-label>
+          {{ 'client.releveFacture' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="true">
+          {{ 'commun.oui' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="false">
+          {{ 'commun.non' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <mat-radio-group formControlName="bon_commande_obligatoire">
+        <mat-label>
+          {{ 'client.bonCommandeObli' | translate }}
+          <label class="font-xs">
+            ({{ 'client.websurControlUnique' | translate }})
+          </label>
+        </mat-label>
+        <mat-radio-button [value]="true">
+          {{ 'commun.actif' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="false">
+          {{ 'commun.inactif' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <mat-radio-group formControlName="mode_bon_livraison">
+        <mat-label>
+          {{ 'client.bonLivraison' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="1">
+          {{ 'client.pasBl' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="2">
+          {{ 'client.blSansPrix' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="3">
+          {{ 'client.blAvecPrix' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <div class="flex h-12 items-center" *ngIf="!addMode">
+        <mat-label class="text-primary">
+          {{ 'commun.solde' | translate }}
+        </mat-label>
+        <mat-label>
+          {{ soldeClient$ | async }}
+        </mat-label>
+      </div>
+    </div>
+  </form>
+
+  <div class="border-b pb-2.5 text-slate-300">
+    <h6 class="font-medium uppercase text-black">
+      {{ 'client.tarificationSpecification' | translate }}
+    </h6>
+  </div>
+
+  <app-tarification
+    [tarificationsList$]="tarification$"
+    [isReadOnly$]="isReadOnly$"
+    [remisePourcentage]="facturationForm.controls.remise_pourcentage.value"
+    (delete)="deleteTarification($event)"
+    (addUpdate)="addUpdateTarification($event)"
+    (remiseGlobal)="setPourcentageRemise($event)"
+  ></app-tarification>
+
+  <mat-action-row *ngIf="!addMode && facturationForm.dirty">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="facturationForm.invalid"
+      (click)="updateClient()"
+    >
+      {{ 'commun.modifier' | translate }}
+    </button>
+  </mat-action-row>
+</div>

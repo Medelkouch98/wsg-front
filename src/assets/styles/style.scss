@@ -1,0 +1,16 @@
+@use 'themes/ws-theme2';
+@use 'themes/ws-default-theme';
+
+//Matriel Overrides
+@forward './material-overrides/mat-card';
+@forward './material-overrides/mat-table';
+@forward './material-overrides/mat-toolbar';
+@forward './material-overrides/mat-form-field';
+@forward './material-overrides/mat-accordion';
+@forward './material-overrides/mat-radio';
+@forward './material-overrides/mat-chip';
+
+@forward 'icons/flag-icon-css/flag-icon.min.css';
+@forward 'app';
+@forward 'sidebar';
+@forward 'variable';

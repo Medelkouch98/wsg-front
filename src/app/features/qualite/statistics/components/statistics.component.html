@@ -1,0 +1,50 @@
+<ng-container
+  *ngIf="{
+    statisticsModule: selectedStatisticsModule$ | async,
+    entities: entities$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.entities"
+  [isSearchClicked]="_.searchClicked"
+>
+  <app-actions-buttons
+    [actionButtons]="buttons"
+    (action)="handleActions($event)"
+  />
+  <app-statistics-search-form />
+  <mat-accordion
+    *ngIf="_.entities?.length"
+    multi="true"
+    class="mx-2.5 flex flex-col gap-2.5"
+  >
+    <!-- Activité -->
+    <ng-container *ngIf="_.statisticsModule === statisticsModuleEnum.Activity">
+      <app-activity-statistics
+        *ngFor="let entity of _.entities; let first = first"
+        [entity]="entity"
+        [expanded]="first"
+      />
+    </ng-container>
+
+    <!-- Durée Moyenne -->
+    <ng-container
+      *ngIf="_.statisticsModule === statisticsModuleEnum.AverageDuration"
+    >
+      <app-average-duration-statistics
+        *ngFor="let entity of _.entities; let first = first"
+        [entity]="entity"
+        [expanded]="first"
+      />
+    </ng-container>
+
+    <!-- Défaillances -->
+    <ng-container *ngIf="_.statisticsModule === statisticsModuleEnum.Defect">
+      <app-defect-statistics
+        *ngFor="let entity of _.entities; let first = first"
+        [entity]="entity"
+        [expanded]="first"
+      />
+    </ng-container>
+  </mat-accordion>
+</ng-container>

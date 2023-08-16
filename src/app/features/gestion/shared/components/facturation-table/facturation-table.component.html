@@ -1,0 +1,330 @@
+<div class="mb-5 flex flex-1 justify-end lg:hidden">
+  <button mat-raised-button color="primary">
+    {{ 'commun.selectAll' | translate }}
+    <mat-checkbox
+      color="warn"
+      (change)="
+        $event
+          ? togglePrestations(
+              prestationsForm.controls.prestationsRowsForm.getRawValue(),
+              $event
+            )
+          : null
+      "
+      [checked]="
+        prestationsSelection.hasValue() && isAllSelected(dataSource.data.length)
+      "
+      [indeterminate]="
+        prestationsSelection.hasValue() &&
+        !isAllSelected(dataSource.data.length)
+      "
+    ></mat-checkbox>
+  </button>
+</div>
+
+<form [formGroup]="prestationsForm">
+  <ng-container formArrayName="prestationsRowsForm">
+    <mat-table
+      class="responsive-table expanded-table mat-elevation-z5"
+      multiTemplateDataRows
+      [dataSource]="dataSource"
+    >
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            color="warn"
+            (change)="
+              $event
+                ? togglePrestations(
+                    prestationsForm.controls.prestationsRowsForm.getRawValue(),
+                    $event
+                  )
+                : null
+            "
+            [checked]="
+              prestationsSelection.hasValue() &&
+              isAllSelected(dataSource.data.length)
+            "
+            [indeterminate]="
+              prestationsSelection.hasValue() &&
+              !isAllSelected(dataSource.data.length)
+            "
+          ></mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row; let i = index" [formGroup]="row">
+          <span class="header-label"></span>
+          <mat-checkbox
+            color="warn"
+            (click)="$event.stopPropagation()"
+            (change)="
+              $event ? togglePrestations([row.getRawValue()], $event) : null
+            "
+            [checked]="prestationsSelection.isSelected(row.controls.code.value)"
+          ></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="code">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.code' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" [formGroup]="element">
+          <span class="header-label">
+            {{ 'commun.code' | translate }}
+          </span>
+          {{ element.controls.code.value }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="libelle">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_15%]">
+          {{ 'gestion.factures.designation' | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [formGroup]="element"
+          class="flex-[1_1_15%]"
+        >
+          <span class="header-label">
+            {{ 'gestion.factures.designation' | translate }}
+          </span>
+          {{ element.controls.libelle.value }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="quantite">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.qte' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" [formGroup]="element">
+          <span class="header-label">
+            {{ 'commun.qte' | translate }}
+          </span>
+          {{ element.controls.quantite.value }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="baseHt">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+          {{ 'gestion.factures.baseHt' | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [formGroup]="element"
+          class="flex-[1_1_10%]"
+        >
+          <span class="header-label">
+            {{ 'gestion.factures.baseHt' | translate }}
+          </span>
+          {{
+            element.controls.montant_ht_brut.value
+              | number : NUMBER_FORMAT_TREE_DECIMALS
+          }}
+          €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="montantRemiseTtc">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+          {{ 'gestion.factures.montantRemiseTtc' | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [formGroup]="element"
+          class="flex-[1_1_10%]"
+        >
+          <span class="header-label">
+            {{ 'gestion.factures.montantRemiseTtc' | translate }}
+          </span>
+          {{
+            element.controls.remise_ttc.value
+              | number : NUMBER_FORMAT_TREE_DECIMALS
+          }}
+          €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="montantHtOtc">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+          {{ 'gestion.factures.montantHtOtc' | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [formGroup]="element"
+          class="flex-[1_1_10%]"
+        >
+          <span class="header-label">
+            {{ 'gestion.factures.montantHtOtc' | translate }}
+          </span>
+          {{
+            element.controls.montant_ht_net.value
+              | number : NUMBER_FORMAT_TREE_DECIMALS
+          }}
+          €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="montantTtcOtc">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+          {{ 'gestion.factures.montantTtcOtc' | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [formGroup]="element"
+          class="flex-[1_1_10%]"
+        >
+          <span class="header-label">
+            {{ 'gestion.factures.montantTtcOtc' | translate }}
+          </span>
+          {{
+            element.controls.montant_ttc.value
+              | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
+        <mat-cell *matCellDef="let element" [formGroup]="element">
+          <button
+            mat-icon-button
+            (click)="openTableDetails(element.controls.code.value)"
+          >
+            <mat-icon *ngIf="expandedElement !== element.controls.code.value">
+              keyboard_arrow_down
+            </mat-icon>
+            <mat-icon *ngIf="expandedElement === element.controls.code.value">
+              keyboard_arrow_up
+            </mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <mat-cell *matCellDef="let element" [formGroup]="element">
+          <div class="my-3 w-full" [@detailExpand]="expandedElement">
+            <app-facturation-details-table
+              [prestationFormGroup]="element"
+            ></app-facturation-details-table>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let element; columns: columns"></mat-row>
+
+      <mat-row
+        *matRowDef="let row; columns: ['expandedDetail']"
+        [formGroup]="row"
+        [ngClass]="{ hidden: row.controls.code.value !== expandedElement }"
+      ></mat-row>
+    </mat-table>
+  </ng-container>
+</form>
+
+<mat-table
+  class="responsive-table mat-elevation-z5 my-5"
+  [dataSource]="totalFacture$ | async"
+>
+  <ng-container matColumnDef="total_montant_ht">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.htPrestation' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.htPrestation' | translate }}
+      </span>
+      {{ element.htPrestation | number : NUMBER_FORMAT_TREE_DECIMALS }} €
+    </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="total_ht_otc">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.htOtc' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.htOtc' | translate }}
+      </span>
+      {{ element.totalOtc.ht | number : NUMBER_FORMAT_TREE_DECIMALS }} €
+    </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="totat_ht">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.totalHt' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.totalHt' | translate }}
+      </span>
+      {{ element.totalPrestation.ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+    </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="total_tva">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.totalTva' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.totalTva' | translate }}
+      </span>
+      {{ element.totalPrestation.tva | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+    </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="total_ttc">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.totalTtc' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.totalTtc' | translate }}
+      </span>
+      {{ element.totalPrestation.ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+    </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="restant_payer">
+    <mat-header-cell *matHeaderCellDef>
+      {{ 'gestion.factures.restantAPayer' | translate }}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="header-label">
+        {{ 'gestion.factures.restantAPayer' | translate }}
+      </span>
+      {{ element.totalPrestation.ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+    </mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="totalColumns"></mat-header-row>
+  <mat-row *matRowDef="let element; columns: totalColumns"></mat-row>
+</mat-table>
+
+<div
+  class="flex justify-center"
+  *ngIf="factureType !== FactureTypeEnum.FACTURE_DIVERSE"
+>
+  <div class="w-1/2">
+    <mat-table
+      class="responsive-table mat-elevation-z5"
+      [dataSource]="totalFacture$ | async"
+    >
+      <ng-container matColumnDef="total_ttc_otc">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.factures.redevanceOtc' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.factures.redevanceOtc' | translate }}
+          </span>
+          {{ element.totalOtc.ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="['total_ttc_otc']"></mat-header-row>
+      <mat-row *matRowDef="let element; columns: ['total_ttc_otc']"></mat-row>
+    </mat-table>
+  </div>
+</div>

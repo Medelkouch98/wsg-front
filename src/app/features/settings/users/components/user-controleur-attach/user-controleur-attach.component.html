@@ -1,0 +1,178 @@
+<div
+  *ngIf="{
+    filteredUsers: filteredUsers$ | async,
+    showCancelButton: showCancelButton$ | async
+  } as _"
+  class="flex h-full flex-col"
+>
+  <div
+    mat-dialog-title
+    class="mx-28 mt-2 flex items-center justify-center gap-2 text-sm"
+  >
+    <div><mat-icon color="warn">warning</mat-icon></div>
+    {{ 'users.attachUsersdialogTitle' | translate }}
+  </div>
+
+  <mat-dialog-content class="max-h-max flex-1">
+    <form
+      *ngIf="attachForm"
+      [formGroup]="attachForm"
+      appMarkRequiredFormControlAsDirty
+      [updateRequiredStatus$]="updateRequiredStatus$"
+    >
+      <ng-container *ngIf="attachRowsForm" formArrayName="attachRowsForm">
+        <div class="responsive-table editable-table">
+          <mat-table [dataSource]="dataSource">
+            <!-- Nom -->
+            <ng-container matColumnDef="nom">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.nom' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.nom' | translate }}
+                </span>
+                {{ element.value.controleur.nom }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Prénom -->
+            <ng-container matColumnDef="prenom">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.prenom' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.prenom' | translate }}
+                </span>
+                {{ element.value.controleur.prenom }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Agrément -->
+            <ng-container matColumnDef="agrement">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.agrement' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.agrement' | translate }}
+                </span>
+                {{ element.value.controleur.agrement_vl }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Utilisateur -->
+            <ng-container matColumnDef="user">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+                {{ 'commun.user' | translate }}
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroup]="element"
+                class="flex-[1_1_10%]"
+              >
+                <span class="header-label">
+                  {{ 'commun.user' | translate }}
+                </span>
+                <mat-form-field>
+                  <input
+                    type="text"
+                    matInput
+                    [matAutocomplete]="auto"
+                    formControlName="user"
+                    #autoCompleteInput
+                    (keyup)="searchUsersList(i)"
+                  />
+                  <mat-autocomplete
+                    #auto="matAutocomplete"
+                    [displayWith]="displayFn"
+                    (opened)="searchUsersList(i); onOpenAutoComplete(i)"
+                  >
+                    <mat-option [value]="newUser">
+                      {{ 'users.newUser' | translate }}
+                    </mat-option>
+                    <mat-option
+                      *ngFor="let user of _.filteredUsers"
+                      [value]="user"
+                    >
+                      {{ user.nom }} {{ user.prenom }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error
+                    appFormControlError
+                    [errors]="element.controls.user.errors"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Login -->
+            <ng-container matColumnDef="login">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+                {{ 'commun.login' | translate }}
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let element"
+                [formGroup]="element"
+                class="flex-[1_1_10%]"
+              >
+                <span class="header-label">
+                  {{ 'commun.login' | translate }}
+                </span>
+                <mat-form-field>
+                  <input matInput formControlName="login" />
+                  <mat-error
+                    appFormControlError
+                    [errors]="element.controls.login.errors"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Email -->
+            <ng-container matColumnDef="email">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]">
+                {{ 'commun.email' | translate }}
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let element"
+                [formGroup]="element"
+                class="flex-[1_1_10%]"
+              >
+                <span class="header-label">
+                  {{ 'commun.email' | translate }}
+                </span>
+                <mat-form-field>
+                  <input matInput formControlName="email" />
+                  <mat-error
+                    appFormControlError
+                    [errors]="element.controls.email.errors"
+                    pattern="email"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="columns; sticky: true" />
+            <mat-row *matRowDef="let row; columns: columns" />
+          </mat-table>
+        </div>
+      </ng-container>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="justify-center">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="submitUsers()"
+      [disabled]="attachForm.invalid"
+    >
+      {{ 'commun.save' | translate }}
+    </button>
+    <button mat-raised-button mat-dialog-close *ngIf="_.showCancelButton">
+      {{ 'commun.annuler' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

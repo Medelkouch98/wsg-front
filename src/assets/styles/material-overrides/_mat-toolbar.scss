@@ -1,0 +1,11 @@
+@use '../variable' as *;
+
+mat-toolbar {
+  box-shadow: 1px 0 10px rgb(0 0 0 / 50%);
+}
+
+@media (max-width: 768px) {
+  .mat-toolbar-single-row {
+    height: 64px !important;
+  }
+}

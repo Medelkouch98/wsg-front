@@ -1,0 +1,128 @@
+<form
+  [formGroup]="identificationForm"
+  appMarkRequiredFormControlAsDirty
+  class="flex flex-col"
+>
+  <div class="grid grid-cols-1 gap-x-5 gap-y-1 lg:grid-cols-2">
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.code' | translate }}</mat-label>
+      <input matInput formControlName="code" />
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.phone' | translate }}</mat-label>
+      <input matInput formControlName="fixe" />
+      <mat-error>
+        {{ identificationForm.get('fixe').errors | error : 'phone' }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.civilite' | translate }}</mat-label>
+      <mat-select formControlName="civilite_id" (selectionChange)="emitTitle()">
+        <mat-option
+          *ngFor="let civilite of civilite$ | async"
+          [value]="civilite.id"
+        >
+          {{ civilite.libelle_complet }}
+        </mat-option>
+        <!--ici on affiche la civilité actuelle inactive dans le cas où un client a une civilité qui n'est plus active-->
+        <mat-option
+          *ngIf="currentInactiveCivilite$ | async"
+          [value]="(currentInactiveCivilite$ | async)?.id"
+        >
+          {{ (currentInactiveCivilite$ | async)?.libelle_complet }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.fax' | translate }}</mat-label>
+      <input matInput formControlName="fax" />
+      <mat-error>
+        {{ identificationForm.get('fax').errors | error : 'fax' }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.nom' | translate }}</mat-label>
+      <input
+        (change)="emitTitle()"
+        matInput
+        formControlName="nom"
+        appCapitalizeFirstLetter
+      />
+      <mat-error>
+        {{ identificationForm.get('nom').errors | error }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.mobile' | translate }}</mat-label>
+      <input matInput formControlName="mobile" />
+      <mat-error>
+        {{ identificationForm.get('mobile').errors | error : 'phone' }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.address' | translate }}</mat-label>
+      <input matInput formControlName="adresse" />
+      <mat-error>
+        {{ identificationForm.get('adresse').errors | error }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.email' | translate }}</mat-label>
+      <input matInput formControlName="email" />
+      <mat-error>
+        {{ identificationForm.get('email').errors | error : 'email' }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.addressSuite' | translate }}</mat-label>
+      <input matInput formControlName="suite" />
+      <mat-error>
+        {{ identificationForm.get('suite').errors | error }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-radio-group
+      formControlName="actif"
+      class="w-full lg:col-start-2 lg:col-end-3"
+    >
+      <mat-label>
+        {{ 'commun.statut' | translate }}
+      </mat-label>
+      <mat-radio-button [value]="true">
+        {{ 'commun.actif' | translate }}
+      </mat-radio-button>
+      <mat-radio-button [value]="false">
+        {{ 'commun.inactif' | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.codePostal' | translate }}</mat-label>
+      <input matInput formControlName="cp" appFormControlNumberOnly />
+      <mat-error>
+        {{ identificationForm.get('cp').errors | error }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.ville' | translate }}</mat-label>
+      <input matInput formControlName="ville" appCapitalizeFirstLetter />
+      <mat-error>
+        {{ identificationForm.get('ville').errors | error }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <mat-action-row
+    class="flex justify-end"
+    *ngIf="
+      (isIdentificationValidated$ | async) === false && identificationForm.dirty
+    "
+  >
+    <button
+      mat-raised-button
+      [color]="addMode ? 'primary' : 'accent'"
+      [disabled]="identificationForm.invalid"
+      (click)="valider()"
+    >
+      {{ (addMode ? 'commun.suivant' : 'commun.modifier') | translate }}
+    </button>
+  </mat-action-row>
+</form>

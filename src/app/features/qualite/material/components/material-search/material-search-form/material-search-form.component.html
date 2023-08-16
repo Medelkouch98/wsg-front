@@ -1,0 +1,89 @@
+<ng-container
+  *ngIf="{
+    categories: categories$ | async,
+    types: types$ | async,
+    subTypes: subTypes$ | async
+  } as _"
+>
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="searchForm" class="flex flex-col">
+        <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+          <!-- Categories -->
+          <mat-form-field appFieldControlLabel>
+            <mat-label>{{ 'commun.category' | translate }}</mat-label>
+            <mat-select formControlName="materiel_categorie_id">
+              <mat-option [value]="-1">
+                {{ 'commun.all' | translate }}
+              </mat-option>
+              <mat-option
+                *ngFor="let categorie of _.categories"
+                [value]="categorie.id"
+              >
+                {{ 'qualite.material.' + categorie.libelle | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Types -->
+          <mat-form-field appFieldControlLabel>
+            <mat-label>{{ 'commun.type' | translate }}</mat-label>
+            <mat-select formControlName="materiel_type_id">
+              <mat-option [value]="-1">
+                {{ 'commun.all' | translate }}
+              </mat-option>
+              <mat-option *ngFor="let type of _.types" [value]="type.id">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Sub Types -->
+          <mat-form-field appFieldControlLabel>
+            <mat-label>{{ 'commun.subType' | translate }}</mat-label>
+            <mat-select formControlName="materiel_sous_type_id">
+              <mat-option [value]="-1">
+                {{ 'commun.all' | translate }}
+              </mat-option>
+              <mat-option
+                *ngFor="let subType of _.subTypes"
+                [value]="subType.id"
+              >
+                {{ subType.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Actif -->
+          <mat-form-field appFieldControlLabel>
+            <mat-label>{{ 'commun.status' | translate }}</mat-label>
+            <mat-select formControlName="actif">
+              <mat-option *ngFor="let state of states" [value]="state.code">
+                {{ state.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="flex flex-1 items-center justify-end gap-2.5">
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="search()"
+            [disabled]="searchForm.invalid"
+          >
+            {{ 'commun.search' | translate }}
+          </button>
+          <button
+            mat-icon-button
+            color="primary"
+            [matTooltip]="'commun.reinitialiseRecherche' | translate"
+            (click)="resetSearchForm()"
+          >
+            <mat-icon fontIcon="autorenew" />
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

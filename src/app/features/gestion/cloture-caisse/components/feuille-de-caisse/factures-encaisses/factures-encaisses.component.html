@@ -1,0 +1,29 @@
+<mat-expansion-panel expanded class="my-4 w-full">
+  <mat-expansion-panel-header
+
+  >
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{ 'gestion.clotureCaisse.facturesEncaisses' | translate }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <!--les details des factures encaissées des clients en compte-->
+  <app-detail-facture-encaisse
+    [title]="'gestion.clotureCaisse.facturesClientsEnCompteEncaissees'"
+    [factures]="getFactureByClientType(TypePersonneEnum.COMPTE)"
+  ></app-detail-facture-encaisse>
+
+  <!--les details des factures encaissées des clients de passage-->
+  <app-detail-facture-encaisse
+    [title]="'gestion.clotureCaisse.facturesClientsDePassageEncaissees'"
+    [factures]="getFactureByClientType(TypePersonneEnum.PASSAGE)"
+  ></app-detail-facture-encaisse>
+
+  <!--les details des factures non soldées des compte passage-->
+  <app-detail-facture-encaisse
+    [title]="'gestion.clotureCaisse.facturesClientsDePassageNonSoldees'"
+    [factures]="facturesNonRegles"
+  ></app-detail-facture-encaisse>
+</mat-expansion-panel>

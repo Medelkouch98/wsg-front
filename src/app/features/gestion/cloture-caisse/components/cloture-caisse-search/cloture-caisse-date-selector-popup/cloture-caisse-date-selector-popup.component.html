@@ -1,0 +1,61 @@
+<h1 mat-dialog-title class="text-center">
+  {{ 'gestion.clotureCaisse.cloturerCaisse' | translate }}
+</h1>
+<div mat-dialog-content class="flex flex-col">
+  <div class="justify-center p-4 my-4">
+    <form [formGroup]="clotureForm"
+          appMarkRequiredFormControlAsDirty>
+        <mat-form-field>
+          <mat-label>
+            {{ 'gestion.clotureCaisse.cloturerPourLaPeriode' | translate }}
+          </mat-label>
+          <mat-date-range-input
+            [min]="minDate"
+            [max]="maxDate"
+            [rangePicker]="picker"
+          >
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              formControlName="date_debut"
+              [placeholder]="'commun.du' | translate"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              formControlName="date_fin"
+              [placeholder]="'commun.au' | translate"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="clotureForm.errors">
+            {{ clotureForm.errors | error : 'emptyInterval' }}
+          </mat-error>
+          <mat-error *ngIf="clotureForm.controls.date_debut.errors">
+            {{ clotureForm.controls.date_debut.errors | error : 'startDate' }}
+          </mat-error>
+          <mat-error *ngIf="clotureForm.controls.date_fin.errors" class="pb-2">
+            {{ clotureForm.controls.date_fin.errors | error : 'endDate' }}
+          </mat-error>
+        </mat-form-field>
+    </form>
+  </div>
+  <div mat-dialog-actions class="justify-center">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="verify()"
+      [disabled]="clotureForm.invalid || verificationInProgress"
+    >
+      {{ 'commun.continuer' | translate }}
+    </button>
+    <button mat-raised-button color="primary" (click)="closeDialog()">
+      {{ 'commun.close' | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,163 @@
+<mat-accordion multi="true">
+  <mat-expansion-panel
+    class="my-4"
+    *ngFor="
+      let anomalie of groupedAnomalies | keyvalue;
+      trackBy: trackByFn;
+      first as isFirst
+    "
+    [expanded]="isFirst"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ anomalie.key }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <form
+      [formGroup]="auditForm"
+      appMarkRequiredFormControlAsDirty
+      [updateRequiredStatus$]="updateRequiredStatus$"
+    >
+      <ng-container formArrayName="auditRowsForm">
+        <mat-expansion-panel
+          *ngFor="
+            let row of auditRowsForm().controls;
+            trackBy: trackByFn;
+            first as isFirst
+          "
+          [expanded]="isFirst"
+          class="mb-2 p-2"
+          [formGroup]="row"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title class="flex flex-row items-start gap-x-2">
+              <mat-icon
+                class="flex-none"
+                [ngClass]="
+                  checkConstat(row.controls) ? 'text-success' : 'text-warn'
+                "
+              >
+                {{
+                  checkConstat(row.controls) ? 'check_circle_outline' : 'cancel'
+                }}
+              </mat-icon>
+              <span>{{ row.controls.anomalie.value }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="mt-2 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5">
+            <mat-form-field>
+              <mat-label>{{ 'qualite.audit.exigences' | translate }}</mat-label>
+              <textarea matInput formControlName="justification"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>
+                {{ 'qualite.audit.commentaireAuditeur' | translate }}
+              </mat-label>
+              <textarea matInput formControlName="commentaire"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>
+                {{ 'qualite.audit.commentaireReseau' | translate }}
+              </mat-label>
+              <textarea
+                matInput
+                formControlName="commentaire_reseau"
+              ></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>
+                {{ 'qualite.audit.descpritionAction' | translate }}
+              </mat-label>
+              <textarea matInput formControlName="action"></textarea>
+              <mat-error>
+                {{ row.controls.action.errors | error }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>
+                {{ 'qualite.audit.dateReponseCentre' | translate }}
+              </mat-label>
+              <input
+                matInput
+                appCustomDateMaskDirective
+                [matDatepicker]="picker"
+                placeholder="jj/mm/aaaa"
+                formControlName="date_reponse_centre"
+                [max]="maxDate"
+                [min]="dateAudit"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error
+                *ngIf="
+                  row.controls.date_reponse_centre.hasError('matDatepickerMin');
+                  else other
+                "
+              >
+                {{ 'validators.dateReponseCentreMin' | translate }}
+              </mat-error>
+              <ng-template #other>
+                <mat-error>
+                  {{ row.controls.date_reponse_centre.errors | error }}
+                </mat-error>
+              </ng-template>
+            </mat-form-field>
+
+            <div class="flex flex-col justify-center lg:gap-y-2">
+              <span
+                *ngIf="!isReadOnly"
+                (click)="file.click()"
+                class="self-start text-warn"
+              >
+                {{ 'qualite.audit.addDocument' | translate }}
+                <input
+                  (change)="addFile($event.target.files, row.controls.id.value)"
+                  type="file"
+                  class="hidden"
+                  #file
+                />
+              </span>
+              <mat-chip-listbox *ngIf="row.controls.fichiers.value?.length">
+                <mat-chip
+                  (click)="getFile(file)"
+                  class="cursor-pointer text-white"
+                  *ngFor="
+                    let file of row.controls.fichiers.value;
+                    trackBy: trackByFn
+                  "
+                >
+                  <!--  Enlever l'identificateur ajouté au nom du fichier-->
+                  {{ file.fichier.slice(file.fichier.indexOf('-') + 1) }}
+                  <button
+                    matChipRemove
+                    *ngIf="!isReadOnly"
+                    (click)="deleteFile(file.id)"
+                  >
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              </mat-chip-listbox>
+            </div>
+          </div>
+          <mat-action-row *ngIf="!isReadOnly && row.dirty">
+            <button
+              mat-raised-button
+              color="accent"
+              [disabled]="row.invalid"
+              (click)="updateAuditAnomalie(row)"
+            >
+              {{ 'commun.modifier' | translate }}
+            </button>
+          </mat-action-row>
+        </mat-expansion-panel>
+      </ng-container>
+    </form>
+  </mat-expansion-panel>
+</mat-accordion>

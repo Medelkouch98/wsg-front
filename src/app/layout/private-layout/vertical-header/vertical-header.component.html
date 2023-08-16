@@ -1,0 +1,75 @@
+<button
+  mat-stroked-button
+  class="border-white"
+  [matMenuTriggerFor]="centersMenu"
+>
+  {{ getCentreDisplay(currentCentre) }}
+</button>
+<mat-menu #centersMenu="matMenu">
+  <button
+    mat-menu-item
+    *ngFor="let centre of centres"
+    [ngClass]="{ 'bg-black/[0.04]': centre === currentCentre }"
+    (click)="selectCenter(centre)"
+  >
+    <span [ngClass]="{ 'text-primary': centre === currentCentre }">
+      {{ getCentreDisplay(centre) }}
+    </span>
+  </button>
+</mat-menu>
+
+<button
+  mat-icon-button
+  class="mr-1.5 ml-1.5"
+  [class]="{ notificationsCount: calendarCount }"
+>
+  <mat-icon [matBadge]="calendarCount" matBadgeColor="accent">
+    calendar_today
+  </mat-icon>
+</button>
+<button
+  mat-icon-button
+  class="mr-1"
+  [class]="{ notificationsCount: notificationsCount }"
+>
+  <mat-icon [matBadge]="notificationsCount" matBadgeColor="accent">
+    notifications
+  </mat-icon>
+</button>
+<button [matMenuTriggerFor]="flags" class="mr-1" mat-icon-button>
+  <mat-icon>
+    <span class="w-full flag-icon flag-icon-{{ selectedLanguage.code }}"></span>
+  </mat-icon>
+</button>
+<mat-menu #flags="matMenu">
+  <button
+    (click)="changeLanguage(lang)"
+    *ngFor="let lang of languages"
+    mat-menu-item
+  >
+    <span class="flag-icon flag-icon-{{ lang.icon }} mr-2.5"></span>
+    <span>{{ lang.language }}</span>
+  </button>
+</mat-menu>
+
+<button [matMenuTriggerFor]="profile" class="mr-1" mat-icon-button>
+  <mat-icon>account_circle</mat-icon>
+  <mat-menu #profile="matMenu">
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon>
+      {{ 'userMenu.settings' | translate }}
+    </button>
+    <button mat-menu-item>
+      <mat-icon>account_box</mat-icon>
+      {{ 'userMenu.profile' | translate }}
+    </button>
+    <button mat-menu-item>
+      <mat-icon>notifications_off</mat-icon>
+      {{ 'userMenu.disableNotifications' | translate }}
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      {{ 'authentication.logout' | translate }}
+    </button>
+  </mat-menu>
+</button>

@@ -1,0 +1,124 @@
+<mat-expansion-panel expanded class="my-4 w-full">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{ 'gestion.clotureCaisse.activitesNonFactures' | translate }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="responsive-table my-4">
+    <mat-table [dataSource]="[activiteNonFactures]">
+      <ng-container matColumnDef="activites_non_factures">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          {{ 'gestion.clotureCaisse.activitesNonFactures' | translate }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ht">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.HT' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.HT' | translate }}
+          </span>
+          {{ element.total_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_tva">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TVA' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.TVA' | translate }}
+          </span>
+          {{ element.total_tva | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ttc">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TTC' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.TTC' | translate }}
+          </span>
+          {{ element.total_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columnsActivitesNonFactures"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsActivitesNonFactures"></mat-row>
+    </mat-table>
+  </div>
+
+  <!--les details des activités non facturés-->
+  <h5 class="font-medium text-center">
+    {{ 'gestion.clotureCaisse.detailActivitesNonFactures' | translate }}
+  </h5>
+  <div class="responsive-table pt-4">
+    <mat-table [dataSource]="detailNonFactures">
+      <ng-container matColumnDef="nom_client">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.nomClient' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.nomClient' | translate }}
+        </span>
+          {{ element.nom_client }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="numero_rapport">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.numPV' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.numPV' | translate }}
+        </span>
+          {{ element.numero_rapport }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="montant_ht">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.HT' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.HT' | translate }}
+        </span>
+          {{ element.montant_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="montant_tva">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TVA' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.TVA' | translate }}
+        </span>
+          {{ element.montant_tva | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="montant_ttc">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TTC' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.TTC' | translate }}
+        </span>
+          {{ element.montant_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columnsDetailsActivitesNonFactures"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsDetailsActivitesNonFactures"></mat-row>
+    </mat-table>
+    <div class="p-4 text-center" *ngIf="detailNonFactures?.length === 0">
+      {{ 'gestion.clotureCaisse.aucuneDetailActiviteNonFacture' | translate }}
+    </div>
+  </div>
+</mat-expansion-panel>

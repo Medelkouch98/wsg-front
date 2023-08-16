@@ -1,0 +1,45 @@
+<!-- Breadcrumb -->
+<ng-container *ngIf="pageInfo">
+  <div class="bg-white py-5 px-7">
+    <div class="flex flex-col md:flex-row">
+      <div class="flex items-center">
+        <h4 class="font-bold text-primary">
+          {{ pageInfo.title }}
+        </h4>
+      </div>
+      <div
+        class="m-0 hidden flex-1 items-center justify-end bg-transparent p-0 sm:flex"
+      >
+        <ng-container *ngIf="previousUrl">
+          <button mat-button color="primary" [routerLink]="previousUrl">
+            <mat-icon>arrow_circle_left</mat-icon>
+            {{ 'commun.retour' | translate }}
+          </button>
+          <mat-icon>chevron_right</mat-icon>
+        </ng-container>
+
+        <ul class="m-0 flex list-none items-center p-0">
+          <ng-template
+            [ngForOf]="pageInfo.urls"
+            let-first="first"
+            let-last="last"
+            let-url
+            ngFor
+          >
+            <mat-icon *ngIf="!first">chevron_right</mat-icon>
+            <li>
+              <button
+                mat-button
+                color="primary"
+                [routerLink]="url.url"
+                [disabled]="last"
+              >
+                {{ url.title }}
+              </button>
+            </li>
+          </ng-template>
+        </ul>
+      </div>
+    </div>
+  </div>
+</ng-container>

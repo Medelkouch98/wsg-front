@@ -1,0 +1,254 @@
+<!-- ============================================================== -->
+<!-- sidebar -->
+<!-- ============================================================== -->
+<div
+  class="relative min-h-[165px] bg-cover"
+  style="
+    background: url(../../../../assets/images/background/login-bg-autosur02.jpg);
+  "
+>
+  <button
+    class="absolute bottom-0 flex w-full justify-between whitespace-nowrap bg-black/50 py-1.5 px-8 text-white backdrop-blur-sm"
+  >
+    <span>
+      {{ 'commun.welcome' | translate : { value: (user$ | async)?.prenom } }}
+    </span>
+  </button>
+</div>
+
+<mat-nav-list appAccordion class="px-4">
+  <!-- Favorite -->
+  <mat-list-item
+    appAccordionLink
+    *ngIf="(favoriteItems$ | async).length; else noFavorites"
+    routerLinkActive="selected"
+    [group]="'favoris'"
+  >
+    <a
+      class="flex flex-wrap bg-primary pt-3 align-baseline text-white"
+      appAccordionToggle
+    >
+      <mat-icon
+        fontSet="material-icons-outlined"
+        class="font-xl self-center justify-self-start text-white"
+      >
+        star
+      </mat-icon>
+      <span class="lowerCapitalize flex-1">
+        {{ 'commun.myFavorites' | translate }}
+      </span>
+      <mat-icon class="dd-icon justify-self-end">keyboard_arrow_down</mat-icon>
+    </a>
+    <!-- favorite item -->
+    <mat-nav-list class="sub-item">
+      <div
+        cdkDropList
+        (cdkDropListDropped)="drop($event)"
+        [cdkDropListData]="favoriteItems"
+      >
+        <!-- link -->
+        <mat-list-item
+          cdkDrag
+          *ngFor="
+            let favoriteItem of favoriteItems$ | async;
+            let j = index;
+            let i = childitem
+          "
+        >
+          <a
+            [routerLink]="[favoriteItem.route]"
+            routerLinkActive="selected"
+            (click)="itemSelect[i] = j; handleNotify()"
+            [ngClass]="{ 'mt-2': j === 0 }"
+            [matTooltip]="favoriteItem.name | translate"
+            matTooltipPosition="right"
+            [matTooltipDisabled]="favoriteItem.name?.length < 19"
+            class="flex cursor-grabbing items-center justify-between"
+          >
+            <span class="lowerCapitalize truncate hover:text-clip">
+              {{ favoriteItem.name | translate }}
+            </span>
+            <div class="flex items-center">
+              <span
+                class="badge"
+                *ngIf="stats | sidebarStats : favoriteItem.state as state"
+              >
+                {{ state.value }}
+              </span>
+              <mat-icon
+                class="favorite ml-1 mr-0 cursor-pointer justify-self-end text-xl leading-6 hover:text-warn"
+                (click)="handleFavorite(favoriteItem, $event)"
+              >
+                close
+              </mat-icon>
+            </div>
+          </a>
+        </mat-list-item>
+      </div>
+    </mat-nav-list>
+  </mat-list-item>
+
+  <!-- No Favorites Template -->
+  <ng-template #noFavorites>
+    <div
+      class="mb-2 flex flex-col gap-1 rounded-xl border border-primary bg-bodycolor p-3 text-center text-xs text-primary"
+    >
+      <span class="flex items-center justify-center gap-1 font-bold">
+        <mat-icon>star</mat-icon>
+        {{ 'commun.noFavoritesTitle' | translate }}
+      </span>
+      <span>{{ 'commun.noFavoritesText' | translate }}</span>
+    </div>
+  </ng-template>
+
+  <!-- Other Menu Type -->
+  <mat-list-item
+    appAccordionLink
+    *ngFor="let menuitem of wsgItems$ | async"
+    [group]="menuitem.state"
+    routerLinkActive="selected"
+    (click)="scrollToTop()"
+  >
+    <a
+      class="flex flex-wrap pt-3 align-baseline"
+      appAccordionToggle
+      (click)="onNavigate(menuitem)"
+      *ngIf="menuitem.type !== menuTypeEnum.ExtLink"
+    >
+      <mat-icon
+        fontSet="material-icons-outlined"
+        class="font-xl self-center justify-self-start"
+      >
+        {{ menuitem.icon }}
+      </mat-icon>
+      <span class="lowerCapitalize flex-1">
+        {{ menuitem.name | translate }}
+      </span>
+      <span
+        class="badge"
+        *ngIf="stats | sidebarStats : menuitem.state as state"
+      >
+        {{ state.value }}
+      </span>
+      <mat-icon
+        *ngIf="menuitem.type === menuTypeEnum.Sub"
+        class="dd-icon justify-self-end"
+      >
+        keyboard_arrow_down
+      </mat-icon>
+    </a>
+    <!-- Sub item -->
+    <mat-nav-list class="sub-item" *ngIf="menuitem.type === menuTypeEnum.Sub">
+      <!-- link -->
+      <mat-list-item
+        *ngFor="
+          let childitem of menuitem.children;
+          let j = index;
+          let i = childitem
+        "
+        routerLinkActive="selected"
+      >
+        <a
+          [routerLink]="[menuitem.state, childitem.state]"
+          *ngIf="childitem.type === menuTypeEnum.Link"
+          routerLinkActive="selected"
+          (click)="itemSelect[i] = j; handleNotify()"
+          [ngClass]="{ 'mt-2': j === 0 }"
+          [matTooltip]="childitem.name | translate"
+          matTooltipPosition="right"
+          [matTooltipDisabled]="childitem.name?.length < 19"
+          class="group/item flex items-center justify-between"
+        >
+          <span class="lowerCapitalize truncate hover:text-clip">
+            {{ childitem.name | translate }}
+          </span>
+          <div class="flex items-center">
+            <span
+              class="badge"
+              *ngIf="stats | sidebarStats : childitem.state as state"
+            >
+              {{ state.value }}
+            </span>
+            <mat-icon
+              class="favorite ml-1 justify-self-end text-xl leading-6 hover:scale-110 group-hover/item:visible"
+              [ngClass]="{
+                'text-red-500': isFavorite(childitem),
+                'text-gray-500 invisible hover:text-red-500':
+                  !isFavorite(childitem)
+              }"
+              (click)="handleFavorite(childitem, $event)"
+            >
+              star
+            </mat-icon>
+          </div>
+        </a>
+      </mat-list-item>
+      <!-- SubChild -->
+      <mat-list-item
+        *ngFor="let childitem of menuitem.children; let j = index"
+        routerLinkActive="selected"
+      >
+        <a
+          *ngIf="childitem.type === menuTypeEnum.SubChild"
+          (click)="addExpandClass(childitem.name)"
+          [ngClass]="{ selected: showMenu === childitem.name }"
+        >
+          <div class="flex flex-wrap align-baseline">
+            <span class="lowerCapitalize flex-1 justify-self-start">
+              {{ childitem.name | translate }}
+            </span>
+            <mat-icon class="dd-icon justify-self-end">
+              keyboard_arrow_down
+            </mat-icon>
+          </div>
+        </a>
+
+        <mat-nav-list
+          class="child-sub-item"
+          *ngIf="childitem.type === menuTypeEnum.SubChild"
+        >
+          <mat-list-item *ngFor="let child of childitem.subchildren">
+            <a
+              [routerLink]="[menuitem.state, childitem.state, child.state]"
+              routerLinkActive="selected"
+              class="lowerCapitalize"
+              (click)="handleNotify()"
+            >
+              {{ child.name | translate }}
+            </a>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-list-item>
+  <!-- ExtLink item -->
+  <ng-container *ngIf="(extItems$ | async).length">
+    <div class="text-black-700 mb-2 mt-6 cursor-text">
+      <mat-divider class="mb-3" />
+      <span class="text-sm">{{ 'commun.quickAccess' | translate }}</span>
+    </div>
+    <mat-list-item
+      appAccordionLink
+      *ngFor="let menuitem of extItems$ | async"
+      [group]="menuitem.state"
+      (click)="scrollToTop()"
+      routerLinkActive="selected"
+    >
+      <a
+        class="flex flex-wrap pt-3 align-baseline"
+        appAccordionToggle
+        (click)="onNavigate(menuitem)"
+      >
+        <mat-icon
+          fontSet="material-icons-outlined"
+          class="font-xl self-center justify-self-start"
+        >
+          {{ menuitem.icon }}
+        </mat-icon>
+        <span class="lowerCapitalize flex-1">
+          {{ menuitem.name | translate }}
+        </span>
+      </a>
+    </mat-list-item>
+  </ng-container>
+</mat-nav-list>

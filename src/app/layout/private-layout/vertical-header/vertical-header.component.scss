@@ -1,0 +1,37 @@
+@use '../../../../assets/styles/variable' as *;
+
+/*******************
+Notify
+*******************/
+
+@keyframes heartbit {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scale(0.1);
+    opacity: 0.1;
+  }
+
+  50% {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.notificationsCount .mat-badge-content {
+  animation: heartbit 1s ease-out;
+  animation-iteration-count: infinite;
+}

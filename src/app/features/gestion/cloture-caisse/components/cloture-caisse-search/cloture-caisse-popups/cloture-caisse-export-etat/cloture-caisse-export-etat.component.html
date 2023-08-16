@@ -1,0 +1,68 @@
+<h1 mat-dialog-title class="text-center">
+  {{ 'gestion.clotureCaisse.modifierEtatLorsDeLaCloture' | translate }}
+</h1>
+<div mat-dialog-content>
+  <mat-accordion multi>
+    <mat-expansion-panel expanded class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          <h5 class="font-medium">
+            {{ 'gestion.clotureCaisse.findDeJournee' | translate }}
+          </h5>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid grid-cols-2 gap-4 p-2">
+        <ng-container *ngFor="let typeEtatExportKey of exportEtatEnumKeys">
+          <label>
+            <input
+              type="checkbox"
+              [value]="typeEtatExportKey"
+              (change)="handleCheckboxChangeFinDeJournee($event)"
+              [checked]="
+                data.etatsFindDeJournee.includes(
+                  ExportEtatEnum[typeEtatExportKey]
+                )
+              "
+            />
+            {{
+              'gestion.exportEtats.typeExport.' +
+                ExportEtatEnum[typeEtatExportKey] | translate
+            }}
+          </label>
+        </ng-container>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          <h5 class="font-medium">
+            {{ 'gestion.clotureCaisse.finDuMois' | translate }}
+          </h5>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid grid-cols-2 gap-4 p-2">
+        <ng-container *ngFor="let typeEtatExportKey of exportEtatEnumKeys">
+          <label>
+            <input
+              type="checkbox"
+              [value]="typeEtatExportKey"
+              (change)="handleCheckboxChangeFinDuMois($event)"
+              [checked]="
+                data.etatsFindDuMois.includes(ExportEtatEnum[typeEtatExportKey])
+              "
+            />
+            {{
+              'gestion.exportEtats.typeExport.' +
+                ExportEtatEnum[typeEtatExportKey] | translate
+            }}
+          </label>
+        </ng-container>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+<div mat-dialog-actions class="justify-center">
+  <button mat-raised-button color="accent" (click)="savePreference()">
+    {{ 'commun.continuer' | translate }}
+  </button>
+</div>

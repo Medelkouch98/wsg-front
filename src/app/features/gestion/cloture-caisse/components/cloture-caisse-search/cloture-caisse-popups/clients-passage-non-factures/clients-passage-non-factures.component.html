@@ -1,0 +1,12 @@
+<h1 mat-dialog-title class="text-center">{{'gestion.clotureCaisse.clientsPassagePVNonFactures' | translate : {count:data.count} }}</h1>
+<div mat-dialog-content class="text-center" [innerHTML]="'gestion.clotureCaisse.clientsPassagePVNonFacturesDetails' | translate">
+</div>
+<div mat-dialog-actions class="justify-center">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="emitAction(true)"
+  >
+    {{ 'commun.retour' |translate }}
+  </button>
+</div>

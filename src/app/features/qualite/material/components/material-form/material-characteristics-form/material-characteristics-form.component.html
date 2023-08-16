@@ -1,0 +1,52 @@
+<!-- Material characteristics section heading -->
+<div class="mb-4 border-b border-slate-300 pb-2.5 lg:col-span-2">
+  <h5 class="font-medium">
+    {{ 'qualite.material.materialCharacteristics' | translate }}
+  </h5>
+</div>
+
+<div class="grid grid-cols-1 gap-x-5 gap-y-1 lg:grid-cols-2">
+  <!-- Iterating over each characteristic control -->
+  <ng-container
+    *ngFor="let characteristic of characteristicsForm?.controls"
+    [formGroup]="characteristic"
+  >
+    <!-- Form field for each characteristic -->
+    <mat-form-field appFieldControlLabel>
+      <!-- Label for the characteristic -->
+      <mat-label>{{ getCharacteristicLabel(characteristic) }}</mat-label>
+
+      <!-- Switching based on the control type of the characteristic -->
+      <ng-container [ngSwitch]="getCharacteristicControlType(characteristic)">
+        <!-- Select control type -->
+        <mat-select
+          *ngSwitchCase="'select'"
+          formControlName="valeur"
+          (selectionChange)="setValue()"
+        >
+          <!-- Options for the select control -->
+          <mat-option
+            *ngFor="let option of characteristic.getRawValue().choix"
+            [value]="option"
+          >
+            {{ option }}
+          </mat-option>
+        </mat-select>
+
+        <!-- Input control type -->
+        <input
+          *ngSwitchCase="'input'"
+          matInput
+          formControlName="valeur"
+          (input)="setValue()"
+        />
+      </ng-container>
+
+      <!-- Error message for the characteristic value -->
+      <mat-error
+        appFormControlError
+        [errors]="characteristic.controls.valeur.errors"
+      />
+    </mat-form-field>
+  </ng-container>
+</div>

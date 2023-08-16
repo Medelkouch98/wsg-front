@@ -1,0 +1,28 @@
+<div [formGroup]="form">
+  <div>
+    <mat-slide-toggle
+      color="primary"
+      (change)="onFormatSivFniChange()"
+      formControlName="formatSivFni"
+      class="mb-2"
+    >
+      {{ 'immatriculationControl.formatSivFni' | translate }}
+    </mat-slide-toggle>
+  </div>
+  <mat-form-field class="mt-1" appFieldControlLabel>
+    <mat-label>
+      {{ 'immatriculationControl.immatriculation' | translate }}
+    </mat-label>
+    <input
+      matInput
+      formControlName="immatriculation"
+      (blur)="formaterImmat()"
+    />
+    <mat-error>
+      {{
+        form.controls.immatriculation.errors
+          | error : 'immatriculationFormatSIV'
+      }}
+    </mat-error>
+  </mat-form-field>
+</div>

@@ -1,0 +1,134 @@
+<ng-container
+  *ngIf="{
+    users: users$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    searchClicked: searchClicked$ | async,
+    currentCentre: currentCentre$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.users?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.users?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.users.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nom">
+              {{ 'commun.name' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.name' | translate }}
+              </span>
+              {{ element.nom }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="prenom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prenom">
+              {{ 'commun.prenom' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.prenom' | translate }}
+              </span>
+              {{ element.prenom }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="agrement">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="agrement">
+              {{ 'commun.agrement' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.agrement' | translate }}
+              </span>
+              {{ element.controleur?.agrement_vl ?? '--' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="role">
+              {{ 'commun.role' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.role' | translate }}
+              </span>
+              {{
+                (
+                  rolesSelector
+                  | getElementFromResource
+                    : getUserRoleIdOfCurrentCentre(
+                        element.centres,
+                        _.currentCentre.id
+                      )
+                  | async
+                )?.nom
+              }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actif">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="actif">
+              {{ 'commun.status' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.status' | translate }}
+              </span>
+              <app-status-illustration [status]="element.actif" />
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="goToDetails(element); $event.stopPropagation()"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+
+              <button
+                *ngIf="!element.is_controleur"
+                mat-icon-button
+                color="warn"
+                (click)="deleteUser(element); $event.stopPropagation()"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns" />
+          <mat-row
+            *matRowDef="let row; columns: columns"
+            [ngClass]="{ 'bg-inactif': !row.actif }"
+            (click)="goToDetails(row)"
+          />
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.users.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.users.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        />
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

@@ -1,0 +1,430 @@
+<ng-container
+  *ngIf="{
+    roles: roles$ | async,
+    civilites: civilites$ | async,
+    isReadOnly: isReadOnly$ | async,
+    currentUser: currentUser$ | async,
+    isAddRoleGranted: isAddRoleGranted$ | async
+  } as _"
+>
+  <div *ngIf="userForm" class="flex w-full flex-col flex-wrap">
+    <mat-card>
+      <mat-card-content>
+        <form
+          [formGroup]="userForm"
+          appMarkRequiredFormControlAsDirty
+          [updateRequiredStatus$]="updateRequiredStatus$"
+        >
+          <div class="grid grid-cols-1 gap-x-5 gap-y-1 lg:grid-cols-2">
+            <div
+              *ngIf="!userForm.getRawValue().actif"
+              class="mb-2 border-2 border-warn p-4 text-center text-warn lg:col-span-2"
+            >
+              {{
+                (userForm.getRawValue().is_controleur
+                  ? 'users.inactifControllerMessage'
+                  : 'users.inactifUserMessage'
+                ) | translate
+              }}
+            </div>
+            <!-- Type de profile -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'users.profileType' | translate }}
+              </mat-label>
+              <mat-select formControlName="is_controleur">
+                <mat-option [value]="false">
+                  {{ 'users.type.classique' | translate }}
+                </mat-option>
+                <mat-option [value]="true">
+                  {{ 'users.type.conroleur' | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Statut -->
+            <mat-radio-group
+              formControlName="actif"
+              (change)="onStatusChange($event.value)"
+            >
+              <mat-label>
+                {{ 'commun.statut' | translate }}
+              </mat-label>
+              <mat-radio-button [value]="true">
+                {{ 'commun.actif' | translate }}
+              </mat-radio-button>
+              <mat-radio-button [value]="false">
+                {{ 'commun.inactif' | translate }}
+              </mat-radio-button>
+            </mat-radio-group>
+
+            <!-- Agrément VL -->
+            <!-- The field is inside a div to keep the empty space on the right columnn case *ngIf condition is falsy -->
+            <mat-form-field
+              *ngIf="userForm.getRawValue().is_controleur"
+              formGroupName="controleur"
+              appFieldControlLabel
+            >
+              <mat-label>
+                {{ 'users.agrementVl' | translate }}
+              </mat-label>
+              <input matInput formControlName="agrement_vl" />
+              <mat-error
+                appFormControlError
+                [errors]="controleurForm.controls.agrement_vl.errors"
+                pattern="agrementVl"
+              />
+            </mat-form-field>
+
+            <!-- Nom -->
+            <mat-form-field appFieldControlLabel class="col-start-1">
+              <mat-label>
+                {{ 'commun.nom' | translate }}
+              </mat-label>
+              <input matInput formControlName="nom" />
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.nom.errors"
+              />
+            </mat-form-field>
+
+            <!-- Prenom -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.prenom' | translate }}
+              </mat-label>
+              <input matInput formControlName="prenom" />
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.prenom.errors"
+              />
+            </mat-form-field>
+
+            <!-- Civilité -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.civilite' | translate }}
+              </mat-label>
+              <mat-select formControlName="civilite_id">
+                <mat-option
+                  *ngFor="let civilite of _.civilites"
+                  [value]="civilite.id"
+                >
+                  {{ civilite.libelle_complet }}
+                </mat-option>
+              </mat-select>
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.civilite_id.errors"
+              />
+            </mat-form-field>
+
+            <!-- Login -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.login' | translate }}
+              </mat-label>
+              <input matInput formControlName="login" />
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.login.errors"
+              />
+            </mat-form-field>
+
+            <!-- Téléphone -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.telephone' | translate }}
+              </mat-label>
+              <input matInput formControlName="mobile" />
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.mobile.errors"
+                pattern="phone"
+              />
+            </mat-form-field>
+
+            <!-- Email -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.email' | translate }}
+              </mat-label>
+              <input matInput formControlName="email" />
+              <mat-error
+                appFormControlError
+                [errors]="userForm.controls.email.errors"
+                pattern="email"
+              />
+            </mat-form-field>
+
+            <ng-container
+              *ngIf="userForm.getRawValue().is_controleur"
+              formGroupName="controleur"
+            >
+              <!-- Centre de rattachement -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'users.agrement_centre_rattachement' | translate }}
+                </mat-label>
+                <input
+                  matInput
+                  formControlName="agrement_centre_rattachement"
+                />
+              </mat-form-field>
+
+              <!-- Date de début d'agrément -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'users.dateDebutAgrement' | translate }}
+                </mat-label>
+                <input
+                  matInput
+                  appCustomDateMaskDirective
+                  [matDatepicker]="debutAgrementDatePicker"
+                  placeholder="jj/mm/aaaa"
+                  formControlName="date_debut_agrement"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="debutAgrementDatePicker"
+                />
+                <mat-datepicker #debutAgrementDatePicker />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.date_debut_agrement.errors"
+                />
+              </mat-form-field>
+
+              <!-- Date de fin d'agrément -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'users.dateFinAgrement' | translate }}
+                </mat-label>
+                <input
+                  matInput
+                  appCustomDateMaskDirective
+                  [matDatepicker]="finAgrementDatePicker"
+                  [min]="controleurForm.getRawValue().date_debut_agrement"
+                  placeholder="jj/mm/aaaa"
+                  formControlName="date_fin_agrement"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="finAgrementDatePicker"
+                />
+                <mat-datepicker #finAgrementDatePicker />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.date_fin_agrement.errors"
+                />
+              </mat-form-field>
+
+              <!-- Adresse -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'commun.adresse' | translate }}
+                </mat-label>
+                <input matInput formControlName="adresse" />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.adresse.errors"
+                />
+              </mat-form-field>
+
+              <!-- Suite -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'commun.suite' | translate }}
+                </mat-label>
+                <input matInput formControlName="suite" />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.suite.errors"
+                />
+              </mat-form-field>
+
+              <!-- CP -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'commun.cp' | translate }}
+                </mat-label>
+                <input matInput formControlName="cp" appFormControlNumberOnly />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.cp.errors"
+                  pattern="positiveInteger"
+                />
+              </mat-form-field>
+
+              <!-- Ville -->
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'commun.ville' | translate }}
+                </mat-label>
+                <input matInput formControlName="ville" />
+                <mat-error
+                  appFormControlError
+                  [errors]="controleurForm.controls.ville.errors"
+                />
+              </mat-form-field>
+
+              <!-- Habilitation gaz -->
+              <mat-radio-group formControlName="habilitation_gaz">
+                <mat-label>
+                  {{ 'users.habilitation_gaz' | translate }}
+                </mat-label>
+                <mat-radio-button [value]="true">
+                  {{ 'commun.oui' | translate }}
+                </mat-radio-button>
+                <mat-radio-button [value]="false">
+                  {{ 'commun.non' | translate }}
+                </mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Habilitation électrique -->
+              <mat-radio-group formControlName="habilitation_electrique">
+                <mat-label>
+                  {{ 'users.habilitation_electrique' | translate }}
+                </mat-label>
+                <mat-radio-button [value]="true">
+                  {{ 'commun.oui' | translate }}
+                </mat-radio-button>
+                <mat-radio-button [value]="false">
+                  {{ 'commun.non' | translate }}
+                </mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Réinitialiser le mot de passe -->
+              <mat-radio-group formControlName="reset_password">
+                <mat-label>
+                  {{ 'users.reset_password' | translate }}
+                </mat-label>
+                <mat-radio-button [value]="true">
+                  {{ 'commun.oui' | translate }}
+                </mat-radio-button>
+                <mat-radio-button [value]="false">
+                  {{ 'commun.non' | translate }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+            <div class="flex flex-col gap-2.5 lg:col-span-2">
+              <mat-divider />
+              <div
+                class="flex justify-end"
+                *ngIf="!_.isReadOnly && _.isAddRoleGranted"
+              >
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="button"
+                  (click)="addRole()"
+                >
+                  {{ 'roles.addRole' | translate }}
+                </button>
+              </div>
+              <p
+                *ngIf="incativityReasonMessage"
+                [innerHTML]="incativityReasonMessage"
+                class="text-base text-warn"
+              ></p>
+              <!-- Centres Permissions Table-->
+              <div class="responsive-table editable-table">
+                <mat-table *ngIf="centres" [dataSource]="centres">
+                  <!-- Centre -->
+                  <ng-container matColumnDef="centre" formArrayName="centres">
+                    <mat-header-cell *matHeaderCellDef>
+                      {{ 'commun.center' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                      *matCellDef="let element; let i = index"
+                      [formGroupName]="i"
+                    >
+                      <span class="header-label">
+                        {{ 'commun.center' | translate }}
+                      </span>
+                      <mat-checkbox
+                        formControlName="id"
+                        (change)="updateUserAttachedCentres($event.checked, i)"
+                      >
+                        {{ element.agrement }} - {{ element.ville }}
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Rôle -->
+                  <ng-container matColumnDef="role" formArrayName="centres">
+                    <mat-header-cell *matHeaderCellDef>
+                      {{ 'commun.role' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                      *matCellDef="let element; let i = index"
+                      [formGroupName]="i"
+                    >
+                      <span class="header-label">
+                        {{ 'commun.role' | translate }}
+                      </span>
+                      <mat-form-field>
+                        <mat-select formControlName="role_id">
+                          <mat-option
+                            *ngFor="let role of _.roles"
+                            [value]="role.id"
+                          >
+                            {{ role.nom }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error
+                          appFormControlError
+                          [errors]="
+                            userForm.controls.centres.controls[i].controls
+                              .role_id.errors
+                          "
+                        />
+                      </mat-form-field>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Centre de controle -->
+                  <ng-container
+                    matColumnDef="isControleur"
+                    *ngIf="userForm.getRawValue().is_controleur"
+                    formGroupName="controleur"
+                  >
+                    <mat-header-cell *matHeaderCellDef>
+                      {{ 'commun.controleur' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                      *matCellDef="let element; let i = index"
+                      formArrayName="centres_controle"
+                    >
+                      <span class="header-label">
+                        {{ 'commun.controleur' | translate }}
+                      </span>
+                      <mat-checkbox
+                        [formControlName]="i"
+                        (change)="updateControleurAttachedCentres(i)"
+                      />
+                    </mat-cell>
+                  </ng-container>
+
+                  <mat-header-row *matHeaderRowDef="centresTableColumns" />
+                  <mat-row *matRowDef="let row; columns: centresTableColumns" />
+                </mat-table>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="flex justify-center">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!isValid()"
+        (click)="saveUser()"
+      >
+        {{ 'commun.save' | translate }}
+      </button>
+    </div>
+  </div>
+</ng-container>

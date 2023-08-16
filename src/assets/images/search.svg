@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_2" data-name="Calque 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 284.74 258.96">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 6px;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-1, .cls-4, .cls-5 {
+        stroke: #0c4890;
+      }
+
+      .cls-2, .cls-3 {
+        stroke: #e5271f;
+      }
+
+      .cls-3, .cls-4 {
+        stroke-linecap: round;
+      }
+
+      .cls-6 {
+        fill: #cdcccc;
+      }
+
+      .cls-4 {
+        stroke-width: 8px;
+      }
+
+      .cls-5 {
+        fill: #fff;
+        stroke-width: 9px;
+      }
+
+      .cls-7 {
+        fill: #0c4890;
+      }
+    </style>
+  </defs>
+  <g id="Calque_1-2" data-name="Calque 1">
+    <path class="cls-2" d="m166.04,176.71c0-14.65,11.87-26.52,26.52-26.52s26.52,11.87,26.52,26.52c0,7.32-2.97,13.95-7.77,18.75-4.8,4.8-11.43,7.77-18.75,7.77-14.65,0-26.52-11.87-26.52-26.52Z"/>
+    <path class="cls-1" d="m41.63,176.71c0-14.65,11.87-26.52,26.52-26.52s26.52,11.87,26.52,26.52c0,7.32-2.97,13.95-7.77,18.75-4.8,4.8-11.43,7.77-18.75,7.77-14.65,0-26.52-11.87-26.52-26.52Z"/>
+    <circle class="cls-5" cx="130.15" cy="109.04" r="71.7"/>
+    <line class="cls-3" x1="231.3" y1="215.23" x2="211.31" y2="195.47"/>
+    <ellipse class="cls-6" cx="143" cy="251.85" rx="74.85" ry="7.11"/>
+    <circle class="cls-6" cx="68.15" cy="8.89" r="8.89"/>
+    <circle class="cls-6" cx="242.96" cy="58.67" r="8.3"/>
+    <circle class="cls-6" cx="281.48" cy="166.52" r="3.26"/>
+    <circle class="cls-6" cx="114.37" cy="218.07" r="4.74"/>
+    <circle class="cls-6" cx="68.15" cy="176.71" r="4.74"/>
+    <circle class="cls-6" cx="2.96" cy="69.93" r="2.96"/>
+    <path class="cls-4" d="m147.56,123.55c-5.93,7.25-24.3,13.63-36.15,0"/>
+    <circle class="cls-7" cx="102.93" cy="101.93" r="5.33"/>
+    <circle class="cls-7" cx="157.44" cy="101.93" r="5.33"/>
+  </g>
+</svg>

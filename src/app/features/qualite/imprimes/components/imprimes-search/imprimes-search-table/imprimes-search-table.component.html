@@ -1,0 +1,164 @@
+<ng-container
+  *ngIf="{
+    cartonsLiasses: dataSource$ | async,
+    page: page$ | async,
+    sort: sort$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.cartonsLiasses?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.cartonsLiasses?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table expanded-table">
+        <mat-table
+          [dataSource]="_.cartonsLiasses.data"
+          multiTemplateDataRows
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="type">
+            <mat-header-cell
+              *matHeaderCellDef
+              class="flex-[1_1_10%]"
+              mat-sort-header
+            >
+              {{ 'qualite.imprimes.typeImprimes' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="flex-[1_1_10%]">
+              <span class="header-label">
+                {{ 'qualite.imprimes.typeImprimes' | translate }}
+              </span>
+              {{ element.type }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="premier_numero">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'qualite.imprimes.premierNumImprimes' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.premierNumImprimes' | translate }}
+              </span>
+              {{ element.premier_numero }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="dernier_numero">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'qualite.imprimes.dernierNumImprimes' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.dernierNumImprimes' | translate }}
+              </span>
+              {{ element.dernier_numero }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="date_livraison">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'qualite.imprimes.dateEnreCarton' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.dateEnreCarton' | translate }}
+              </span>
+              {{ element.date_livraison | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="etat">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'qualite.imprimes.etat' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.etat' | translate }}
+              </span>
+              {{ element.etat }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="date_utilisation">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'qualite.imprimes.dateDernierUtilisation' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.dateDernierUtilisation' | translate }}
+              </span>
+              {{ element.date_utilisation | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="quantite_restante">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'qualite.imprimes.imprimesRestants' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.imprimes.imprimesRestants' | translate }}
+              </span>
+              {{ element.quantite_restante }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); openTableDetails(element)"
+              >
+                <mat-icon *ngIf="expandedElement !== element">
+                  keyboard_arrow_down
+                </mat-icon>
+                <mat-icon *ngIf="expandedElement === element">
+                  keyboard_arrow_up
+                </mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetail">
+            <mat-cell *matCellDef="let element">
+              <div
+                class="w-full"
+                [@detailExpand]="expandedElement"
+                *ngIf="expandedElement === element"
+              >
+                <app-imprimes-search-table-details
+                  [liasses]="element.liasses"
+                  [cartonId]="element.id"
+                  [sort]="element.liassesSort"
+                ></app-imprimes-search-table-details>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            *matRowDef="let element; columns: columns"
+            (click)="openTableDetails(element)"
+          ></mat-row>
+          <mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            [ngClass]="{ hidden: row !== expandedElement }"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.cartonsLiasses.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.cartonsLiasses.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="pageChange($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

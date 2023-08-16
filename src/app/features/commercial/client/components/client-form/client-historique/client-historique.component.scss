@@ -1,0 +1,8 @@
+.mat-button-toggle-checked {
+  background-color: green !important;
+  color: white !important;
+
+  &:first-child {
+    background-color: #df0002 !important;
+  }
+}

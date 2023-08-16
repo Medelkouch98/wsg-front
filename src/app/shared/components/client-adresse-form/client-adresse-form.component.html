@@ -1,0 +1,80 @@
+<div class="flex flex-col gap-4">
+  <div
+    class="flex flex-row items-baseline rounded-md border border-gray px-4 pt-4"
+  >
+    <ng-container *ngIf="!!showPassage">
+      <mat-label class="text-primary">
+        {{ 'client.passage' | translate }}
+      </mat-label>
+      <mat-checkbox [(ngModel)]="isPassageChecked"></mat-checkbox>
+    </ng-container>
+    <app-client-autocomplete
+      class="w-full pl-3"
+      [label]="translateService.instant('commun.client')"
+      [formControl]="clientControl"
+      [typePersonne]="
+        isPassageChecked ? TypePersonneEnum.PASSAGE : typePersonne
+      "
+    ></app-client-autocomplete>
+  </div>
+  <div class="pointer-events-none border border-gray px-4 pt-4 opacity-70">
+    <form [formGroup]="adresseForm">
+      <div class="grid grid-cols-4 gap-x-4">
+        <mat-form-field
+          *ngIf="adresseForm.get('code').value"
+          class="col-span-2"
+          appFieldControlLabel=""
+        >
+          <mat-label>
+            {{ 'commun.codeClient' | translate }}
+          </mat-label>
+          <input matInput type="number" formControlName="code" />
+        </mat-form-field>
+        <mat-form-field
+          [ngClass]="
+            adresseForm.get('code').value ? 'col-span-2' : 'col-span-4'
+          "
+          appFieldControlLabel=""
+        >
+          <mat-label>{{ 'commun.civilite' | translate }}</mat-label>
+          <mat-select formControlName="civilite_id">
+            <mat-option
+              *ngFor="let civilite of civilites$ | async"
+              [value]="civilite.id"
+            >
+              {{ civilite.libelle_complet }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-4">
+          <mat-label>{{ 'commun.nom' | translate }}</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-4">
+          <mat-label>{{ 'commun.adresse' | translate }}</mat-label>
+          <input matInput formControlName="adresse" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-4">
+          <mat-label>{{ 'commun.suite' | translate }}</mat-label>
+          <input matInput formControlName="suite" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-2">
+          <mat-label>{{ 'commun.cp' | translate }}</mat-label>
+          <input matInput formControlName="cp" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-2">
+          <mat-label>{{ 'commun.ville' | translate }}</mat-label>
+          <input matInput formControlName="ville" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-4">
+          <mat-label>{{ 'commun.phone' | translate }}</mat-label>
+          <input matInput formControlName="fixe" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel="" class="col-span-4">
+          <mat-label>{{ 'commun.email' | translate }}</mat-label>
+          <input matInput formControlName="email" />
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+</div>

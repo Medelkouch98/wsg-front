@@ -1,0 +1,40 @@
+stages:
+  - analyze
+  - deploy
+pages:
+  stage: deploy
+  only:
+    refs:
+      - develop
+  script:
+        curl -H "Authorization:Bearer O6H8hWTgXTEefJNQpd7m6kxNjFvcSs" -H "Content-Type:application/json" --data '{"extra_vars":{"git_project":"develop","appVersion":"2.00","git_force_tag":"non","build_force":"non","import_wsc_metier":"non","metier_name":"V20-01-00-00","list_project_extravars":["WSG-Front"]},"inventory":"184"}' -X POST "https://ansible.secta-dsi.fr/api/v2/job_templates/384/launch/"
+Run Sonarqube-check:
+  stage: analyze
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  ##before_script: 
+    ##- wget -P /home/gitlab-runner/ https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+    ##- cd /home/gitlab-runner && unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+    # - wget -P /home/gitlab-runner/ http://srv-rd.secta.fr/sonar-scanner-4.6.2.2472-linux.tar
+    #- apt-get update && apt-get install -y unzip
+    # - cd /home/gitlab-runner && tar xvf sonar-scanner-cli-4.6.2.2472-linux.tar
+    ##- chmod +x /home/gitlab-runner/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner
+  script:
+    - /home/gitlab-runner/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -X
+    #- sonar-scanner 
+    #- PACKAGE_VERSION=$(node -p "require('./package.json').version")
+    #- echo sonar.projectVersion=${PACKAGE_VERSION} >> sonar-project.properties
+    #- npm run build
+    #- npm run sonar-scanner -- -Dsonar.login=${SONAR_LOGIN}
+  allow_failure: true
+  only:
+    - develop
+  when: manual

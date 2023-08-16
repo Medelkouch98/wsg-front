@@ -1,0 +1,142 @@
+<ng-container
+  *ngIf="{
+    theme: theme$ | async,
+    calledRessources: calledRessources$ | async,
+    defaultLogo: logo$ | async,
+    currentCenter: currentCenter$ | async
+  } as _"
+>
+  <!-- ============================================================== -->
+  <!-- Main wrapper - style you can find in charts.scss -->
+  <!-- ============================================================== -->
+  <div
+    [class]="_.theme"
+    class="relative top-0 bottom-0 left-0 right-0 flex flex-col overflow-hidden"
+    *ngIf="_.calledRessources.calledAll"
+  >
+    <!-- ============================================================== -->
+    <!-- Topbar - style you can find in header.scss -->
+    <!-- ============================================================== -->
+    <mat-toolbar class="relative z-[2] px-3.5 py-0" color="primary">
+      <div class="fix-width-for-horizontal flex w-full">
+        <!-- ============================================================== -->
+        <!-- Logo - style you can find in header.scss -->
+        <!-- ============================================================== -->
+        <div class="text-center md:w-[225px] md:shrink-0">
+          <a class="flex items-center leading-4 md:pt-0" href="/">
+            <!-- Logo -->
+            <span class="hidden sm:block">
+              <!-- dark Logo text -->
+              <img
+                alt="homepage-logo "
+                class="max-w-[148px]"
+                [src]="displayLogo(_.currentCenter, _.defaultLogo)"
+              />
+            </span>
+          </a>
+        </div>
+        <!-- ============================================================== -->
+        <!-- sidebar toggle -->
+        <!-- ============================================================== -->
+        <button
+          (click)="snav.toggle()"
+          class="sidebar-toggle"
+          mat-icon-button
+          value="sidebarclosed"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+        <!-- ============================================================== -->
+        <!-- Search - style you can find in header.scss -->
+        <!-- ============================================================== -->
+        <button
+          (click)="showSearch = !showSearch"
+          class="hidden sm:block"
+          mat-icon-button
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+        <form
+          class="absolute right-0 top-0 left-0 z-[99] w-full"
+          [ngClass]="showSearch ? 'block' : 'hidden'"
+        >
+          <input
+            class="h-16 w-full border-0 px-2.5 text-primary"
+            [placeholder]="'commun.search' | translate"
+            type="text"
+          />
+
+          <button
+            mat-icon-button
+            (click)="showSearch = !showSearch"
+            class="absolute top-1/2 right-0 -translate-y-1/2 text-primary"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </form>
+        <span class="grow"></span>
+        <!-- ============================================================== -->
+        <!-- app header component - style you can find in header.scss / header.component.ts-->
+        <!-- ============================================================== -->
+        <app-vertical-header class="flex items-center" />
+      </div>
+    </mat-toolbar>
+    <!-- ============================================================== -->
+    <!-- End Topbar - style you can find in charts.scss -->
+    <!-- ============================================================== -->
+    <mat-sidenav-container
+      [style.marginTop.px]="mobileQuery.matches ? 0 : 0"
+      class="shrink-0 grow basis-auto"
+    >
+      <!-- ============================================================== -->
+      <!-- Sidebar - style you can find in sidebar.scss -->
+      <!-- ============================================================== -->
+      <mat-sidenav
+        #snav
+        (close)="sidebarOpened = false"
+        (open)="sidebarOpened = true"
+        [disableClose]="mobileQuery.matches"
+        [mode]="mobileQuery.matches ? 'side' : 'over'"
+        [opened]="mobileQuery.matches"
+        class="w-64 pt-0 xl:w-72 2xl:w-80"
+        fixedTopGap="0"
+        id="snav"
+      >
+        <ng-scrollbar>
+          <app-vertical-sidebar (notify)="snav.toggle()" />
+        </ng-scrollbar>
+      </mat-sidenav>
+
+      <!-- ============================================================== -->
+      <!-- Page container - style you can find in charts.scss -->
+      <!-- ============================================================== -->
+
+      <mat-sidenav-content
+        #sidenavContent
+        class="page-wrapper h-[calc(100vh_-_64px)] bg-bodycolor"
+      >
+        <app-info-bar />
+        <app-breadcrumb />
+        <div class="p-3.5">
+          <router-outlet />
+        </div>
+      </mat-sidenav-content>
+
+      <!-- ============================================================== -->
+      <!-- Page container - style you can find in charts.scss -->
+      <!-- ============================================================== -->
+    </mat-sidenav-container>
+  </div>
+  <button
+    mat-fab
+    [hidden]="displayScrollButton$ | async"
+    class="fixed bottom-3 right-3 z-50"
+    (click)="scrollToTop()"
+  >
+    <mat-icon>keyboard_arrow_up</mat-icon>
+  </button>
+
+  <app-download-progress
+    class="fixed bottom-0 right-20 z-10 w-96 max-w-max md:block"
+  />
+</ng-container>

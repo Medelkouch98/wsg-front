@@ -1,0 +1,46 @@
+<!-- Actions buttons component -->
+<app-actions-buttons
+  [actionButtons]="buttons"
+  (action)="handleActions($event)"
+/>
+
+<!-- Material search form component -->
+<app-material-search-form />
+
+<ng-container *ngIf="{ materials: materials$ | async } as _">
+  <!-- Alert component -->
+  <app-alert
+    *ngIf="showAlert"
+    [message]="'qualite.material.alerts.checkDatesNotice' | translate"
+    (closeAlert)="showAlert = false"
+  />
+
+  <!-- Material list component -->
+  <app-material-list [materials]="_.materials">
+    <!-- Material category component -->
+    <app-material-category
+      *ngFor="let materialByCategory of _.materials; let first = first"
+      [category]="materialByCategory"
+      [showError]="true"
+      [showSelect]="false"
+      [expanded]="first"
+    >
+      <!-- Material type component -->
+      <app-material-type
+        *ngFor="let type of materialByCategory.types"
+        [type]="type"
+        [showError]="true"
+        [showSelect]="false"
+      >
+        <!-- Material sub-type component -->
+        <app-material-sub-type
+          *ngFor="let subType of type.subTypes"
+          [columns]="materialByCategory.columns"
+          [showSubTypeColumns]="true"
+          [showActions]="true"
+          [subType]="subType"
+        />
+      </app-material-type>
+    </app-material-category>
+  </app-material-list>
+</ng-container>

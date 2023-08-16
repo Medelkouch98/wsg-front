@@ -1,0 +1,194 @@
+<app-statistic-card
+  [statisticsCardsData]="activityStatistics$ | async"
+></app-statistic-card>
+<mat-card>
+  <mat-card-content>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row class="justify-center">
+        <button
+          mat-icon-button
+          mwlCalendarPreviousView
+          [view]="view"
+          [viewDate]="viewDate"
+          (viewDateChange)="viewDate = $event; dateInput()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <mat-form-field class="w-0 opacity-0">
+          <input
+            matInput
+            [(ngModel)]="viewDate"
+            (dateInput)="dateInput()"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-button (click)="picker.open()">
+          <mat-icon>today</mat-icon>
+          {{ viewDate | date : 'shortDate' : undefined : (language$ | async) }}
+        </button>
+        <button
+          [matTooltip]="'commun.today' | translate"
+          mat-icon-button
+          mwlCalendarToday
+          [viewDate]="viewDate"
+          (viewDateChange)="viewDate = $event; dateInput()"
+        >
+          <mat-icon>cached</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          mwlCalendarNextView
+          [view]="view"
+          [viewDate]="viewDate"
+          (viewDateChange)="viewDate = $event; dateInput()"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-tab-group
+      (selectedTabChange)="tabIndexStart = 0; tabIndexEnd = tabSize"
+      (animationDone)="animationDone()"
+      (animationstart)="animationStart()"
+    >
+      <mat-tab
+        *ngFor="let dailyActivityResponse of dailyActivityResponse$ | async"
+      >
+        <ng-template mat-tab-label>
+          <mat-icon fontIcon="directions_car" class="mr-1" />
+
+          <span class="text-secondary">
+            {{ dailyActivityResponse?.agrement }}
+          </span>
+          &nbsp;{{ dailyActivityResponse?.raison_sociale }}
+        </ng-template>
+
+        <div class="responsive-table">
+          <table class="mat-table table-fixed">
+            <tr class="flex">
+              <th class="mat-header-cell max-w-[24em]">
+                <button
+                  *ngIf="
+                    dailyActivityResponse?.calendar_colonnes?.length > tabSize
+                  "
+                  mat-icon-button
+                  (click)="moveLeft()"
+                  [disabled]="tabIndexStart === 0"
+                >
+                  <mat-icon>chevron_left</mat-icon>
+                </button>
+              </th>
+              <th
+                class="mat-header-cell flex-1"
+                *ngFor="
+                  let calendarColonne of dailyActivityResponse?.calendar_colonnes
+                    | slice : tabIndexStart : tabIndexEnd
+                "
+              >
+                {{ calendarColonne.controleur_nom }}/{{
+                  calendarColonne.controleur_agrement
+                }}
+              </th>
+              <th class="mat-header-cell max-w-[24em]">
+                <button
+                  *ngIf="
+                    dailyActivityResponse?.calendar_colonnes?.length > tabSize
+                  "
+                  mat-icon-button
+                  (click)="
+                    moveRight(dailyActivityResponse.calendar_colonnes.length)
+                  "
+                  [disabled]="
+                    tabIndexEnd >=
+                    dailyActivityResponse.calendar_colonnes.length
+                  "
+                >
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+              </th>
+            </tr>
+            <tr class="mat-row flex" *ngIf="!animationInProgress">
+              <td></td>
+              <td
+                class="mat-cell flex-1"
+                *ngIf="dailyActivityResponse?.calendar_colonnes?.length === 0"
+              >
+                <mwl-calendar-day-view
+                  [dayStartHour]="7"
+                  [hourSegments]="4"
+                  [dayEndHour]="19"
+                  [viewDate]="viewDate"
+                  [locale]="language$ | async"
+                  [eventTemplate]="customEventTemplate"
+                  (eventClicked)="goToFicheControle($event.event)"
+                ></mwl-calendar-day-view>
+              </td>
+              <td
+                class="mat-cell flex-1"
+                *ngFor="
+                  let calendarColonne of dailyActivityResponse?.calendar_colonnes
+                    | slice : tabIndexStart : tabIndexEnd
+                "
+              >
+                <mwl-calendar-day-view
+                  [dayStartHour]="7"
+                  [hourSegments]="4"
+                  [dayEndHour]="19"
+                  [viewDate]="viewDate"
+                  [events]="mapToEvent(calendarColonne.events)"
+                  [minimumEventHeight]="1"
+                  [locale]="language$ | async"
+                  [eventTemplate]="customEventTemplate"
+                  (eventClicked)="goToFicheControle($event.event)"
+                ></mwl-calendar-day-view>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #customEventTitleTemplate let-event="event">
+  <span class="event-header">{{ getTitle(event.meta) }}</span>
+  <span class="event-body">{{ getTitleTime(event.meta) }}</span>
+</ng-template>
+
+<ng-template #cellTooltipTemplate let-event="event">
+  <div class="cal-tooltip cal-tooltip-top">
+    <div class="cal-tooltip-arrow"></div>
+    <div class="cal-tooltip-inner whitespace-pre-wrap">
+      {{ getTooltipMessage(event.meta) }}
+    </div>
+  </div>
+</ng-template>
+<ng-template
+  #customEventTemplate
+  let-dayEvent="weekEvent"
+  let-tooltipPlacement="tooltipPlacement"
+  let-eventClicked="eventClicked"
+  let-tooltipAppendToBody="tooltipAppendToBody"
+>
+  <div
+    appCalendarEventStyle
+    [event]="dayEvent"
+    class="cal-event"
+    [mwlCalendarTooltip]="
+      dayEvent.event.title | calendarEventTitle : 'dayTooltip' : dayEvent.event
+    "
+    [tooltipPlacement]="tooltipPlacement"
+    [tooltipEvent]="dayEvent.event"
+    [tooltipTemplate]="cellTooltipTemplate"
+    [tooltipAppendToBody]="tooltipAppendToBody"
+    (mwlClick)="eventClicked.emit({ sourceEvent: $event })"
+  >
+    <mwl-calendar-event-title
+      [event]="dayEvent.event"
+      [customTemplate]="customEventTitleTemplate"
+      view="day"
+    ></mwl-calendar-event-title>
+  </div>
+</ng-template>

@@ -1,0 +1,107 @@
+<div class="flex">
+  <mat-accordion
+    class="flex w-full flex-col flex-wrap gap-2.5"
+    [multi]="typeApporteurAffaire === TypeApporteurAffaire.national"
+  >
+    <mat-expansion-panel
+      class="w-full"
+      (opened)="identificationPanelExpanded = true"
+      (closed)="identificationPanelExpanded = false"
+      [expanded]="identificationPanelExpanded"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h5 class="font-medium">
+            {{ 'commun.identification' | translate | uppercase }}
+          </h5>
+        </mat-panel-title>
+        <mat-panel-description
+          class="mt-1"
+          *ngIf="!identificationPanelExpanded"
+        >
+          <p>{{ identificationTitle }}</p>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-apporteur-affaire-identification
+        [addMode]="addMode"
+        [typeApporteurAffaire]="typeApporteurAffaire"
+        [isReadOnly$]="isReadOnly$"
+        (title)="identificationTitle = $event"
+        #apporteurIdentification
+      ></app-apporteur-affaire-identification>
+    </mat-expansion-panel>
+    <ng-container
+      *ngIf="typeApporteurAffaire === TypeApporteurAffaire.national"
+    >
+      <mat-expansion-panel class="w-full" expanded="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium">
+              {{ 'commun.remise' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-apporteur-affaire-remise
+          #apporteurRemises
+        ></app-apporteur-affaire-remise>
+      </mat-expansion-panel>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        typeApporteurAffaire === TypeApporteurAffaire.local &&
+        ((addMode &&
+          apporteurIdentification.identificationForm.pristine &&
+          !!isIdentificationValidated) ||
+          !addMode)
+      "
+    >
+      <mat-expansion-panel
+        class="w-full"
+        (opened)="contactsPanelExpanded = true"
+        (closed)="contactsPanelExpanded = false"
+        [expanded]="contactsPanelExpanded"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium">
+              {{ 'commun.contacts' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-apporteur-affaire-contact
+          [addMode]="addMode"
+          [isReadOnly$]="isReadOnly$"
+          #apporteurContacts
+        ></app-apporteur-affaire-contact>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="w-full">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium">
+              {{ 'client.tarificationFacturation' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-tarification
+          [tarificationsList$]="tarifications$"
+          [isReadOnly$]="isReadOnly$"
+          [remisePourcentage]="remiseGlobal$ | async"
+          (delete)="deleteTarification($event)"
+          (addUpdate)="addUpdateTarification($event)"
+          (remiseGlobal)="saveRemiseGlobale($event)"
+          #apporteurTarifications
+        ></app-tarification>
+      </mat-expansion-panel>
+    </ng-container>
+    <div class="flex justify-center" *ngIf="addMode">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!isValid()"
+        (click)="saveApporteurAffaire()"
+      >
+        {{ 'commun.save' | translate }}
+      </button>
+    </div>
+  </mat-accordion>
+</div>

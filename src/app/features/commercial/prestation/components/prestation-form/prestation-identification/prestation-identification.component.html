@@ -1,0 +1,249 @@
+<form [formGroup]="identificationForm" appMarkRequiredFormControlAsDirty
+      class="flex flex-col gap-y-5">
+  <div class="grid grid-cols-1 gap-y-1 lg:grid-cols-2 lg:gap-x-5">
+    <div class="mb-5 border-b border-slate-300 pb-2.5 lg:col-span-2">
+      <h6 class="font-medium uppercase">
+        {{ 'commun.description' | translate }}
+      </h6>
+    </div>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.label' | translate }}</mat-label>
+      <input (blur)="emitTitle()" matInput formControlName="libelle" />
+      <mat-error>
+        {{ identificationForm.controls.libelle.errors | error }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.prixHT' | translate }}</mat-label>
+      <input matInput formControlName="prix_ht" (blur)="prixHTChange()" />
+      <mat-error>
+        {{ identificationForm.controls.prix_ht.errors | error }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" appFieldControlLabel>
+      <mat-label>{{ 'commun.code' | translate }}</mat-label>
+      <input (blur)="codeChange()" matInput formControlName="code" />
+      <mat-error class="mb-2">
+        {{
+          identificationForm.controls.code.errors
+            | error : 'codePrestationPattern'
+        }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="isVP" appFieldControlLabel>
+      <mat-label>
+        {{ 'commercial.prestations.famille' | translate }}
+      </mat-label>
+      <mat-select formControlName="familles" multiple>
+        <mat-option
+          *ngFor="let famille of famillesIT$ | async"
+          [value]="famille.id"
+        >
+          {{ famille.libelle }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.tva' | translate }}</mat-label>
+      <mat-select
+        formControlName="tva_id"
+        (selectionChange)="setTTC($event.value)"
+      >
+        <mat-option *ngFor="let tva of tvas$ | async" [value]="tva.id">
+          {{ tva?.taux }} - {{ tva?.libelle }}
+        </mat-option>
+      </mat-select>
+      <mat-error>
+        {{ identificationForm.controls.tva_id.errors | error }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appFieldControlLabel>
+      <mat-label>
+        {{ 'commercial.prestations.numComptable' | translate }}
+      </mat-label>
+      <input matInput formControlName="numero_comptable" />
+      <mat-error>
+        {{ identificationForm.controls.numero_comptable.errors | error }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'commun.prixTTC' | translate }}</mat-label>
+      <input matInput formControlName="prix_ttc" />
+      <span matSuffix *ngIf="showSuffix">* Dont redevance OTC</span>
+    </mat-form-field>
+
+    <mat-radio-group formControlName="actif">
+      <mat-label>
+        {{ 'commun.statut' | translate }}
+      </mat-label>
+      <mat-radio-button [value]="true">
+        {{ 'commun.actif' | translate }}
+      </mat-radio-button>
+      <mat-radio-button [value]="false">
+        {{ 'commun.inactif' | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <mat-radio-group formControlName="prestation_divers">
+      <mat-label>
+        {{ 'commercial.prestations.prestationDiverse' | translate }}
+      </mat-label>
+      <mat-radio-button [value]="true">
+        {{ 'commun.yes' | translate }}
+      </mat-radio-button>
+      <mat-radio-button [value]="false">
+        {{ 'commun.no' | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <ng-container
+      formGroupName="agenda"
+    >
+      <div class="my-5 border-b border-slate-300 pb-2.5 lg:col-span-2">
+        <h6 class="my-0 font-medium uppercase">
+          {{ 'commun.agenda' | translate }}
+        </h6>
+      </div>
+
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'commercial.prestations.informationGenerale' | translate }}
+        </mat-label>
+        <input matInput formControlName="bo_name" />
+      </mat-form-field>
+
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'commercial.prestations.descriptionWeb' | translate }}
+        </mat-label>
+        <input matInput formControlName="fo_name" />
+      </mat-form-field>
+
+      <div class="mr-5 flex">
+        <mat-label class="flex-1 text-primary">
+          {{ 'commercial.prestations.color' | translate }}
+        </mat-label>
+        <button
+          mat-mini-fab
+          [(colorPicker)]="color"
+          [cpOutputFormat]="'hex'"
+          [style.background-color]="color"
+        ></button>
+      </div>
+
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'commercial.prestations.durationInMinutes' | translate }}
+        </mat-label>
+        <input matInput min="0" formControlName="duration" type="number" />
+        <mat-error>
+          {{ identificationForm.get('agenda').get('duration').errors | error }}
+        </mat-error>
+      </mat-form-field>
+      <mat-radio-group formControlName="display_price">
+        <mat-label>
+          {{ 'commercial.prestations.displayPrice' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="'1'">
+          {{ 'commun.yes' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="'0'">
+          {{ 'commun.no' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <mat-radio-group formControlName="assurance_web">
+        <mat-label>
+          {{ 'commercial.prestations.assuranceWeb' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="'1'">
+          {{ 'commun.yes' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="'0'">
+          {{ 'commun.no' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <mat-radio-group formControlName="display_duration">
+        <mat-label>
+          {{ 'commercial.prestations.displayDuration' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="'1'">
+          {{ 'commun.yes' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="'0'">
+          {{ 'commun.no' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <mat-radio-group formControlName="visible">
+        <mat-label>
+          {{ 'commercial.prestations.visibleOnTheWeb' | translate }}
+        </mat-label>
+        <mat-radio-button [value]="'1'">
+          {{ 'commun.yes' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="'0'">
+          {{ 'commun.no' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'commercial.prestations.agendasMSA' | translate }}
+        </mat-label>
+        <mat-select
+          formControlName="agendas"
+          multiple
+          [compareWith]="compareFn"
+        >
+          <mat-option
+            *ngFor="let agenda of agendaPrestationElements$ | async"
+            [value]="{ id: agenda.agenda_id, action: 1 }"
+          >
+            {{ agenda?.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appFieldControlLabel>
+        <mat-label>
+          {{ 'commercial.prestations.prestationCategories' | translate }}
+        </mat-label>
+        <mat-select
+          formControlName="categories"
+          multiple
+          [compareWith]="compareFn"
+        >
+          <mat-option
+            *ngFor="let categorie of agendaPrestationCategories$ | async"
+            [value]="{ id: categorie.category_id, action: 1 }"
+          >
+            {{ categorie?.bo_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+  </div>
+  <mat-action-row
+    *ngIf="
+      !addMode &&
+      (isIdentificationValidated$ | async) === false &&
+      identificationForm.dirty
+    "
+  >
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="identificationForm.invalid"
+      (click)="valider()"
+    >
+      {{ 'commun.modifier' | translate }}
+    </button>
+  </mat-action-row>
+</form>

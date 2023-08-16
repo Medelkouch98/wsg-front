@@ -1,0 +1,72 @@
+<ng-container *ngIf="buttons.length && buttons.some(displayButton)">
+  <mat-card class="hidden lg:block">
+    <mat-card-content
+      class="flex flex-wrap justify-between gap-1.5 overflow-x-auto overflow-y-hidden p-2.5"
+    >
+      <div class="flex justify-start gap-x-2">
+        <ng-container
+          *ngTemplateOutlet="
+            buttonsByDirection;
+            context: { buttons: filterByDirection(DirectionEnum.LEFT) }
+          "
+        />
+      </div>
+      <div class="flex justify-end gap-x-2">
+        <ng-container
+          *ngTemplateOutlet="
+            buttonsByDirection;
+            context: {
+              buttons: filterByDirection(DirectionEnum.RIGHT)
+            }
+          "
+        />
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="fixed bottom-[4.25rem] right-3 z-[1000] lg:hidden">
+    <div (click)="openCloseListButtons()" [@fade]="isOpen ? 'in' : 'out'"></div>
+
+    <button
+      mat-fab
+      class="transition duration-150 ease-in-out"
+      [ngClass]="isOpen ? 'rotate-90 scale-75' : 'scale-100'"
+      [color]="isOpen ? 'warn' : 'primary'"
+      (click)="openCloseListButtons()"
+    >
+      <mat-icon>{{ isOpen ? 'close' : 'more_vert' }}</mat-icon>
+    </button>
+
+    <div
+      [@openClose]="{ value: isOpen ? 'open' : 'close' }"
+      class="absolute right-0 bottom-14 w-max flex-col gap-2"
+    >
+      <ng-container
+        *ngTemplateOutlet="buttonsByDirection; context: { buttons }"
+      />
+    </div>
+  </div>
+  <ng-template let-buttons="buttons" #buttonsByDirection>
+    <div
+      *ngFor="let button of buttons; let i = index"
+      [matTooltipDisabled]="!button.tooltip"
+      [matTooltip]="button.tooltip | translate"
+    >
+      <button
+        mat-raised-button
+        *ngIf="button.display || !button.hasOwnProperty('display')"
+        [attr.data-subitem]="i + 1"
+        [color]="button.color || defaultButtonColor"
+        [style.background-color]="!button.disabled ? button.customColor : null"
+        [disabled]="button.disabled"
+        (click)="emitAction(button.action)"
+        class="w-full"
+      >
+        <mat-icon *ngIf="button.icon">
+          {{ button.icon }}
+        </mat-icon>
+        {{ button.libelle | translate }}
+      </button>
+    </div>
+  </ng-template>
+</ng-container>

@@ -1,0 +1,193 @@
+<ng-container
+  *ngIf="{
+    subTypesOptions: subTypesOptions$ | async,
+    marques: marques$ | async,
+    modeles: modeles$ | async,
+    maintenanceCompanies: maintenanceCompanies$ | async,
+    materialEvents: materialEvents$ | async
+  } as _"
+>
+  <!-- Material Form -->
+  <div *ngIf="materialForm" class="flex w-full flex-col flex-wrap">
+    <mat-card>
+      <mat-card-content>
+        <form
+          [formGroup]="materialForm"
+          appMarkRequiredFormControlAsDirty
+          [updateRequiredStatus$]="updateRequiredStatus$"
+        >
+          <div class="grid grid-cols-1 gap-x-5 gap-y-1 lg:grid-cols-2">
+            <!-- Sous Type -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.subType' | translate }}
+              </mat-label>
+              <mat-select formControlName="materiel_sous_type_id">
+                <mat-optgroup
+                  *ngFor="let type of _.subTypesOptions"
+                  [label]="type.libelle"
+                >
+                  <mat-option
+                    *ngFor="let subType of type.subTypes"
+                    [value]="subType.id"
+                    (click)="onSubTypeChange(subType)"
+                  >
+                    {{ subType.libelle }}
+                  </mat-option>
+                </mat-optgroup>
+              </mat-select>
+              <mat-error
+                appFormControlError
+                [errors]="materialForm.controls.materiel_sous_type_id.errors"
+              />
+            </mat-form-field>
+
+            <!-- Marque -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.marque' | translate }}
+              </mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="marque"
+                [matAutocomplete]="marqueAutocomplete"
+              />
+              <mat-autocomplete #marqueAutocomplete="matAutocomplete">
+                <mat-option
+                  *ngFor="let option of filteredMarques$ | async"
+                  [value]="option.libelle"
+                >
+                  {{ option.libelle }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error
+                appFormControlError
+                [errors]="materialForm.controls.marque.errors"
+              />
+            </mat-form-field>
+
+            <!-- Modèle -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'commun.modele' | translate }}
+              </mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="modele"
+                [matAutocomplete]="modeleAutocomplete"
+              />
+              <mat-autocomplete #modeleAutocomplete="matAutocomplete">
+                <mat-option
+                  *ngFor="let option of filteredModeles$ | async"
+                  [value]="option.libelle"
+                >
+                  {{ option.libelle }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error
+                appFormControlError
+                [errors]="materialForm.controls.modele.errors"
+              />
+            </mat-form-field>
+
+            <!-- Numéro de série -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>
+                {{ 'qualite.material.numero_serie' | translate }}
+              </mat-label>
+              <input matInput formControlName="numero_serie" />
+              <mat-error
+                appFormControlError
+                [errors]="materialForm.controls.numero_serie.errors"
+              />
+            </mat-form-field>
+
+            <!-- Société de maintenance -->
+            <div>
+              <mat-form-field appFieldControlLabel>
+                <mat-label>
+                  {{ 'qualite.material.maintenanceCompany' | translate }}
+                </mat-label>
+                <mat-select
+                  formControlName="materiel_societe_maintenance_id"
+                  (selectionChange)="
+                    setMaintenanceCompanyForm(
+                      $event.value,
+                      _.maintenanceCompanies
+                    )
+                  "
+                >
+                  <mat-option [value]="0">
+                    {{ 'commun.other' | translate }}
+                  </mat-option>
+                  <mat-option
+                    *ngFor="let company of _.maintenanceCompanies"
+                    [value]="company.id"
+                  >
+                    {{ company.nom }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  appFormControlError
+                  [errors]="
+                    materialForm.controls.materiel_societe_maintenance_id.errors
+                  "
+                />
+              </mat-form-field>
+
+              <app-material-maintenance-company-form
+                *ngIf="
+                  materialForm.controls.materiel_societe_maintenance_id
+                    .value !== null
+                "
+                formControlName="societe_maintenance"
+              />
+            </div>
+          </div>
+
+          <!-- Caracteristiques -->
+          <ng-container *ngIf="subType?.materiel_caracteristiques?.length">
+            <app-material-characteristics-form
+              formControlName="materiel_caracteristiques"
+              [subType]="subType"
+            />
+          </ng-container>
+
+          <!-- Evènements  -->
+          <ng-container *ngIf="subType?.materiel_evenement_types?.length">
+            <!-- Material Events Table -->
+            <app-material-events-table
+              *ngIf="!addMode; else eventsForm"
+              class="lg:col-span-2"
+              [materialEvents]="_.materialEvents"
+              (popUpEventForm)="popUpEventForm.emit($event)"
+              (deleteEvent)="deleteEvent($event)"
+            />
+
+            <!-- Material Events Form -->
+            <ng-template #eventsForm>
+              <app-material-events-form
+                *ngIf="addMode && showEventForm; else eventsList"
+                formControlName="materiel_evenements"
+                [subType]="subType"
+              />
+            </ng-template>
+          </ng-container>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="flex justify-center">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!materialForm?.dirty || !materialForm?.valid"
+        (click)="saveMaterial()"
+      >
+        {{ 'commun.save' | translate }}
+      </button>
+    </div>
+  </div>
+</ng-container>

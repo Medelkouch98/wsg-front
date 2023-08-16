@@ -1,0 +1,26 @@
+@use '../variable' as *;
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mdc-notched-outline__notch {
+  border-right: transparent;
+}
+
+/* For date selection in daily activity */
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: transparent !important;
+}
+
+/* adjust height in case of error or hint */
+.mat-mdc-form-field-subscript-wrapper:has(mat-error, mat-hint) {
+  min-height: 30px;
+}
+.mat-mdc-text-field-wrapper {
+  flex: none !important;
+}
+
+.mat-focused .mat-mdc-form-field-required-marker {
+  color: $warn;
+}

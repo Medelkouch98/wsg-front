@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+@use '@ng-matero/extensions' as mtx;
+@use '@angular/material/theming' as *;
+@use 'ws-palettes' as *;
+
+@include mat.core();
+
+$bodyfont: 'Poppins', sans-serif;
+$primary-palette: mat.define-palette($ws-dark-blue);
+$accent-palette: mat.define-palette($ws-red);
+
+$ws-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $primary-palette,
+      accent: $accent-palette,
+    ),
+    typography:
+      mat.define-typography-config(
+        $font-family: $bodyfont,
+      ),
+  )
+);
+
+@include mat.all-component-themes($ws-theme);
+@include mtx.all-component-themes($ws-theme);
+
+:root {
+  --bodyfont: #{$bodyfont};
+  --primary: #{mat.get-color-from-palette($primary-palette, 500)};
+  --secondary: #{mat.get-color-from-palette($accent-palette, 500)};
+  --warn: #{mat.get-color-from-palette($mat-red, 500)};
+  --success: #{mat.get-color-from-palette($mat-green, 500)};
+  --bodycolor: #eef5f9;
+  --bodytext: #67757c;
+  --headingtext: #455a64;
+  --link: #1e88e5;
+  --gray: #e0e0e0;
+  --white: #fff;
+  --inactif: #{mat.get-color-from-palette($mat-red, 50)};
+  --sidebar-text: #607d8b;
+  --sidebar-icons: #99abb4;
+  --sidebar-selected-text: #fff;
+  --menu-selected-text: #2f3d4a;
+  --menu-selected-bg: #eef5f9;
+  --nested-table-text: #4682b4;
+  --nested-table-bg: #e6e6fa;
+}

@@ -1,0 +1,17 @@
+<mat-chip
+  class="file-name min-w-max cursor-pointer text-white"
+  *ngFor="let file of files; index as index"
+>
+  {{ file }}
+  <button matChipRemove type="button" (click)="download.emit(index)">
+    <mat-icon>save_alt</mat-icon>
+  </button>
+  <button
+    matChipRemove
+    *ngIf="!readOnly"
+    type="button"
+    (click)="confirmDelete(index)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</mat-chip>

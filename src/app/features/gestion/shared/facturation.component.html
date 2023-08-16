@@ -1,0 +1,152 @@
+<ng-container
+  *ngIf="{
+    echeances: echeances$ | async,
+    dateFacture: dateFacture$ | async,
+    numeroFacture: numeroFacture$ | async,
+    client: client$ | async,
+    detailsSelection: detailsSelection$ | async
+  } as _"
+>
+  <mat-card>
+    <mat-card-content>
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 lg:grid-cols-2">
+        <div class="flex flex-row">
+          <div class="flex flex-col font-medium" *ngIf="_.client">
+            <span>
+              {{ _.client.nom }}
+            </span>
+            <span>{{ _.client.adresse }}</span>
+            <span>{{ _.client.cp }} {{ _.client.ville }}</span>
+            <span>{{ _.client.email }}</span>
+            <span>{{ _.client.fixe }}</span>
+          </div>
+          <span class="inline-block">
+            <span
+              class="font-medium uppercase text-primary"
+              *ngIf="!_.client && !isReadOnly"
+            >
+              {{ 'commun.client' | translate }}
+            </span>
+            <button
+              *ngIf="!isReadOnly"
+              class="align-middle"
+              mat-icon-button
+              color="primary"
+              (click)="editClient()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
+        </div>
+
+        <div>
+          <span class="font-medium uppercase text-primary">
+            {{ 'gestion.factures.observations' | translate }}
+          </span>
+          <mat-form-field>
+            <textarea
+              matInput
+              maxlength="191"
+              [formControl]="observationControl"
+              (change)="setObservation()"
+              rows="3"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="flex flex w-1/2 items-baseline self-end">
+          <span class="mr-2 w-1/2 font-medium uppercase text-primary">
+            {{ 'commun.echeance' | translate }} :
+          </span>
+          <span class="flex items-center">
+            <span *ngIf="!showEcheanceSelect">
+              {{ dateEcheance | date : 'dd/MM/yyyy' }}
+              <button
+                *ngIf="!isReadOnly"
+                mat-icon-button
+                color="primary"
+                (click)="showEcheanceSelect = true"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </span>
+          </span>
+
+          <mat-form-field *ngIf="!!showEcheanceSelect">
+            <mat-select
+              [formControl]="echeanceControl"
+              (selectionChange)="calcEcheance($event)"
+            >
+              <mat-option *ngFor="let row of _.echeances" [value]="row">
+                {{ row.libelle }}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              {{ echeanceControl.errors | error }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div
+          class="w-2/4"
+          *ngIf="_.client && _.client.type !== TypePersonneEnum.COMPTE"
+        >
+          <app-apporteur-affaire-autocomplete
+            [groupedAutoComplete]="true"
+            [formControl]="apporteurAffaireControl"
+            [label]="translateService.instant('commun.partenaireMandant')"
+          ></app-apporteur-affaire-autocomplete>
+        </div>
+
+        <span class="self-center font-medium text-primary">
+          {{
+            'gestion.factures.refactTitle'
+              | translate
+                : {
+                    dateFacture: (_.dateFacture | date : 'dd/MM/yyyy')
+                  }
+          }}
+        </span>
+
+        <div
+          class="flex flex-1 items-center justify-end gap-2.5"
+          *ngIf="!isReadOnly"
+        >
+          <button mat-raised-button color="primary" (click)="addPrestation()">
+            {{ 'commun.ajouter' | translate }}
+          </button>
+          <button
+            *ngIf="factureType === FactureTypeEnum.REFACTURATION"
+            [matTooltip]="'commun.reinitialiseFacture' | translate"
+            mat-mini-fab
+            color="accent"
+            (click)="resetFacture()"
+          >
+            <mat-icon>undo</mat-icon>
+          </button>
+        </div>
+
+        <app-facturation-table
+          [prestationFormGroup]="prestationsForm"
+        ></app-facturation-table>
+
+        <div class="mt-4 flex justify-end" *ngIf="!isReadOnly">
+          <button
+            mat-raised-button
+            color="warn"
+            [disabled]="
+              !_.detailsSelection.size ||
+              !dateEcheance ||
+              !_.client ||
+              prestationsForm.invalid
+            "
+            (click)="saveFacture()"
+          >
+            {{ 'commun.validerFacture' | translate }}
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

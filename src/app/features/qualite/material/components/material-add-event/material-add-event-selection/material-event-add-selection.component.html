@@ -1,0 +1,57 @@
+<!-- Checkbox for selecting all materials -->
+<mat-checkbox
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCheckboxes($event.checked)"
+  [checked]="isAllSelected"
+  [indeterminate]="!this.isAllSelected && hasSelection"
+>
+  {{ 'commun.selectAll' | translate }}
+</mat-checkbox>
+
+<!-- Material List Component -->
+<app-material-list [materials]="materials">
+  <!-- Material Category Component -->
+  <app-material-category
+    *ngFor="let materialByCategory of materials; let first = first"
+    [category]="materialByCategory"
+    [showError]="false"
+    [showSelect]="true"
+    [expanded]="first"
+  >
+    <!-- Material Type Component -->
+    <app-material-type
+      *ngFor="let type of materialByCategory.types"
+      [type]="type"
+      [showError]="false"
+      [showSelect]="true"
+    >
+      <!-- Material Sub-Type Component -->
+      <app-material-sub-type
+        *ngFor="let subType of type.subTypes"
+        [columns]="columns"
+        [showSubTypeColumns]="false"
+        [showActions]="false"
+        [subType]="subType"
+      />
+    </app-material-type>
+  </app-material-category>
+</app-material-list>
+
+<!-- Material Event Add Selection Form Component -->
+<app-material-event-add-selection-form
+  [addEventForm]="addEventForm"
+  [eventLabel]="eventLabel"
+  [selectedMaterials]="selectedMaterials$ | async"
+/>
+
+<!-- Save Button -->
+<div class="mt-2.5 flex justify-center">
+  <button
+    mat-raised-button
+    color="accent"
+    [disabled]="addEventForm?.invalid"
+    (click)="saveEvent()"
+  >
+    {{ 'commun.save' | translate }}
+  </button>
+</div>

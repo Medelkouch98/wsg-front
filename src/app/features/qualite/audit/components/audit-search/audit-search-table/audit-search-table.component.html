@@ -1,0 +1,154 @@
+<ng-container
+  *ngIf="{
+    audits: dataSource$ | async,
+    sort: sort$ | async,
+    page: pageEvent$ | async,
+    searchForm: searchForm$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.audits?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card
+    *ngIf="
+      !!(_.searchForm.type_audit_id && _.searchForm.year) &&
+      _.audits?.data?.length
+    "
+  >
+    <mat-card-content>
+      <div class="responsive-table expanded-table">
+        <mat-table
+          [dataSource]="_.audits?.data"
+          multiTemplateDataRows
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="auditeur">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="auditeur">
+              {{ 'qualite.audit.auditeur' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.audit.auditeur' | translate }}
+              </span>
+              {{ element.auditeur }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="date_audit">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="date_audit">
+              {{ 'qualite.audit.dateAudit' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.audit.dateAudit' | translate }}
+              </span>
+              {{ element.date_audit | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="result">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="avis_final">
+              {{ 'qualite.audit.resultat' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.audit.resultat' | translate }}
+              </span>
+              {{ element.avis_final }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="numero_pv">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="numero_pv">
+              {{ 'qualite.audit.numeroPV' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.audit.numeroPV' | translate }}
+              </span>
+              {{ element.numero_pv || '--' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="agrement_centre_rattachement">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="agrement_centre_rattachement"
+            >
+              {{ 'qualite.audit.agrementCentreRattachement' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'qualite.audit.agrementCentreRattachement' | translate }}
+              </span>
+              {{ element.agrement_centre_rattachement || '--' }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                *ngIf="element.anomalies?.length"
+                mat-icon-button
+                (click)="
+                  expandedElement =
+                    expandedElement === element ? null : element;
+                  $event.stopPropagation()
+                "
+              >
+                <mat-icon *ngIf="expandedElement !== element">
+                  keyboard_arrow_down
+                </mat-icon>
+                <mat-icon *ngIf="expandedElement === element">
+                  keyboard_arrow_up
+                </mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="expandedDetail">
+            <mat-cell *matCellDef="let element">
+              <div
+                class="w-full"
+                [@detailExpand]="expandedElement"
+                *ngIf="expandedElement === element"
+              >
+                <app-audit-result-table
+                  [anomalies]="element.anomalies"
+                  [isReadOnly]="isReadOnly$ | async"
+                  [dateAudit]="element.date_audit"
+                ></app-audit-result-table>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            *matRowDef="let element; columns: columns"
+            (click)="
+              expandedElement = expandedElement === element ? null : element;
+              $event.stopPropagation()
+            "
+          ></mat-row>
+          <mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            [ngClass]="{
+              hidden: row !== expandedElement || !row.anomalies?.length
+            }"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.audits?.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.audits?.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="pageChange($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

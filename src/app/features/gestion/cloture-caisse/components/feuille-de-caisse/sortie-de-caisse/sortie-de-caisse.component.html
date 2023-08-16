@@ -1,0 +1,41 @@
+<mat-expansion-panel expanded class="my-4 w-full">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{ 'gestion.clotureCaisse.sortieDeCaisse' | translate }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="responsive-table my-4">
+    <mat-table [dataSource]="sortiesCaisse">
+      <ng-container matColumnDef="usage">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.usage' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.usage' | translate }}
+          </span>
+          {{ element.usage }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="montant">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.montant' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.montant' | translate }}
+          </span>
+          {{ element.montant | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns"></mat-row>
+    </mat-table>
+    <div class="p-4 text-center" *ngIf="sortiesCaisse?.length === 0">
+      {{ 'gestion.clotureCaisse.aucuneSortieDeCaisse' | translate }}
+    </div>
+  </div>
+</mat-expansion-panel>

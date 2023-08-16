@@ -1,0 +1,31 @@
+<mat-expansion-panel class="bg-black/5">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="gap-x-2 text-base">
+      <!-- Select/Deselect All Checkbox -->
+      <mat-checkbox
+        *ngIf="showSelect"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllCheckboxes($event.checked)"
+        [checked]="isAllSelected"
+        [indeterminate]="!isAllSelected && hasSelection"
+      />
+
+      <!-- Icon -->
+      <mat-icon [svgIcon]="type.icon" class="text-primary" />
+
+      <!-- Type Text -->
+      <span class="flex-1">{{ type.libelle }}</span>
+
+      <!-- Error Icon -->
+      <mat-icon
+        *ngIf="showError && type.has_error"
+        fontIcon="error"
+        color="warn"
+      />
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="mt-2 flex flex-col gap-5">
+    <ng-content />
+  </div>
+</mat-expansion-panel>

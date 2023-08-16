@@ -1,0 +1,31 @@
+<mat-form-field appFieldControlLabel>
+  <mat-label>{{ label }}</mat-label>
+    <input
+      matInput
+      [matAutocomplete]="auto"
+      [formControl]="factureInputControl"
+      (input)="onInputChange($event.target.value)"
+      (keyup.enter)="selectFacture()"
+    />
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectFacture()">
+    <mat-option *ngIf="message?.length > 0">{{ message }}</mat-option>
+    <mat-option *ngIf="isLoading">
+      {{ 'commun.loading' | translate }}
+    </mat-option>
+    <ng-container *ngFor="let option of searchFactureList">
+      <mat-option *ngIf="!isSelected(option)" [value]="option">
+        {{ displayFnDefaultValues(option) }}
+      </mat-option>
+    </ng-container>
+  </mat-autocomplete>
+</mat-form-field>
+<mat-chip-listbox>
+  <mat-chip
+    *ngFor="let selectedFacture of factureControl.value"
+    [removable]="true"
+    (removed)="removeFacture(selectedFacture)"
+  >
+    {{ displayFnDefaultValues(selectedFacture) }}
+    <mat-icon matChipRemove>cancel</mat-icon>
+  </mat-chip>
+</mat-chip-listbox>

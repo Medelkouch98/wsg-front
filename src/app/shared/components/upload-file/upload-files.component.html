@@ -1,0 +1,36 @@
+<div class="pb-3">
+  <div class="flex flex-row items-center">
+    <mat-label
+      *ngIf="showLabel === true"
+      [ngClass]="ngControl.control.errors ? 'text-warn' : 'text-primary'"
+    >
+      {{ 'commun.attachment' | translate }}
+      <span *ngIf="required" class="text-warn">*</span>
+    </mat-label>
+    <input
+      class="hidden"
+      type="file"
+      [accept]="acceptedTypes"
+      [multiple]="multipleFiles === true"
+      (change)="onFileSelect($event)"
+      #file
+    />
+    <button
+      mat-icon-button
+      color="primary"
+      type="button"
+      (click)="file.click()"
+    >
+      <mat-icon>attach_file</mat-icon>
+    </button>
+  </div>
+  <mat-chip
+    class="file-name min-w-max cursor-pointer text-white"
+    *ngFor="let file of files; index as index"
+  >
+    {{ file.name }}
+    <button matChipRemove type="button" (click)="deleteFile(index)">
+      <mat-icon>cancel</mat-icon>
+    </button>
+  </mat-chip>
+</div>

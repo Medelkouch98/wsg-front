@@ -1,0 +1,38 @@
+/* Colors */
+$primary: var(--primary);
+$secondary: var(--secondary);
+$warn: var(--warn);
+$white: var(--white);
+
+/* Font */
+$headingtext: (--headingtext);
+$bodytext: var(--bodytext);
+$bodycolor: var(--bodycolor);
+$bodyfont: var(--bodyfont);
+
+/* Sidebar */
+$sidebar-selected-text: var(--sidebar-selected-text);
+$sidebar-text: var(--sidebar-text);
+$sidebar-icons: var(--sidebar-icons);
+$menu-selected-text: var(--menu-selected-text);
+$menu-selected-bg: var(--menu-selected-bg);
+
+/* Table */
+$nested-table-bg: var(--nested-table-bg);
+$nested-table-text: var(--nested-table-bg);
+
+/* Extra Variable */
+$radius: 4px;
+
+/* Calendar */
+$cal-event-color-primary: white;
+$calendar-vtp: #072e5e;
+$calendar-cv: #5f7590;
+$calendar-vtc: #327cd7;
+$calendar-cvc: #0c60c5;
+$calendar-vp: #ff5b68;
+$calendar-vt: #5287c7;
+$calendar-nonFacture: #e61919;
+$calendar-event-header: #f69d01;
+$calendar-event-tooltip-text: #0b4892;
+$calendar-event-tooltip-border: red;

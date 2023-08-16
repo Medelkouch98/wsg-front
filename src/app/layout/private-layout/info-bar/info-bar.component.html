@@ -1,0 +1,22 @@
+<ng-container
+  *ngIf="{
+    timer: timer$ | async,
+    informations: informations$ | async,
+    refreshInfos: refreshInfos$ | async
+  } as _"
+>
+  <div class="flex text-base" *ngIf="_.informations?.length as infoLength">
+    <div
+      class="heading flex items-center bg-warn px-3.5 py-2 font-normal uppercase text-white"
+    >
+      <mat-icon>info</mat-icon>
+    </div>
+
+    <span
+      [@slideUp]="_.timer"
+      class="z-[-1] pt-3 pr-0.5 pb-2.5 pl-2.5 text-[13px] font-normal leading-[17px]"
+    >
+      {{ _.informations[_.timer % infoLength].message }}
+    </span>
+  </div>
+</ng-container>

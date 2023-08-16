@@ -1,0 +1,101 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="searchForm" class="flex flex-col">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.month' | translate }}</mat-label>
+          <mat-select formControlName="month">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option *ngFor="let month of MONTHS" [value]="+month">
+              {{ 'commun.months.' + month | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.year' | translate }}</mat-label>
+          <mat-select formControlName="year">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option *ngFor="let year of years" [value]="year">
+              {{ year }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.year.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.compteurs.niveauGravite' | translate }}
+          </mat-label>
+          <mat-select formControlName="niveau">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option *ngFor="let niveau of niveaux" [value]="niveau">
+              {{ 'qualite.compteurs.niveau' | translate : { niveau } }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.state' | translate }}</mat-label>
+          <mat-select formControlName="state">
+            <mat-option value="">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option *ngFor="let state of states" [value]="state">
+              {{ 'qualite.compteurs.' + state | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.controleur' | translate }}</mat-label>
+          <input
+            type="text"
+            aria-label="Number"
+            matInput
+            formControlName="agrement_controleur"
+            (input)="onSearchControleur$.next($event.target.value)"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #auto="matAutocomplete"
+            [displayWith]="displayWith"
+          >
+            <mat-option
+              *ngFor="let controleur of filtredControleurs$ | async"
+              [value]="controleur.agrement_vl"
+            >
+              {{ controleur.nom }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+<mat-card *ngIf="displayCheckCompteurSelector$ | async">
+  <mat-card-content>
+    <mat-checkbox color="warn" (change)="checkCompteur($event)">
+      <span class="wrap-check-box-label">
+        {{ 'qualite.compteurs.checkCompteur' | translate }}
+      </span>
+    </mat-checkbox>
+  </mat-card-content>
+</mat-card>

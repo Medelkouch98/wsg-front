@@ -1,0 +1,67 @@
+<mat-card>
+  <mat-card-content class="text-sm">
+    <form [formGroup]="searchForm" class="flex flex-col">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>{{ 'commun.searchPeriod' | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              formControlName="date_debut"
+              [placeholder]="'commun.du' | translate"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              formControlName="date_fin"
+              [placeholder]="'commun.au' | translate"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker" />
+          <mat-date-range-picker #picker />
+
+          <mat-error *ngIf="searchForm.controls.date_debut.errors">
+            {{
+              searchForm.controls.date_debut.errors | error : null : 'startDate'
+            }}
+          </mat-error>
+          <mat-error *ngIf="searchForm.controls.date_fin.errors" class="pb-2">
+            {{ searchForm.controls.date_fin.errors | error : null : 'endDate' }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.statistics' | translate }}</mat-label>
+          <mat-select formControlName="module">
+            <mat-option
+              *ngFor="let module of statisticsModule | keyvalue"
+              [value]="module.value"
+            >
+              {{ 'statistics.module.' + module.value | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

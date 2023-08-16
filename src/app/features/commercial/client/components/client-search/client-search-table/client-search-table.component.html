@@ -1,0 +1,146 @@
+<ng-container
+  *ngIf="{
+    clients: clients$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.clients?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.clients?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.clients.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="type">
+              {{ 'commun.typeClient' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.typeClient' | translate }}
+              </span>
+              {{
+                (element.type === 2 ? 'client.compte' : 'client.passage')
+                  | translate
+              }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="code">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="code">
+              {{ 'client.codeClient' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'client.codeClient' | translate }}
+              </span>
+              {{ element.clientPro?.code ? element.clientPro?.code : '--' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nom">
+              {{ 'commun.name' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.name' | translate }}
+              </span>
+              {{ element.nom }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="cp">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="cp">
+              {{ 'commun.codePostal' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.codePostal' | translate }}
+              </span>
+              {{ element.cp }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="ville">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ville">
+              {{ 'commun.ville' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'ville' | translate }}
+              </span>
+              {{ element.ville }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actif">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="actif">
+              {{ 'commun.status' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.status' | translate }}
+              </span>
+              <app-status-illustration
+                [status]="element.actif"
+              ></app-status-illustration>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="date_derniere_prestation">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="date_derniere_prestation"
+            >
+              {{ 'client.dateDernierePresta' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'client.dateDernierePresta' | translate }}
+              </span>
+              {{
+                element.date_derniere_prestation
+                  ? (element.date_derniere_prestation | date : 'dd/MM/yyyy')
+                  : '--'
+              }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            *matRowDef="let row; columns: columns"
+            [ngClass]="{ 'bg-inactif': row.type === 2 && !row.actif }"
+            (click)="redirectToFiche(row)"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.clients?.meta.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.clients?.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

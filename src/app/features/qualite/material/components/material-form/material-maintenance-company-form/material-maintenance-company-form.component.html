@@ -1,0 +1,39 @@
+<!-- Maintenance Company Form -->
+<ng-container
+  *ngIf="maintenanceCompanyForm"
+  [formGroup]="maintenanceCompanyForm"
+  appMarkRequiredFormControlAsDirty
+  [updateRequiredStatus$]="updateRequiredStatus$"
+>
+  <!-- Nom -->
+  <mat-form-field appFieldControlLabel>
+    <mat-label>{{ 'commun.nom' | translate }}</mat-label>
+    <input matInput formControlName="nom" />
+    <mat-error
+      appFormControlError
+      [errors]="maintenanceCompanyForm.controls.nom.errors"
+    />
+  </mat-form-field>
+
+  <!-- Téléphone -->
+  <mat-form-field appFieldControlLabel>
+    <mat-label>{{ 'commun.telephone' | translate }}</mat-label>
+    <input matInput formControlName="telephone" />
+    <mat-error
+      appFormControlError
+      [errors]="maintenanceCompanyForm.controls.telephone.errors"
+      pattern="phone"
+    />
+  </mat-form-field>
+
+  <!-- Email -->
+  <mat-form-field appFieldControlLabel>
+    <mat-label>{{ 'commun.email' | translate }}</mat-label>
+    <input matInput formControlName="email" />
+    <mat-error
+      appFormControlError
+      [errors]="maintenanceCompanyForm.controls.email.errors"
+      pattern="email"
+    />
+  </mat-form-field>
+</ng-container>

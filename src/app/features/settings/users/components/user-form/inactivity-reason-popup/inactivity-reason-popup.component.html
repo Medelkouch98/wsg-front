@@ -1,0 +1,24 @@
+<div mat-dialog-content>
+  <form [formGroup]="reasonForm">
+    <app-optional-dropdown
+      formControlName="reason"
+      [data]="desactivationReasons"
+      [defaultId]="5"
+      mainTitle="users.inactivityReason"
+      subTitle="users.otherInactivityReason"
+    />
+  </form>
+</div>
+<div mat-dialog-actions class="justify-center">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="reasonForm.invalid"
+    (click)="updateReason()"
+  >
+    {{ 'commun.valider' | translate }}
+  </button>
+  <button mat-raised-button mat-dialog-close>
+    {{ 'commun.annuler' | translate }}
+  </button>
+</div>

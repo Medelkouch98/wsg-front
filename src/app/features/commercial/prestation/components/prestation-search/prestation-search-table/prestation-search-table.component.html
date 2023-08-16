@@ -1,0 +1,142 @@
+<ng-container
+  *ngIf="{
+    prestations: prestations$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.prestations?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.prestations?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.prestations.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="code">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="code">
+              {{ 'commun.code' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.code' | translate }}
+              </span>
+              {{ element.code }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="libelle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="libelle">
+              {{ 'commun.label' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.label' | translate }}
+              </span>
+              {{ element.libelle }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="prixht">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prixht">
+              {{ 'commun.prixHT' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.prixHT' | translate }}
+              </span>
+              {{ element.prix_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="tva">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'commun.tva' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.tva' | translate }}
+              </span>
+              {{ element?.tva?.taux }} %
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="prixTTC">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.prixTTC' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.prixTTC' | translate }}
+              </span>
+              {{ element?.ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="soumis_redevance">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'commun.otc' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.otc' | translate }}
+              </span>
+              {{
+                (element?.soumis_redevance
+                  ? 'commun.soumis'
+                  : 'commun.nonSoumis'
+                ) | translate
+              }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actif">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'commun.status' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.status' | translate }}
+              </span>
+              <app-status-illustration
+                [status]="element?.actif"
+              ></app-status-illustration>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="goToDetails(element)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            *matRowDef="let row; columns: columns"
+            [ngClass]="{ 'bg-inactif': !row.actif }"
+            (click)="goToDetails(row)"
+          ></mat-row>
+        </mat-table>
+
+        <mat-paginator
+          *ngIf="_.prestations.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.prestations.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

@@ -1,0 +1,262 @@
+<form [formGroup]="searchForm">
+  <mat-card class="flex flex-wrap">
+    <mat-card-content class="flex-grow">
+      <div class="flex flex-col lg:flex-row lg:gap-5">
+        <mat-form-field class="lg:basis-1/2" subscriptSizing="dynamic">
+          <mat-label>{{ 'commun.searchPeriod' | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              formControlName="debut_periode"
+              [placeholder]="'commun.du' | translate"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              formControlName="fin_periode"
+              [placeholder]="'commun.au' | translate"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="searchForm.errors">
+            {{ searchForm.errors | error : 'emptyInterval' }}
+          </mat-error>
+          <mat-error *ngIf="searchForm.controls.debut_periode.errors">
+            {{ searchForm.controls.debut_periode.errors | error : 'startDate' }}
+          </mat-error>
+          <mat-error
+            *ngIf="searchForm.controls.fin_periode.errors"
+            class="pb-2"
+          >
+            {{ searchForm.controls.fin_periode.errors | error : 'endDate' }}
+          </mat-error>
+        </mat-form-field>
+
+        <div
+          class="flex flex-none items-center justify-center lg:basis-1/2 lg:justify-end lg:p-4"
+        >
+          <button
+            (click)="search()"
+            [disabled]="searchForm.invalid"
+            color="accent"
+            mat-raised-button
+          >
+            {{ 'commun.search' | translate }}
+          </button>
+          <button
+            (click)="resetSearch()"
+            class=""
+            color="primary"
+            mat-icon-button
+            matTooltip="{{ 'commun.reinitialiseRecherche' | translate }}"
+          >
+            <mat-icon>autorenew</mat-icon>
+          </button>
+          <button
+            (click)="showMoreSearchCriteria = !showMoreSearchCriteria"
+            class=""
+            color="primary"
+            mat-icon-button
+            matTooltip="{{ 'advancedSearch.criteresRecherche' | translate }}"
+          >
+            <mat-icon>filter_list</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <div
+    *ngIf="showMoreSearchCriteria"
+    class="flex flex-grow flex-col 2xl:flex-row"
+  >
+    <div class="flex flex-col lg:flex-row 2xl:basis-1/2">
+      <mat-card class="items-stretch xl:basis-1/2">
+        <mat-card-header class="justify-center">
+          <mat-card-title>
+            {{ 'commun.client' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="h-full">
+          <app-client-autocomplete
+            [label]="translateService.instant('advancedSearch.nom')"
+            formControlName="client"
+          ></app-client-autocomplete>
+          <app-client-autocomplete
+            formControlName="proprietaire"
+            [label]="translateService.instant('advancedSearch.nomProprietaire')"
+          ></app-client-autocomplete>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.reglement' | translate }}
+            </mat-label>
+            <mat-select formControlName="mode_reglement_id">
+              <mat-option [value]=""></mat-option>
+              <mat-option
+                *ngFor="let modeReglement of modesReglement$ | async"
+                [value]="modeReglement.id"
+              >
+                {{ modeReglement.libelle | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="xl:basis-1/2">
+        <mat-card-header class="justify-center">
+          <mat-card-title>
+            {{ 'advancedSearch.vehicule' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <app-immatriculation-control
+            formControlName="immatriculation"
+          ></app-immatriculation-control>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.numSerie' | translate }}
+            </mat-label>
+            <input formControlName="numero_serie" matInput />
+            <mat-error>
+              {{ searchForm.controls.numero_serie.errors | error : 'alphanum' }}
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'commun.marque' | translate }}
+            </mat-label>
+            <input formControlName="marque" matInput />
+            <mat-error>
+              {{ searchForm.controls.marque.errors | error : 'alphanum' }}
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'commun.modele' | translate }}
+            </mat-label>
+            <input formControlName="modele" matInput />
+            <mat-error>
+              {{ searchForm.controls.modele.errors | error : 'alphanum' }}
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.energie' | translate }}
+            </mat-label>
+            <mat-select formControlName="energie_id">
+              <mat-option [value]=""></mat-option>
+              <mat-option
+                *ngFor="let energie of energies$ | async"
+                [value]="energie.id"
+              >
+                {{ energie.code }} - {{ energie.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <mat-card class="flex-grow items-stretch xl:basis-1">
+      <mat-card-header class="justify-center">
+        <mat-card-title>
+          {{ 'advancedSearch.dossier' | translate }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="flex h-full flex-col">
+        <div class="flex flex-col justify-between md:flex-row md:gap-x-3">
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.numDossier' | translate }}
+            </mat-label>
+            <input
+              appFormControlNumberOnly
+              formControlName="numero_dossier"
+              matInput
+            />
+            <mat-error>
+              {{ searchForm.controls.numero_dossier.errors | error }}
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.controleur' | translate }}
+            </mat-label>
+            <input formControlName="nom_controleur" matInput />
+            <mat-error>
+              {{
+                searchForm.controls.nom_controleur.errors | error : 'alphanum'
+              }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="flex flex-col justify-between md:flex-row md:gap-x-3">
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.numPv' | translate }}
+            </mat-label>
+            <input
+              appFormControlNumberOnly
+              formControlName="numero_liasse_multi_pv"
+              matInput
+            />
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'commun.type' | translate }}
+            </mat-label>
+            <mat-select formControlName="type_controle_id">
+              <mat-option [value]=""></mat-option>
+              <mat-option
+                *ngFor="let typeControle of typesControle$ | async"
+                [value]="typeControle.id"
+              >
+                {{ typeControle.code }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="flex flex-col justify-between md:flex-row md:gap-x-3">
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'advancedSearch.numLiasse' | translate }}
+            </mat-label>
+            <input
+              appFormControlNumberOnly
+              formControlName="numero_liasse"
+              matInput
+            />
+          </mat-form-field>
+          <mat-form-field appFieldControlLabel>
+            <mat-label>
+              {{ 'commun.category' | translate }}
+            </mat-label>
+            <mat-select formControlName="categorie_id">
+              <mat-option
+                *ngFor="let categorie of categories$ | async"
+                [value]="categorie.id"
+              >
+                {{ categorie.libelle_reduit }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'commun.numFacture' | translate }}
+          </mat-label>
+          <input formControlName="numero_facture" matInput />
+          <mat-error>
+            {{
+              searchForm.controls.numero_facture.errors | error : 'numFacture'
+            }}
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</form>

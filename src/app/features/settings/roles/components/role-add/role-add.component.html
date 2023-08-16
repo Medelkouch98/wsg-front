@@ -1,0 +1,46 @@
+<ng-container *ngIf="{ roles: roles$ | async } as _">
+  <div class="flex w-full flex-col flex-wrap">
+    <mat-card>
+      <mat-card-content>
+        <form
+          [formGroup]="roleForm"
+          appMarkRequiredFormControlAsDirty
+          class="flex flex-col"
+        >
+          <div class="grid grid-cols-1 lg:gap-x-5">
+            <!-- Label -->
+            <mat-form-field appFieldControlLabel>
+              <mat-label>{{ 'commun.label' | translate }}</mat-label>
+              <input matInput formControlName="label" />
+              <mat-error
+                appFormControlError
+                [errors]="roleForm.controls.label.errors"
+              />
+            </mat-form-field>
+
+            <!-- Role -->
+            <mat-form-field floatLabel="auto">
+              <mat-label>{{ 'roles.duplicateFromRole' | translate }}</mat-label>
+              <mat-select formControlName="role">
+                <mat-option *ngFor="let role of _.roles" [value]="role">
+                  {{ role.nom }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="flex justify-center">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="roleForm.invalid"
+        (click)="addRole()"
+      >
+        {{ 'commun.save' | translate }}
+      </button>
+    </div>
+  </div>
+</ng-container>

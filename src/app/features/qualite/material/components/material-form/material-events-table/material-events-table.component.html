@@ -1,0 +1,90 @@
+<!-- Material Events Header -->
+<div class="mb-4 border-b border-slate-300 pb-2.5 lg:col-span-2">
+  <h5 class="font-medium">
+    {{ 'qualite.material.materialEvents' | translate }}
+  </h5>
+</div>
+
+<!-- Material Events Table -->
+<ng-container *ngIf="events?.data?.length as dataLength; else addEventsMessage">
+  <table
+    mat-table
+    [dataSource]="events"
+    matSort
+    aria-describedby="material-events"
+  >
+    <!-- Event Type Column -->
+    <ng-container matColumnDef="materiel_evenement_type_id">
+      <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'qualite.material.eventType' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="flex items-center gap-2">
+          {{ element.materiel_evenement_type_id | eventType | async }}
+          <mat-icon
+            *ngIf="element.materiel_evenement_fichiers?.length"
+            fontIcon="file_present"
+            class="text-success"
+          />
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="date">
+      <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'commun.date' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.date | date : 'dd/MM/yyyy' }}
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th scope="col" mat-header-cell *matHeaderCellDef>
+        {{ 'commun.actions' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="popUpEventForm.emit(element); $event.stopPropagation()"
+        >
+          <mat-icon fontIcon="visibility" />
+        </button>
+
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteEvent.emit(element.id); $event.stopPropagation()"
+        >
+          <mat-icon fontIcon="delete" />
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Table Rows -->
+    <tr mat-header-row *matHeaderRowDef="eventColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: eventColumns"
+      (click)="popUpEventForm.emit(row)"
+    ></tr>
+  </table>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="dataLength > MIN_PAGE_SIZE_OPTIONS" />
+</ng-container>
+
+<!-- Add Events Message -->
+<ng-template #addEventsMessage>
+  <h5 class="flex items-center justify-center gap-1 pb-1 font-medium">
+    <mat-icon
+      fontIcon="info"
+      fontSet="material-icons-outlined"
+      class="text-cyan-600"
+    />
+    {{ 'qualite.material.emptyEventsHistoryMessage' | translate }}
+  </h5>
+</ng-template>

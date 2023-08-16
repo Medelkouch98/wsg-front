@@ -1,0 +1,45 @@
+<h1 mat-dialog-title class="text-center">
+  {{ 'gestion.factures.generationFactures' | translate }}
+</h1>
+<br />
+<ng-container>
+  <div mat-dialog-content class="justify-center">
+    <mat-form-field>
+      <mat-label>
+        {{ 'gestion.factures.dateFacturation' | translate }}
+      </mat-label>
+      <input
+        matInput
+        appCustomDateMaskDirective
+        [formControl]="dateFacturationControl"
+        (dateChange)="dateChange()"
+        [matDatepicker]="picker"
+      />
+      <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker color="primary"></mat-datepicker>
+      <mat-error>
+        {{ dateFacturationControl.errors | error }}
+      </mat-error>
+    </mat-form-field>
+    <mat-error *ngIf="dateFacturationError">
+      {{ dateFacturationError }}
+    </mat-error>
+  </div>
+  <div mat-dialog-actions class="justify-center">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="dateFacturationControl.invalid || !!dateFacturationError"
+      (click)="generateFacture()"
+    >
+      {{ 'commun.valider' | translate }}
+    </button>
+    <button mat-raised-button [mat-dialog-close]="false">
+      {{ 'commun.cancel' | translate }}
+    </button>
+  </div>
+</ng-container>

@@ -1,0 +1,97 @@
+<div class="flex">
+  <mat-accordion class="flex w-full flex-col flex-wrap gap-2.5">
+    <mat-expansion-panel
+      class="w-full"
+      (opened)="identificationPanelExpanded = true"
+      (closed)="identificationPanelExpanded = false"
+      [expanded]="identificationPanelExpanded"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h5 class="font-medium">
+            {{ 'commun.identification' | translate | uppercase }}
+          </h5>
+        </mat-panel-title>
+        <mat-panel-description *ngIf="!identificationPanelExpanded && !!client">
+          <p>
+            {{ client?.clientPro?.code }} {{ client.nom }} -
+            {{ client.ville }}
+          </p>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-client-form-identification
+        [addMode]="addMode"
+        [isReadOnly$]="isReadOnly$"
+        #clientIdentification
+      ></app-client-form-identification>
+    </mat-expansion-panel>
+
+    <ng-container *ngIf="!addMode && client?.type === typePersonneEnum.PASSAGE">
+      <mat-expansion-panel class="w-full">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium uppercase">
+              {{ 'client.historiqueVehiculeClient' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-client-historique></app-client-historique>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        ((addMode &&
+          clientIdentification.identificationForm.pristine &&
+          !!isIdentificationValidated) ||
+          !addMode) &&
+        client?.type === typePersonneEnum.COMPTE
+      "
+    >
+      <mat-expansion-panel
+        class="w-full"
+        (opened)="contactsPanelExpanded = true"
+        (closed)="contactsPanelExpanded = false"
+        [expanded]="contactsPanelExpanded"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium">
+              {{ 'commun.contacts' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-client-contact
+          [addMode]="addMode"
+          [isReadOnly$]="isReadOnly$"
+        ></app-client-contact>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel class="w-full">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5 class="font-medium">
+              {{ 'client.tarificationFacturation' | translate | uppercase }}
+            </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-form-client-facturation
+          [addMode]="addMode"
+          [isReadOnly$]="isReadOnly$"
+          #clientFacturation
+        ></app-form-client-facturation>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <div class="flex justify-center" *ngIf="!!addMode">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!isValid()"
+        (click)="addClient()"
+      >
+        {{ 'commun.save' | translate }}
+      </button>
+    </div>
+  </mat-accordion>
+</div>

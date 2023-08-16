@@ -1,0 +1,62 @@
+<ng-container
+  *ngIf="{
+    roles: roles$ | async
+  } as _"
+  appNoDataSearch
+  [data]="roles?.data"
+  [isSearchClicked]="true"
+>
+  <mat-card *ngIf="roles?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table [dataSource]="roles" matSort>
+          <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'commun.name' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.name' | translate }}
+              </span>
+              {{ element.nom }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="is_reference">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'roles.is_reference' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'roles.is_reference' | translate }}
+              </span>
+              <app-status-illustration [status]="element.is_reference" />
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="goToDetails(element); $event.stopPropagation()"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns" />
+          <mat-row
+            *matRowDef="let row; columns: columns"
+            (click)="goToDetails(row)"
+          />
+        </mat-table>
+        <mat-paginator *ngIf="roles.data.length > MIN_PAGE_SIZE_OPTIONS" />
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

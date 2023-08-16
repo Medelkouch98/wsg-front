@@ -1,0 +1,74 @@
+<div mat-dialog-content>
+  <form [formGroup]="eventForm" appMarkRequiredFormControlAsDirty>
+    <!-- Event Type -->
+    <mat-form-field appFieldControlLabel>
+      <mat-label>
+        {{ 'qualite.material.eventType' | translate }}
+      </mat-label>
+      <mat-select formControlName="materiel_evenement_type_id">
+        <mat-option *ngFor="let type of subTypeEventTypes" [value]="type.id">
+          {{ type.id | eventType | async }}
+        </mat-option>
+      </mat-select>
+      <mat-error
+        appFormControlError
+        [errors]="eventForm.controls.materiel_evenement_type_id.errors"
+      />
+    </mat-form-field>
+
+    <!-- Date -->
+    <mat-form-field appFieldControlLabel>
+      <mat-label>
+        {{ 'commun.date' | translate }}
+      </mat-label>
+      <input
+        matInput
+        appCustomDateMaskDirective
+        [matDatepicker]="picker"
+        placeholder="jj/mm/aaaa"
+        formControlName="date"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      <mat-error
+        appFormControlError
+        [errors]="eventForm.controls.date.errors"
+      />
+    </mat-form-field>
+
+    <!-- Observation -->
+    <mat-form-field appFieldControlLabel>
+      <mat-label>
+        {{ 'qualite.material.observation' | translate }}
+      </mat-label>
+      <textarea matInput formControlName="observation"></textarea>
+      <mat-error
+        appFormControlError
+        [errors]="eventForm.controls.observation.errors"
+      />
+    </mat-form-field>
+
+    <!-- Documents -->
+    <app-upload-files formControlName="materiel_evenement_fichiers" />
+
+    <app-download-files
+      *ngIf="fileNames?.length"
+      [files]="fileNames"
+      (download)="downloadFile($event)"
+      (delete)="deleteFile($event)"
+    />
+  </form>
+</div>
+<div mat-dialog-actions class="justify-center">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="eventForm.invalid || eventForm.pristine"
+    (click)="saveEvent()"
+  >
+    {{ 'commun.valider' | translate }}
+  </button>
+  <button mat-raised-button mat-dialog-close>
+    {{ 'commun.annuler' | translate }}
+  </button>
+</div>

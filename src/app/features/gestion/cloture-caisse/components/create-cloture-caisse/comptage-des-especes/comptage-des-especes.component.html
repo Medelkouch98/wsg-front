@@ -1,0 +1,76 @@
+<form [formGroup]="form" appMarkRequiredFormControlAsDirty>
+  <ng-container formArrayName="comptageRowsForm">
+    <div class="responsive-table editable-table">
+      <mat-table [dataSource]="dataSource">
+        <ng-container
+          matColumnDef="valeur"
+          *ngIf="{
+            title:
+              TypeComptageEnum.TYPE_ESPECE_BILLET === typeEspece
+                ? 'gestion.clotureCaisse.billets'
+                : 'gestion.clotureCaisse.pieces'
+          } as _"
+        >
+          <mat-header-cell *matHeaderCellDef>
+            {{ _.title | translate }}
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let element; let i = index"
+            [formGroup]="element"
+          >
+            <span class="header-label">
+              {{ _.title | translate }}
+            </span>
+            <span>{{ element.controls.valeur.value }} €</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'gestion.clotureCaisse.nombre' | translate }}
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let element; let i = index"
+            [formGroup]="element"
+          >
+            <span class="header-label">
+              {{ 'gestion.clotureCaisse.nombre' | translate }}
+            </span>
+            <mat-form-field>
+              <input
+                matInput
+                type="number"
+                formControlName="nombre"
+                [min]="0"
+                (blur)="saveRow(element, i)"
+              />
+              <mat-error>
+                {{ element.controls.nombre.errors | error : 'positiveInteger' }}
+              </mat-error>
+            </mat-form-field>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="montant">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.total' | translate }}
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let element; let i = index"
+            [formGroup]="element"
+          >
+            <span class="header-label">
+              {{ 'commun.total' | translate }}
+            </span>
+            <span>
+              {{
+                element.controls.nombre.value * element.controls.valeur.value
+              }}
+              €
+            </span>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: columns"></mat-row>
+      </mat-table>
+    </div>
+  </ng-container>
+</form>

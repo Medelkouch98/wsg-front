@@ -1,0 +1,26 @@
+@use '@angular/material' as mat;
+@use '@ng-matero/extensions' as mtx;
+@use 'ws-palettes' as *;
+
+$primary-palette: mat.define-palette($ws-red);
+$accent-palette: mat.define-palette($ws-dark-blue);
+
+$ws-theme2: mat.define-light-theme(
+  (
+    color: (
+      primary: $primary-palette,
+      accent: $accent-palette,
+    ),
+  )
+);
+
+.ws-theme2 {
+  @include mat.all-component-colors($ws-theme2);
+  @include mtx.all-component-colors($ws-theme2);
+}
+
+:root:has(.ws-theme2) {
+  --primary: #{mat.get-color-from-palette($primary-palette, default)};
+  --secondary: #{mat.get-color-from-palette($accent-palette, default)};
+  --bodycolor: #f0dde2;
+}

@@ -1,0 +1,9 @@
+<ng-container appNoDataSearch [data]="materials" [isSearchClicked]="true">
+  <mat-accordion
+    *ngIf="materials?.length"
+    [multi]="true"
+    class="mx-2.5 flex flex-col gap-2.5"
+  >
+    <ng-content />
+  </mat-accordion>
+</ng-container>

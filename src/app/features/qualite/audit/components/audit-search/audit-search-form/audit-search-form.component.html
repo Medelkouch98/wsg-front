@@ -1,0 +1,51 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="searchForm" class="flex flex-col">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5">
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.year' | translate }}</mat-label>
+          <mat-select formControlName="year">
+            <mat-option *ngFor="let row of annees" [value]="row">
+              {{ row }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.year.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'qualite.audit.typeAudit' | translate }}</mat-label>
+          <mat-select formControlName="type_audit_id">
+            <mat-option
+              *ngFor="let typeAudit of typesAudit$ | async"
+              [value]="typeAudit.id"
+            >
+              {{ typeAudit.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.type_audit_id.errors | error }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="searchForm.invalid"
+          (click)="search()"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          matTooltip="{{ 'commun.reinitialiseRecherche' | translate }}"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

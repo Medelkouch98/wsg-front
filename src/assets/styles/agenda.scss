@@ -1,0 +1,34 @@
+@use './variable' as *;
+
+/* Ne pas renommer ces classes, elles sont utilisées dynamiquement dans CalendarEventDirective */
+.cltCompte {
+  border-left: 5px red solid;
+}
+
+.VTP {
+  background-color: $calendar-vtp;
+}
+
+.CV {
+  background-color: $calendar-cv;
+}
+
+.VTC {
+  background-color: $calendar-vtc;
+}
+
+.CVC {
+  background-color: $calendar-cvc;
+}
+
+.VP {
+  background-color: $calendar-vp;
+}
+
+.VT {
+  background-color: $calendar-vt;
+}
+
+.nonFacture {
+  background-color: $calendar-nonFacture !important;
+}

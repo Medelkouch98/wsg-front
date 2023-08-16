@@ -1,0 +1,283 @@
+<div class="flex items-center justify-between">
+  <mat-form-field class="flex-1" appFieldControlLabel>
+    <mat-label>
+      {{ 'commun.remiseGlobalPourcentage' | translate }}
+    </mat-label>
+    <input
+      matInput
+      type="number"
+      appDecimalNumber
+      [formControl]="pourcentremise"
+      (blur)="setRemisePourcent()"
+      min="0"
+      max="100"
+    />
+    <mat-error>
+      {{ pourcentremise.errors | error }}
+    </mat-error>
+  </mat-form-field>
+  <div
+    class="mb-2 ml-5 flex-1 border-2 border-primary p-4 text-center text-primary"
+  >
+    <span>{{ 'client.regleRemiseClientPro' | translate }}</span>
+  </div>
+</div>
+<div class="flex w-full flex-col">
+  <div
+    class="flex items-center justify-between pb-2.5"
+    *ngIf="(isReadOnly$ | async) === false"
+  >
+    <mat-label class="mr-5 text-primary">
+      {{ 'client.remiseParPrestation' | translate }}
+    </mat-label>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addNewRow()"
+      [disabled]="!!(tarificationToEdit || isNewRow)"
+    >
+      {{ 'commun.ajouter' | translate }}
+    </button>
+  </div>
+  <form [formGroup]="tarificationForm">
+    <ng-container formArrayName="tarificationRowsForm">
+      <div class="responsive-table editable-table">
+        <mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="codeprestation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="codeprestation">
+              {{ 'commun.code' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'commun.code' | translate }}
+              </span>
+              <span
+                *ngIf="
+                  !!element.controls.prestation_id?.value ||
+                  (!element.controls.isEditable.value &&
+                    !element.controls.prestation_id?.value)
+                "
+              >
+                {{ element.controls.codeprestation?.value }}
+              </span>
+              <mat-form-field
+                *ngIf="
+                  !!element.controls.isEditable.value &&
+                  !element.controls.prestation_id?.value
+                "
+              >
+                <mat-select
+                  formControlName="codeprestation"
+                  (selectionChange)="selectPrestation($event, element)"
+                  panelClass="lg:w-40 lg:absolute"
+                >
+                  <mat-option
+                    *ngFor="let presta of allowedPrestations"
+                    [value]="presta.code"
+                  >
+                    {{ presta.code }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="libelleprestation">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="libelleprestation"
+            >
+              {{ 'client.prestation' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.prestation' | translate }}
+              </span>
+              <span>
+                {{ element.controls.libelleprestation?.value }}
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="prix_ht">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prix_ht">
+              {{ 'client.prixht' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.prixht' | translate }}
+              </span>
+              <span>
+                {{ element.controls.prix_ht.value || '0.00' }}
+                €
+              </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="prix_ttc">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prixttc">
+              {{ 'client.prixttc' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.prixttc' | translate }}
+              </span>
+              <span>
+                {{ element.controls.prix_ttc.value || '0.00' }}
+                €
+              </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remise_euro">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="remise_euro">
+              {{ 'client.remiseeuro' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.remiseeuro' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.remise_euro.value || '0.00' }}
+                €
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input
+                  matInput
+                  type="number"
+                  formControlName="remise_euro"
+                  (input)="element.controls.remise_pourcentage.reset()"
+                  (change)="updateRemise(element)"
+                  min="0"
+                />
+                <mat-error>
+                  {{ element.controls.remise_euro.errors | error }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="remise_pourcentage">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="remise_pourcentage"
+            >
+              {{ 'client.remisepource' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.remisepource' | translate }}
+              </span>
+              <span *ngIf="!element.controls.isEditable.value">
+                {{ element.controls.remise_pourcentage.value || '0.00' }}
+                %
+              </span>
+              <mat-form-field *ngIf="!!element.controls.isEditable.value">
+                <input
+                  matInput
+                  type="number"
+                  formControlName="remise_pourcentage"
+                  (input)="element.controls.remise_euro.reset()"
+                  (change)="updateRemise(element)"
+                  min="0"
+                  max="100"
+                />
+                <mat-error>
+                  {{ element.controls.remise_pourcentage.errors | error }}
+                </mat-error>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="prixttcremise">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="prixttcremise">
+              {{ 'client.prixttcremise' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <span class="header-label">
+                {{ 'client.prixttcremise' | translate }}
+              </span>
+              <span>
+                {{ element.controls.prixttcremise.value || '0.00' }}
+                €
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroup]="element"
+            >
+              <button
+                mat-icon-button
+                (click)="saveRow(element)"
+                [disabled]="!!element.invalid"
+                *ngIf="!!element.controls.isEditable.value"
+                color="primary"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                *ngIf="!!element.controls.isEditable.value"
+                (click)="cancelChanges(element, i)"
+              >
+                <mat-icon>cancel</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                *ngIf="!element.controls.isEditable.value"
+                (click)="editRow(element)"
+                color="primary"
+                [disabled]="!!(tarificationToEdit || isNewRow)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                color="warn"
+                *ngIf="!element.controls.isEditable.value"
+                (click)="deleteRow(element)"
+                [disabled]="!!(tarificationToEdit || isNewRow)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="dataSource?.data.length > MIN_PAGE_SIZE_OPTIONS"
+        ></mat-paginator>
+      </div>
+    </ng-container>
+  </form>
+</div>

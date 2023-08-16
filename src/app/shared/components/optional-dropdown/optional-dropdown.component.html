@@ -1,0 +1,29 @@
+<form [formGroup]="form" class="flex flex-col">
+  <div class="grid grid-cols-1 lg:gap-x-5">
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ mainTitle | translate }}</mat-label>
+      <mat-select
+        formControlName="id"
+        (selectionChange)="selectionChange($event)"
+      >
+        <mat-option [value]="defaultId">
+          {{ 'commun.others' | translate }}
+        </mat-option>
+        <mat-option *ngFor="let element of data" [value]="element.id">
+          {{ element?.libelle }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field
+      *ngIf="form.controls.id.value === defaultId"
+      appFieldControlLabel
+    >
+      <!--le champ libelle ne s'affiche que si on selectionne un element non predefinie (id=-1 ou defaultId)-->
+      <mat-label>{{ subTitle | translate }}</mat-label>
+      <textarea matInput formControlName="libelle"></textarea>
+      <mat-error>
+        {{ form?.errors | error }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+</form>

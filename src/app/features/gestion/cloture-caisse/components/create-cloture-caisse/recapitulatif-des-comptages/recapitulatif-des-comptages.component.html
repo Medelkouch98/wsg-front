@@ -1,0 +1,193 @@
+<div class="responsive-table editable-table my-4">
+  <mat-table [dataSource]="clotureCaisseRecap$ | async">
+    <ng-container matColumnDef="mode_reglement">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label"></span>
+        {{
+          'gestion.clotureCaisse.typeComptage.' + element.mode_reglement
+            | translate
+        }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="fond_de_caisse">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.fondDeCaisse' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.fondDeCaisse' | translate }}
+        </span>
+        <span
+          *ngIf="
+            element.mode_reglement === TypeComptageEnum.TYPE_ESPECE;
+            else emptyColumn
+          "
+        >
+          {{ element.fond_de_caisse | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="sortie_de_caisse">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.sortieDeCaisse' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.sortieDeCaisse' | translate }}
+        </span>
+        <span
+          *ngIf="
+            element.mode_reglement === TypeComptageEnum.TYPE_ESPECE;
+            else emptyColumn
+          "
+        >
+          {{ element.sortie_de_caisse | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+          €
+        </span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="total_compte">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.totalCompte' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.totalCompte' | translate }}
+        </span>
+        {{ element.total_compte | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="total_a_controller">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.totalAController' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.totalAController' | translate }}
+        </span>
+        {{ element.total_a_controller | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+        €
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="total_factures_reglees">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.totalFacturesReglees' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.totalFacturesReglees' | translate }}
+        </span>
+        {{
+          element.total_factures_reglees | number : DECIMAL_NUMBER_PIPE_FORMAT
+        }}
+        €
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="difference">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.difference' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.difference' | translate }}
+        </span>
+        {{ element.difference | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+        €
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="nb_factures">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.nbFactures' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.nbFactures' | translate }}
+        </span>
+        {{ element.nb_factures }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="commentaire">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'commun.commentaire' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.commentaire' | translate }}
+        </span>
+        <mat-form-field>
+          <input
+            #commentaire
+            matInput
+            type="text"
+            [value]="element.commentaire"
+            (blur)="
+              setEcart(
+                commentaire.value,
+                element.mode_reglement,
+                element.difference
+              )
+            "
+          />
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.suiviFactures' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'gestion.clotureCaisse.suiviFactures' | translate }}
+        </span>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="goToReglement(element)"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row
+      *matHeaderRowDef="columnsReglementsSummaryTable"
+    ></mat-header-row>
+    <mat-row
+      *matRowDef="let row; columns: columnsReglementsSummaryTable"
+    ></mat-row>
+  </mat-table>
+</div>
+
+<div class="flex justify-between">
+  <div class="w-1/2">
+    <mat-form-field appFieldControlLabe>
+      <mat-label>
+        {{ 'gestion.clotureCaisse.nouveauFondDeCaisseEnEuro' | translate }}
+      </mat-label>
+      <input
+        matInput
+        type="number"
+        appDecimalNumber
+        [formControl]="fondCaisseFinal"
+        (blur)="setFondCaisseFinal()"
+        min="0"
+      />
+      <mat-error>
+        {{ fondCaisseFinal.errors | error }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div>
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="!isValid || !fondCaisseFinal.valid"
+      (click)="validerLaCloture.emit()"
+    >
+      {{ 'gestion.clotureCaisse.validerLaCloture' | translate }}
+    </button>
+  </div>
+</div>
+
+<ng-template #emptyColumn>-</ng-template>

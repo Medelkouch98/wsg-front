@@ -1,0 +1,131 @@
+<mat-card>
+  <mat-card-content>
+    <form class="flex flex-col" [formGroup]="searchForm">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>{{ 'commun.searchPeriod' | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              [placeholder]="'commun.du' | translate"
+              formControlName="start_date"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              [placeholder]="'commun.au' | translate"
+              formControlName="end_date"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.typeFacture' | translate }}</mat-label>
+          <mat-select formControlName="facture_type">
+            <mat-option
+              *ngFor="let row of TYPE_FACTURE | keyvalue"
+              [value]="row.value"
+            >
+              {{ 'resource.' + row.key | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.numFacture' | translate }}</mat-label>
+          <input matInput formControlName="numero_facture" />
+        </mat-form-field>
+
+        <app-client-autocomplete
+          [label]="translateService.instant('gestion.factures.clientName')"
+          formControlName="client"
+        ></app-client-autocomplete>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'gestion.factures.etatFacture' | translate }}
+          </mat-label>
+          <mat-select formControlName="facture_status">
+            <mat-option
+              *ngFor="let status of FACTURE_STATUS | keyvalue"
+              [value]="status.value"
+            >
+              {{ 'resource.' + status.key | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'gestion.factures.montantTtc' | translate }}
+          </mat-label>
+          <input matInput type="number" formControlName="montant_ttc" />
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.immatriculation' | translate }}</mat-label>
+          <input matInput formControlName="immatriculation" />
+        </mat-form-field>
+
+        <app-apporteur-affaire-autocomplete
+          formControlName="apporteurAffaire"
+        ></app-apporteur-affaire-autocomplete>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'gestion.factures.regltNegocieEn' | translate }}
+          </mat-label>
+          <mat-select formControlName="negocie_en">
+            <mat-option [value]=""></mat-option>
+            <mat-option
+              *ngFor="let mode of modesReglementsNegocie$ | async"
+              [value]="mode.id"
+            >
+              {{ mode.code }} - {{ mode.libelle }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'gestion.factures.typeReglement' | translate }}
+          </mat-label>
+          <mat-select formControlName="type_reglement">
+            <mat-option [value]=""></mat-option>
+            <mat-option
+              *ngFor="let mode of modesReglements$ | async"
+              [value]="mode.id"
+            >
+              {{ mode.code }} - {{ mode.libelle }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearch()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

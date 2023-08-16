@@ -1,0 +1,80 @@
+<ng-container
+  *ngIf="{
+    activitySearchResponse: activitySearchResponse$ | async,
+    page: page$ | async,
+    sort: sort$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.activitySearchResponse?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.activitySearchResponse?.data?.length">
+    <mat-card-content>
+      <mtx-grid
+        #grid
+        [data]="_.activitySearchResponse.data"
+        [columns]="columns"
+        [showToolbar]="true"
+        [columnSortable]="true"
+        [columnPinnable]="false"
+        [sortOnFront]="false"
+        [rowClassFormatter]="rowClassFormatter"
+        [sortActive]="_.sort?.active"
+        [sortDirection]="_.sort?.direction"
+        (sortChange)="sortChange($event)"
+        [pageOnFront]="false"
+        (page)="changePage($event)"
+        [pageIndex]="_.page?.pageIndex"
+        [pageSize]="_.page?.pageSize"
+        [pageSizeOptions]="PAGE_SIZE_OPTIONS"
+        [length]="_.activitySearchResponse.meta?.total"
+        [columnMenuButtonText]="'commun.manageColumns' | translate"
+        (rowClick)="goToFicheControle($event)"
+        [showColumnMenuFooter]="true"
+        [columnMenuFooterTemplate]="menuFooter"
+        [cellTemplate]="cellTemplate"
+      ></mtx-grid>
+
+      <ng-template #menuFooter>
+        <button mat-button (click)="saveUserPreferences()" color="accent">
+          {{ 'commun.save' | translate }}
+        </button>
+        <button mat-button (click)="closeMenu()">
+          {{ 'commun.close' | translate }}
+        </button>
+      </ng-template>
+
+      <ng-template #cellTemplate let-row let-col="colDef">
+        <container-element [ngSwitch]="col.field">
+          <span *ngSwitchCase="'is_paid'" class="pl-0">
+            <mat-icon *ngIf="row[col.field] === false" color="warn">
+              euro_symbol
+            </mat-icon>
+          </span>
+          <span *ngSwitchCase="'actions'">
+            <button mat-icon-button color="primary">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </span>
+          <span
+            *ngSwitchCase="'immatriculation'"
+            class="border-gray-400 rounded-lg border bg-white px-2 py-1 font-bold"
+          >
+            {{ row[col.field] }}
+          </span>
+          <span
+            *ngSwitchCase="'type_controle'"
+            class="rounded-lg px-2 py-1"
+            [ngClass]="getStylesForTypeControle(row[col.field])"
+          >
+            {{ row[col.field] }}
+          </span>
+          <span *ngSwitchDefault>
+            {{ row[col.field] }}
+          </span>
+        </container-element>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

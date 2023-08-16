@@ -1,0 +1,63 @@
+@use '../../../../../assets/styles/variable' as *;
+
+/*******************
+ Calendar page
+*******************/
+
+.cal-event-action {
+  text-decoration: none;
+  margin: 0 3px;
+}
+
+.cal-header {
+  border-left: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
+}
+
+.act {
+  color: white;
+
+  &:hover {
+    color: aqua;
+  }
+}
+
+:host ::ng-deep .mat-tab-header {
+  display: none !important;
+}
+
+.custom-event {
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.event-header {
+  color: $calendar-event-header;
+}
+
+.event-body {
+  color: $white;
+}
+
+.cal-tooltip-inner {
+  background-color: white;
+  border: 2px solid $calendar-event-tooltip-border;
+  color: $calendar-event-tooltip-text;
+  font-weight: bold;
+  max-width: unset;
+  opacity: 1;
+}
+
+.cal-tooltip.cal-tooltip-top .cal-tooltip-arrow {
+  border-top-color: $calendar-event-tooltip-border;
+}
+
+:host ::ng-deep .cal-event-container {
+  width: calc(100% - 10px) !important;
+}
+
+.eventMinHeight {
+  height: 26px !important;
+  position: relative;
+  z-index: 1;
+}

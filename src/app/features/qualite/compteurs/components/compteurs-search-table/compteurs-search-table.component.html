@@ -1,0 +1,302 @@
+<ng-container
+  *ngIf="{
+    data: compteurs$ | async,
+    searchClicked: searchClicked$ | async,
+    searchCriteria: searchCriteria$ | async,
+    isCompteursIntegres: isCompteursIntegres$ | async
+  } as _"
+>
+  <app-no-data-search
+    *ngIf="!(_?.data | keyvalue)?.length"
+    [message]="
+      getMessage(_.searchCriteria, _.searchClicked, _.isCompteursIntegres)
+        .message | translate
+    "
+    [image]="
+      getMessage(_.searchCriteria, _.searchClicked, _.isCompteursIntegres).image
+    "
+  ></app-no-data-search>
+  <mat-card *ngIf="(_?.data | keyvalue)?.length">
+    <mat-card-content>
+      <mat-accordion [multi]="false">
+        <div
+          *ngFor="
+            let niveau of _?.data | keyvalue : orderByKey;
+            let firstNiveau = first;
+            let lastNiveau = last;
+            let i = index
+          "
+          [id]="getLevelId(_.data, i)"
+        >
+          <mat-expansion-panel
+            class="my-4"
+            *ngFor="
+              let compteurs of niveau.value | keyvalue : orderByKey;
+              let firstCompteur = first
+            "
+            [expanded]="
+              isCompteurPanelExpanded(
+                firstCompteur && firstNiveau,
+                compteurs.value[0]
+              )
+            "
+            [ngClass]="DANGER_LEVELS.get(+niveau.key).border"
+            #compteurPanel
+          >
+            <mat-expansion-panel-header
+              (click)="
+                setOpenPanels(compteurs.value[0]?.code, compteurs.value[0]?.id)
+              "
+            >
+              <mat-panel-title>
+                <div class="flex flex-row lg:gap-2">
+                  <mat-icon
+                    class="flex-none self-center text-success"
+                    *ngIf="$any(compteurs.value) | compteurJustifie"
+                  >
+                    check_circle_outline
+                  </mat-icon>
+                  <span>
+                    {{
+                      'qualite.compteurs.compteurNumero'
+                        | translate
+                          : {
+                              code: compteurs.value[0]?.code,
+                              libelle: compteurs.value[0]?.libelle
+                            }
+                    }}
+                  </span>
+                </div>
+              </mat-panel-title>
+              <mat-panel-description
+                class="grow-0"
+                *ngIf="
+                  _?.searchCriteria.month !== -1 &&
+                  _?.searchCriteria.year !== -1
+                "
+              >
+                <button
+                  *ngIf="(isReadOnly$ | async) === false"
+                  mat-icon-button
+                  color="accent"
+                  [matTooltip]="
+                    'qualite.compteurs.ajouterUneJustificationEtUneActionATousLesControles'
+                      | translate
+                  "
+                  (click)="
+                    openAddJustification(compteurs.value[0]);
+                    $event.stopPropagation()
+                  "
+                >
+                  <mat-icon>add_circle</mat-icon>
+                </button>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <ng-container *ngIf="compteurPanel.expanded">
+              <mat-expansion-panel
+                *ngFor="
+                  let compteurItem of compteurs?.value;
+                  let firstControl = first
+                "
+                [expanded]="isControlPanelExpanded(firstControl, compteurItem)"
+                class="mb-2"
+                #controlPanel
+              >
+                <mat-expansion-panel-header
+                  (click)="setOpenPanels(compteurItem.code, compteurItem.id)"
+                >
+                  <mat-panel-title>
+                    {{ compteurItem?.controleur_nom }} /
+                    {{ compteurItem?.agrement_controleur }}
+                  </mat-panel-title>
+
+                  <mat-panel-description class="grow-0">
+                    <button
+                      *ngIf="(isReadOnly$ | async) === false"
+                      mat-icon-button
+                      color="accent"
+                      [matTooltip]="
+                        'qualite.compteurs.ajouterUneJustificationEtUneAction'
+                          | translate
+                      "
+                      (click)="
+                        openEditJustification(compteurItem);
+                        $event.stopPropagation()
+                      "
+                    >
+                      <mat-icon>
+                        {{
+                          !!compteurItem.justification_id
+                            ? 'edit'
+                            : 'add_circle'
+                        }}
+                      </mat-icon>
+                    </button>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <ng-container *ngIf="controlPanel.expanded">
+                  <div class="flex flex-col gap-y-5">
+                    <div
+                      class="responsive-table"
+                      *ngIf="!!compteurItem.justification_id"
+                    >
+                      <table>
+                        <tr>
+                          <td
+                            class="mat-mdc-header-row mat-mdc-header-cell py-4 text-white"
+                          >
+                            {{ 'qualite.compteurs.justification' | translate }}
+                          </td>
+                          <td class="mat-mdc-row mat-mdc-cell py-4">
+                            <span class="header-label">
+                              {{
+                                'qualite.compteurs.justification' | translate
+                              }}
+                            </span>
+                            {{ compteurItem?.justification }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            class="mat-mdc-header-row mat-mdc-header-cell py-4 text-white"
+                          >
+                            {{
+                              'qualite.compteurs.actionCorrective' | translate
+                            }}
+                          </td>
+                          <td class="mat-mdc-row mat-mdc-cell py-4">
+                            <span class="header-label">
+                              {{
+                                'qualite.compteurs.actionCorrective' | translate
+                              }}
+                            </span>
+                            {{
+                              getActionLabel(
+                                compteurItem,
+                                TypeCompteurAction.CORRECTIVE
+                              )
+                            }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            class="mat-mdc-header-row mat-mdc-header-cell py-4 text-white"
+                          >
+                            {{
+                              'qualite.compteurs.actionPreventive' | translate
+                            }}
+                          </td>
+                          <td class="mat-mdc-row mat-mdc-cell py-4">
+                            <span class="header-label">
+                              {{
+                                'qualite.compteurs.actionPreventive' | translate
+                              }}
+                            </span>
+                            {{
+                              getActionLabel(
+                                compteurItem,
+                                TypeCompteurAction.PREVENTIVE
+                              )
+                            }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            class="mat-mdc-header-row mat-mdc-header-cell py-4 text-white"
+                          >
+                            {{ 'commun.attachments' | translate }}
+                          </td>
+                          <td class="mat-mdc-row mat-mdc-cell py-4">
+                            <span class="header-label">
+                              {{ 'commun.attachments' | translate }}
+                            </span>
+                            <app-download-files
+                              class="m-4"
+                              *ngIf="compteurItem?.fichiers"
+                              [readOnly]="true"
+                              [files]="
+                                fileNamesFromAttachments(compteurItem?.fichiers)
+                              "
+                              (download)="
+                                downloadAttachment(
+                                  compteurItem?.fichiers[$event]
+                                )
+                              "
+                            ></app-download-files>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <mat-label class="text-primary">
+                      {{ 'commun.details' | translate }}
+                    </mat-label>
+                    <div class="responsive-table">
+                      <mat-table [dataSource]="[compteurItem]">
+                        <ng-container matColumnDef="date_controle">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{ 'commun.dateControle' | translate }}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let element">
+                            <span class="header-label">
+                              {{ 'commun.dateControle' | translate }}
+                            </span>
+                            {{ element?.date_controle | date : 'dd/MM/yyyy' }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="immatriculation">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{ 'commun.immatriculation' | translate }}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let element">
+                            <span class="header-label">
+                              {{ 'commun.immatriculation' | translate }}
+                            </span>
+                            {{ element?.immatriculation }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="numero_rapport">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{ 'commun.numRapport' | translate }}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let element">
+                            <span class="header-label">
+                              {{ 'commun.numRapport' | translate }}
+                            </span>
+                            {{ element?.numero_rapport }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{ 'commun.actions' | translate }}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let element">
+                            <button
+                              color="primary"
+                              mat-icon-button
+                              (click)="goToFicheControle(element)"
+                            >
+                              <mat-icon>visibility</mat-icon>
+                            </button>
+                          </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row
+                          *matHeaderRowDef="detailsColumns"
+                        ></mat-header-row>
+                        <mat-row
+                          *matRowDef="let row; columns: detailsColumns"
+                        ></mat-row>
+                      </mat-table>
+                    </div>
+                  </div>
+                </ng-container>
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-expansion-panel>
+          <mat-divider *ngIf="!lastNiveau"></mat-divider>
+        </div>
+      </mat-accordion>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

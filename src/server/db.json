@@ -1,0 +1,115 @@
+{
+  "data": {
+    "id": 67915,
+    "numero_facture": "217107",
+    "avoir": false,
+    "montant_ttc": "65.000000",
+    "montant_ht": "54.160000",
+    "montant_regle": "65.000000",
+    "date_facture": "2020-01-07T23:00:00.000000Z",
+    "solde": 0,
+    "facture_type": 3,
+    "observation": null,
+    "date_echance": null,
+    "avoir_id": 67916,
+    "centre": {
+      "raison_sociale": "CENTRE AUTOSUR LANESTER",
+      "adresse_centre": "RUE EDOUARD BRANLY",
+      "suite_centre": "LANESTER",
+      "cp_centre": null,
+      "ville_centre": "56600",
+      "telephone_centre": "02.97.81.06.17",
+      "email_centre": null
+    },
+    "client": {
+      "id": 19872,
+      "type": 1,
+      "actif": true,
+      "nom": "LEVITTRE CHRISTIAN",
+      "adresse": "20 KEROUAC H",
+      "suite": "",
+      "cp": "29300",
+      "ville": "MELLAC",
+      "fixe": "",
+      "mobile": null,
+      "email": "",
+      "civilite_id": 33,
+      "clientPro": null
+    },
+    "prestations": [
+      {
+        "code": "OB101",
+        "libelle": "Visite technique reglementaire",
+        "quantite": 2,
+        "details": [
+          {
+            "prestation_id": 14,
+            "code_prestation": "OB101",
+            "libelle_prestation": "Visite technique reglementaire",
+            "remise_euro": "20",
+            "remise_pourcentage": "0",
+            "montant_ht_brut": "70.550000",
+            "montant_ht_net": "53.880000",
+            "montant_tva": "10.780000",
+            "montant_ttc": "64.660000",
+            "taux_tva": "20",
+            "prospect_id": null,
+            "controle_id": 67124,
+            "numero_bon_livraison": null,
+            "immatriculation": "DY-395-VN",
+            "proprietaire": "LEVITTRE CHRISTIAN",
+            "reotc": {
+              "prestation_id": 36,
+              "code_prestation": "REOTC",
+              "libelle_prestation": "Redevance OTC  (Arrêté du 04/10/1991)",
+              "remise_euro": "0",
+              "remise_pourcentage": "0",
+              "montant_ht_brut": "0.280000",
+              "montant_ht_net": "0.280000",
+              "montant_tva": "0.060000",
+              "montant_ttc": "0.340000",
+              "taux_tva": "20",
+              "prospect_id": null,
+              "controle_id": 67124
+            }
+          },
+          {
+            "prestation_id": 14,
+            "code_prestation": "OB101",
+            "libelle_prestation": "Visite technique reglementaire",
+            "remise_euro": "20",
+            "remise_pourcentage": "0",
+            "montant_ht_brut": "70.550000",
+            "montant_ht_net": "53.880000",
+            "montant_tva": "10.780000",
+            "montant_ttc": "64.660000",
+            "taux_tva": "20",
+            "prospect_id": null,
+            "controle_id": 67123,
+            "numero_bon_livraison": null,
+            "immatriculation": "CP-737-SE",
+            "proprietaire": "CHRISTIAN",
+            "reotc": {
+              "prestation_id": 36,
+              "code_prestation": "REOTC",
+              "libelle_prestation": "Redevance OTC  (Arrêté du 04/10/1991)",
+              "remise_euro": "0",
+              "remise_pourcentage": "0",
+              "montant_ht_brut": "0.280000",
+              "montant_ht_net": "0.280000",
+              "montant_tva": "0.060000",
+              "montant_ttc": "0.340000",
+              "taux_tva": "20",
+              "prospect_id": null,
+              "controle_id": 67124
+            }
+          }
+        ],
+        "montant_ht_brut": 141.1,
+        "remise_ttc": 20,
+        "montant_ht_net": 108.32,
+        "montant_ttc": 130
+      }
+    ]
+  }
+}

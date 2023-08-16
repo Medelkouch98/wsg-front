@@ -1,0 +1,65 @@
+<ng-container *ngIf="statistics">
+  <div class="responsive-table max-h-[50vh]">
+    <mat-table [dataSource]="statistics">
+      <ng-container
+        *ngFor="let column of columns; let first = first"
+        [matColumnDef]="column"
+      >
+        <mat-header-cell
+          *matHeaderCellDef
+          [ngClass]="{ 'flex-[1_1_20%]': first }"
+        >
+          {{ 'statistics.columns.' + column | translate }}
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let element"
+          [ngClass]="{ 'flex-[1_1_20%]': first }"
+        >
+          <span class="header-label">
+            {{ 'statistics.columns.' + column | translate }}
+          </span>
+
+          <div
+            class="flex h-full flex-col justify-evenly gap-y-1"
+            [ngClass]="{ 'whitespace-nowrap py-2': element['extras']?.length }"
+          >
+            <div
+              [ngClass]="{
+                'text-base font-medium': element['extras']?.length,
+                'font-bold': first
+              }"
+            >
+              {{ element[column] }}
+            </div>
+            <ng-container *ngFor="let extras of element['extras']">
+              <div class="text-sm text-bodytext">
+                {{ extras[column] }}
+              </div>
+            </ng-container>
+          </div>
+        </mat-cell>
+
+        <ng-container *ngIf="total">
+          <mat-footer-cell
+            *matFooterCellDef
+            class="bg-bodycolor font-bold"
+            [ngClass]="{ 'flex-[1_1_20%]': first }"
+          >
+            <span class="header-label">
+              {{ 'statistics.columns.' + column | translate }}
+            </span>
+            {{ total[column] }}
+          </mat-footer-cell>
+        </ng-container>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columns; sticky: true" />
+      <mat-row *matRowDef="let row; columns: columns" />
+      <ng-container *ngIf="total">
+        <mat-footer-row *matFooterRowDef="columns; sticky: true" />
+      </ng-container>
+    </mat-table>
+  </div>
+
+  <mat-paginator *ngIf="statistics.data.length > MIN_PAGE_SIZE_OPTIONS" />
+</ng-container>

@@ -1,0 +1,52 @@
+<mat-expansion-panel
+  [expanded]="expanded"
+  (opened)="openDefectPanel = true"
+  [ngClass]="{ 'bg-inactif': entity.inactif }"
+>
+  <mat-expansion-panel-header collapsedHeight="70px">
+    <mat-panel-title class="gap-x-2 text-base">
+      <mat-icon class="text-primary">{{ entity.icon }}</mat-icon>
+      <span>{{ entity.name }}</span>
+      <span *ngIf="entity.description" class="text-bodytext">
+        - {{ entity.description }}
+      </span>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <ng-container
+    *ngIf="{
+      defectStatistics: defectStatistics$ | async,
+      statisticsErrors: statisticsErrors$ | async
+    } as _"
+  >
+    <mat-accordion class="flex flex-col gap-2.5">
+      <!-- Défaillance de contrôle -->
+      <mat-expansion-panel
+        #defectPanel
+        class="bg-black/5"
+        [expanded]="openDefectPanel"
+        (opened)="!_.defectStatistics?.length && getDefectStatistics(entity)"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <span *ngIf="entity.type === statisticsEntityTypeEnum.Centre">
+              {{ 'statistics.numberDefectsCenter' | translate }}
+            </span>
+            <span *ngIf="entity.type === statisticsEntityTypeEnum.Controleur">
+              {{ 'statistics.numberDefectsController' | translate }}
+            </span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-statistics-table
+          *ngIf="_.defectStatistics?.length; else emptyData"
+          [data]="_.defectStatistics"
+          [columns]="defectStatisticsColumns"
+        />
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+</mat-expansion-panel>
+
+<ng-template #emptyData>
+  <div class="text-center">{{ 'commun.noDataFound' | translate }}</div>
+</ng-template>

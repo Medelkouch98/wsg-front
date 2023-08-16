@@ -1,0 +1,30 @@
+<mat-expansion-panel [expanded]="expanded">
+  <mat-expansion-panel-header collapsedHeight="70px">
+    <mat-panel-title class="text-base">
+      <!-- Select/Deselect All Checkbox -->
+      <mat-checkbox
+        *ngIf="showSelect"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllCheckboxes($event.checked)"
+        [checked]="isAllSelected"
+        [indeterminate]="!this.isAllSelected && hasSelection"
+      />
+
+      <!-- Category Title -->
+      <span class="flex-1">
+        {{ 'qualite.material.' + category.libelle | translate }}
+      </span>
+
+      <!-- Error Icon -->
+      <mat-icon
+        *ngIf="showError && category.has_error"
+        fontIcon="error"
+        color="warn"
+      />
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion [multi]="true" class="flex flex-col gap-2.5">
+    <ng-content />
+  </mat-accordion>
+</mat-expansion-panel>

@@ -1,0 +1,24 @@
+<ng-container
+  *ngIf="{
+    theme: theme$ | async,
+    currentBackground: currentBackground$ | async,
+    logo: logo$ | async
+  } as _"
+>
+  <div
+    [ngClass]="_.theme"
+    class="flex h-screen items-center bg-cover"
+    [ngStyle]="{ backgroundImage: _.currentBackground }"
+  >
+    <div class="mx-auto min-w-min max-w-md align-middle">
+      <mat-card>
+        <mat-card-content>
+          <div class="mb-5 flex items-center justify-center">
+            <img alt="logo" class="w-4/5" [src]="_.logo" />
+          </div>
+          <router-outlet />
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</ng-container>

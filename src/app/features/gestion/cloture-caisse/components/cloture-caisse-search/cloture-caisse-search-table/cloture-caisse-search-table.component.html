@@ -1,0 +1,106 @@
+<ng-container
+  *ngIf="{
+    clotureCaisseList: clotureCaisseList$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    isReadOnly: isReadOnly$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.clotureCaisseList?.data"
+  [isSearchClicked]="true"
+>
+  <mat-card *ngIf="_.clotureCaisseList?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.clotureCaisseList.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="numero_cloture">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="id">
+              {{ 'gestion.clotureCaisse.numeroCloture' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.clotureCaisse.numeroCloture' | translate }}
+              </span>
+              {{ element?.id }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="date_debut">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="date_debut">
+              {{ 'commun.startDate' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.startDate' | translate }}
+              </span>
+              {{ element.date_debut | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="date_fin">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="date_fin">
+              {{ 'commun.endDate' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.endDate' | translate }}
+              </span>
+              {{ element.date_fin | date : 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="realise_par">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="created_by">
+              {{ 'gestion.clotureCaisse.realisePar' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.clotureCaisse.realisePar' | translate }}
+              </span>
+              {{ element?.realise_par }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.actions' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="goToFeuilleDeCaisse(element)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                *ngIf="!_.isReadOnly"
+                mat-icon-button
+                color="warn"
+                (click)="delete(element)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            class="cursor-default"
+            *matRowDef="let row; columns: columns"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.clotureCaisseList?.meta.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.clotureCaisseList?.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

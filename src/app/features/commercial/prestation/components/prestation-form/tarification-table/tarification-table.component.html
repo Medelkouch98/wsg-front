@@ -1,0 +1,88 @@
+<div class="responsive-table">
+  <ng-container
+    *ngIf="{
+      tarifications: tarifications$ | async,
+      sort: sort$ | async,
+      page: page$ | async
+    } as _"
+  >
+    <mat-table
+      [dataSource]="_.tarifications?.data"
+      matSort
+      [matSortActive]="_.sort?.active"
+      [matSortDirection]="_.sort?.direction"
+      (matSortChange)="sortChange($event)"
+    >
+      <ng-container matColumnDef="nom">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="nom">
+          {{ 'commun.nom' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.nom' | translate }}
+          </span>
+          {{ element.nom }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="remise_euro">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="remise_euro">
+          {{ 'commun.remiseEuroTTC' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.remiseEuroTTC' | translate }}
+          </span>
+          {{ element.remise_euro | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="remise_pourcentage">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="remise_pourcentage">
+          {{ 'commun.remisePourcent' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.remisePourcent' | translate }}
+          </span>
+          {{
+            element?.remise_pourcentage | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          %
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="prix_ht_remise">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.prixHTAvecRemise' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.prixHTAvecRemise' | translate }}
+          </span>
+          {{ element.prixRemiseHT | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="prix_ttc_remise">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.prixTTCAvecRemise' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.prixTTCAvecRemise' | translate }}
+          </span>
+          {{ element.prixRemiseTTC | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns"></mat-row>
+    </mat-table>
+
+    <mat-paginator
+      *ngIf="_.tarifications?.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+      [length]="_.tarifications?.meta?.total"
+      [pageSize]="_.page?.pageSize"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </ng-container>
+</div>

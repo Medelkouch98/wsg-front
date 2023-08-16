@@ -1,0 +1,147 @@
+<mat-expansion-panel expanded class="my-4 w-full">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{ 'gestion.clotureCaisse.activitesFactures' | translate }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <!--la list des factures-->
+  <div class="my-4">
+    <!--entêtes-->
+    <mat-table>
+      <ng-container matColumnDef="date_facture">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.date' | translate }}
+        </mat-header-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ht">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.HT' | translate }}
+        </mat-header-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_tva">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TVA' | translate }}
+        </mat-header-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ttc">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.TTC' | translate }}
+        </mat-header-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+    </mat-table>
+    <!--la list des factures des clients de passage-->
+    <app-activites-factures-table
+      [title]="'gestion.clotureCaisse.facturesClientsPassage'"
+      [footerTitle]="'gestion.clotureCaisse.totalClientsPassage'"
+      [facturesClients]="activiteFactures.factures_clients_passage"
+    ></app-activites-factures-table>
+
+    <!--la list des factures des clients en compte-->
+    <app-activites-factures-table
+      [title]="'gestion.clotureCaisse.facturesClientsEnCompte'"
+      [footerTitle]="'gestion.clotureCaisse.totalClientsEnCompte'"
+      [facturesClients]="activiteFactures.factures_clients_pro"
+    ></app-activites-factures-table>
+
+    <!--les totaux des factures-->
+    <ng-container *ngTemplateOutlet="activiteFactureTotals"></ng-container>
+  </div>
+
+  <!--les details des factures des clients de passage-->
+  <app-detail-facture-client
+    [detailFactures]="getDetailFactureByClientType(TypePersonneEnum.PASSAGE)"
+    [title]="'gestion.clotureCaisse.detailFacturesClientsPassage'"
+    [noDataText]="'gestion.clotureCaisse.noFacturesClientsPassage'"
+  ></app-detail-facture-client>
+
+  <!--les details des factures des clients en compte-->
+  <app-detail-facture-client
+    [detailFactures]="getDetailFactureByClientType(TypePersonneEnum.COMPTE)"
+    [title]="'gestion.clotureCaisse.detailFacturesClientsEnCompte'"
+    [noDataText]="'gestion.clotureCaisse.aucuneFactureClientEnCompte'"
+  ></app-detail-facture-client>
+</mat-expansion-panel>
+
+<!--l'affichage des totaux des factures-->
+<ng-template #activiteFactureTotals>
+  <mat-table>
+    <ng-container matColumnDef="total">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'commun.total' | translate }}
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalHT">
+      <mat-header-cell *matHeaderCellDef>
+        {{ activiteFactures.total_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalTVA">
+      <mat-header-cell *matHeaderCellDef>
+        {{ activiteFactures.total_tva | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalTTC">
+      <mat-header-cell *matHeaderCellDef>
+        {{ activiteFactures.total_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <mat-header-row
+      *matHeaderRowDef="['total', 'totalHT', 'totalTVA', 'totalTTC']"
+    ></mat-header-row>
+
+    <ng-container matColumnDef="totalDontOTC">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'gestion.clotureCaisse.dontOTC' | translate }}
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalHTDontOTC">
+      <mat-header-cell *matHeaderCellDef>
+        {{
+          activiteFactures.total_ht_otc | number : DECIMAL_NUMBER_PIPE_FORMAT
+        }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalTVADontOTC">
+      <mat-header-cell *matHeaderCellDef>
+        {{
+          activiteFactures.total_tva_otc | number : DECIMAL_NUMBER_PIPE_FORMAT
+        }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalTTCDontOTC">
+      <mat-header-cell *matHeaderCellDef>
+        {{
+          activiteFactures.total_ttc_otc | number : DECIMAL_NUMBER_PIPE_FORMAT
+        }}
+        €
+      </mat-header-cell>
+    </ng-container>
+
+    <mat-header-row
+      *matHeaderRowDef="[
+        'totalDontOTC',
+        'totalHTDontOTC',
+        'totalTVADontOTC',
+        'totalTTCDontOTC'
+      ]"
+    ></mat-header-row>
+
+    <mat-row></mat-row>
+  </mat-table>
+</ng-template>

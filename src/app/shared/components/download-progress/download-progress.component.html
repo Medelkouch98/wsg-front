@@ -1,0 +1,49 @@
+<ng-container
+  *ngIf="{ downloadsInProgress: downloadsInProgress$ | async } as _"
+>
+  <mat-accordion *ngIf="_.downloadsInProgress?.length">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header class="rounded-b-none bg-gray">
+        <mat-panel-title>
+          {{
+            'download.currentDownload'
+              | translate : { size: _.downloadsInProgress.length }
+          }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="h-32 overflow-y-auto">
+        <ng-scrollbar>
+          <div
+            *ngFor="let download of _.downloadsInProgress"
+            class="my-3 flex w-full items-center px-6"
+          >
+            <div class="w-32 flex-1">
+              <div class="text-gray-600 truncate text-sm font-medium">
+                {{ download.name || download.uuid }}
+              </div>
+            </div>
+            <mat-icon
+              *ngIf="download.status === 'F'"
+              class="mx-2 text-red-500"
+            >
+              cancel
+            </mat-icon>
+            <mat-progress-spinner
+              *ngIf="!download.status || download.status === 'S'"
+              class="mx-2"
+              [diameter]="20"
+              [value]="download.progress"
+              [mode]="download.progress === 0 ? 'indeterminate' : 'determinate'"
+            >
+              <div class="mat-progress-spinner-wrapper">
+                <div class="mat-progress-spinner-text">
+                  {{ download.progress }}%
+                </div>
+              </div>
+            </mat-progress-spinner>
+          </div>
+        </ng-scrollbar>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

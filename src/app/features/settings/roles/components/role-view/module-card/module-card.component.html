@@ -1,0 +1,41 @@
+<mat-expansion-panel
+  [formGroup]="groupModuleControl"
+  class="bg-black/5"
+  [expanded]="true"
+>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{ groupModuleControl.value.nom }}
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div formArrayName="modules" class="responsive-table">
+    <mat-table [dataSource]="groupModuleControl.controls.modules.controls">
+      <ng-container matColumnDef="module">
+        <mat-cell
+          *matCellDef="let element"
+          class="flex-[0_0_25%] bg-primary text-white"
+          [ngClass]="{ 'bg-primary/80': element.value.childrenIndexes.length }"
+        >
+          <span class="lowerCapitalize">{{ element.value.nom }}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="permissions">
+        <mat-cell *matCellDef="let element" [formGroup]="element">
+          <app-checkbox-group formControlName="permissions" class="w-full">
+            <div class="flex flex-col justify-between md:flex-row">
+              <app-checkbox
+                *ngFor="let permission of permissions"
+                [value]="permission"
+                [label]="'commun.' + permission | translate"
+                (toggle)="onPermissionCheck($event, element, permission)"
+              />
+            </div>
+          </app-checkbox-group>
+        </mat-cell>
+      </ng-container>
+
+      <mat-row *matRowDef="let row; columns: columns" />
+    </mat-table>
+  </div>
+</mat-expansion-panel>

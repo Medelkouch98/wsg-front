@@ -1,0 +1,169 @@
+<mat-expansion-panel expanded class="my-4 w-full">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{ 'gestion.clotureCaisse.saisieDesEncaissements' | translate }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="responsive-table my-4">
+    <mat-table [dataSource]="feuilleDeCaisse.reglements_summary">
+      <ng-container matColumnDef="mode_reglement">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.montantDeReglement' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.montantDeReglement' | translate }}
+          </span>
+          {{
+            'gestion.clotureCaisse.typeComptage.' + element.type_comptage
+              | translate
+          }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="fond_de_caisse">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.fondDeCaisse' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.fondDeCaisse' | translate }}
+          </span>
+          <span *ngIf="element.type_comptage === TypeComptageEnum.TYPE_ESPECE; else emptyColumn">
+            {{
+              feuilleDeCaisse.fond_caisse_initial
+                | number : DECIMAL_NUMBER_PIPE_FORMAT
+            }}
+            €
+          </span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="encaissements_saisis">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.encaissementsSaisis' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.encaissementsSaisis' | translate }}
+          </span>
+          {{ element.total | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="sortie_de_caisse">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.sortieDeCaisse' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.sortieDeCaisse' | translate }}
+          </span>
+          <span *ngIf="element.type_comptage === TypeComptageEnum.TYPE_ESPECE; else emptyColumn">
+            {{
+              feuilleDeCaisse.total_sorties
+                | number : DECIMAL_NUMBER_PIPE_FORMAT
+            }}
+            €
+          </span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="factures_passage_payees">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.facturesPassagePayees' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.facturesPassagePayees' | translate }}
+          </span>
+          {{
+            element.total_factures_passage | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="factures_credit_payees">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.facturesCreditPayees' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.facturesCreditPayees' | translate }}
+          </span>
+          {{ element.total_factures_pro | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+          €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="nouveau_fond_de_caisse">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.nouveauFondDeCaisse' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.nouveauFondDeCaisse' | translate }}
+          </span>
+          <span *ngIf="element.type_comptage === TypeComptageEnum.TYPE_ESPECE; else emptyColumn">
+            {{
+              feuilleDeCaisse.fond_caisse_final
+                | number : DECIMAL_NUMBER_PIPE_FORMAT
+            }}
+            €
+          </span>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row
+        *matHeaderRowDef="columnsReglementsSummaryTable"
+      ></mat-header-row>
+      <mat-row
+        *matRowDef="let row; columns: columnsReglementsSummaryTable"
+      ></mat-row>
+    </mat-table>
+  </div>
+
+  <div class="responsive-table my-4">
+    <mat-table [dataSource]="feuilleDeCaisse.ecarts">
+      <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.clotureCaisse.ecartFactureSaisie' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.clotureCaisse.ecartFactureSaisie' | translate }}
+          </span>
+          {{ 'gestion.clotureCaisse.typeComptage.' + element.type | translate }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="montant">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.montant' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.montant' | translate }}
+          </span>
+          {{ element.montant | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="commentaire">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.commentaire' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.commentaire' | translate }}
+          </span>
+          {{ element.commentaire | translate }}
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columnsEcartsTable"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsEcartsTable"></mat-row>
+    </mat-table>
+    <div class="p-4 text-center" *ngIf="feuilleDeCaisse.ecarts?.length === 0">
+      {{ 'gestion.clotureCaisse.aucunEcart' | translate }}
+    </div>
+  </div>
+</mat-expansion-panel>
+
+<ng-template #emptyColumn>
+  -
+</ng-template>

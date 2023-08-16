@@ -1,0 +1,230 @@
+<ng-container
+  *ngIf="{
+    releveFactures: releveFactures$ | async,
+    selectedReleveFactures: selectedReleveFactures$ | async,
+    sort: sort$ | async,
+    page: page$ | async,
+    searchClicked: searchClicked$ | async
+  } as _"
+  appNoDataSearch
+  [data]="_.releveFactures?.data"
+  [isSearchClicked]="_.searchClicked"
+>
+  <mat-card *ngIf="_.releveFactures?.data?.length">
+    <mat-card-content>
+      <div class="responsive-table">
+        <mat-table
+          [dataSource]="_.releveFactures.data"
+          matSort
+          [matSortActive]="_.sort?.active"
+          [matSortDirection]="_.sort?.direction"
+          (matSortChange)="sortChange($event)"
+        >
+          <ng-container matColumnDef="selectAll">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="
+                  $event
+                    ? toggleRows(
+                        _.releveFactures.data,
+                        isAllSelected(_.releveFactures.data.length)
+                      )
+                    : null
+                "
+                [checked]="
+                  selection.hasValue() &&
+                  isAllSelected(_.releveFactures.data.length)
+                "
+                [indeterminate]="
+                  selection.hasValue() &&
+                  !isAllSelected(_.releveFactures.data.length)
+                "
+              ></mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="
+                  $event
+                    ? toggleRows(
+                        [element],
+                        selection.isSelected(element.client_id)
+                      )
+                    : null
+                "
+                [checked]="selection.isSelected(element.client_id)"
+              ></mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="client">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="nom"
+              class="w-2/6 flex-none"
+            >
+              {{ 'gestion.releveFacture.clientCPVille' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="w-2/6 flex-none">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.clientCPVille' | translate }}
+              </span>
+              <span
+                class="cursor-pointer"
+                (click)="goToClientDetails(element?.client_id)"
+              >
+                {{ element?.nom }} - {{ element?.code }} - {{ element?.cp }}
+                {{ element?.ville }}
+              </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="reglement">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="mode_reglement_id"
+            >
+              {{ 'gestion.releveFacture.reglement' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.reglement' | translate }}
+              </span>
+              {{
+                (
+                  modesReglementsSelector
+                  | getElementFromResource : element?.mode_reglement_id
+                  | async
+                )?.code
+              }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="nb_factures">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nb_factures">
+              {{ 'gestion.releveFacture.nbFacture' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.nbFacture' | translate }}
+              </span>
+              {{ element?.nb_factures }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="nb_controle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nb_controle">
+              {{ 'gestion.releveFacture.nbControle' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.nbControle' | translate }}
+              </span>
+              {{ element?.nb_controle }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="total_ttc">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="total_ttc">
+              {{ 'gestion.releveFacture.mtTTC' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.mtTTC' | translate }}
+              </span>
+              {{ element?.total_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="total_regle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="total_regle">
+              {{ 'gestion.releveFacture.mtRegle' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.mtRegle' | translate }}
+              </span>
+              {{ element?.total_regle | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="mtDu">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="solde">
+              {{ 'gestion.releveFacture.mtDu' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.mtDu' | translate }}
+              </span>
+              {{ element?.solde | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="encours_depasse">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="encours_depasse"
+            >
+              {{ 'gestion.releveFacture.enCoursDepasse' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.enCoursDepasse' | translate }}
+              </span>
+              {{
+                element?.encours_depasse | number : DECIMAL_NUMBER_PIPE_FORMAT
+              }}
+              €
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="facture_releve">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'gestion.releveFacture.factureReleve' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'gestion.releveFacture.factureReleve' | translate }}
+              </span>
+              <app-status-illustration
+                [status]="element?.facture_releve"
+              ></app-status-illustration>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="sendByEmail">
+            <mat-header-cell *matHeaderCellDef>
+              {{ 'commun.sendByEmail' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span class="header-label">
+                {{ 'commun.sendByEmail' | translate }}
+              </span>
+              <span
+                [matTooltip]="
+                  !element.email
+                    ? ('gestion.errors.missingClientEmail' | translate)
+                    : ''
+                "
+              >
+                <mat-checkbox
+                  [disabled]="
+                    !selection.isSelected(element.client_id) || !element.email
+                  "
+                  [checked]="
+                    element?.recoit_facture ||
+                    isFactureSelectedForEmail(element, _.selectedReleveFactures)
+                  "
+                  (click)="toggleForEmail(element)"
+                ></mat-checkbox>
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+          <mat-row
+            class="cursor-default"
+            *matRowDef="let row; columns: columns"
+          ></mat-row>
+        </mat-table>
+        <mat-paginator
+          *ngIf="_.releveFactures?.meta.total > MIN_PAGE_SIZE_OPTIONS"
+          [length]="_.releveFactures?.meta?.total"
+          [pageSize]="_.page.pageSize"
+          [pageIndex]="_.page.pageIndex"
+          (page)="changePage($event)"
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

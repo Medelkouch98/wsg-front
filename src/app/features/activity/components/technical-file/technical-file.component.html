@@ -1,0 +1,59 @@
+<ng-container *ngIf="(selectedTabIndex$ | async) === 1">
+  <app-actions-buttons
+    [actionButtons]="buttons$ | async"
+    (action)="handleActions($event)"
+  ></app-actions-buttons>
+</ng-container>
+<div class="mb-5">
+  <mat-card mat-align-tabs="center">
+    <mat-tab-group
+      mat-stretch-tabs="true"
+      mat-align-tabs="center"
+      [selectedIndex]="selectedTabIndex$ | async"
+      (selectedIndexChange)="onSelectedIndexChange($event)"
+    >
+      <mat-tab [label]="'activityTechnicalFileLibelle.resume' | translate">
+        <ng-template matTabContent>
+          <app-technical-file-summary></app-technical-file-summary>
+        </ng-template>
+      </mat-tab>
+      <mat-tab [label]="'activityTechnicalFileLibelle.pv' | translate">
+        <ng-template matTabContent>
+          <app-technical-file-document
+            [fileType]="technicalFileType.PV"
+          ></app-technical-file-document>
+        </ng-template>
+      </mat-tab>
+      <mat-tab
+        [label]="'activityTechnicalFileLibelle.mesuresBancs' | translate"
+      >
+        <ng-template matTabContent>
+          <app-technical-file-document
+            [fileType]="technicalFileType.MESURES"
+          ></app-technical-file-document>
+        </ng-template>
+      </mat-tab>
+      <mat-tab
+        *ngIf="!!isFactured"
+        [label]="'activityTechnicalFileLibelle.facture' | translate"
+      >
+        <ng-template matTabContent>
+          <app-technical-file-document
+            [fileType]="technicalFileType.FACTURE"
+          ></app-technical-file-document>
+        </ng-template>
+      </mat-tab>
+      <mat-tab
+        [label]="
+          'activityTechnicalFileLibelle.journalModifications' | translate
+        "
+      >
+        <ng-template matTabContent>
+          <app-technical-file-document
+            [fileType]="technicalFileType.JOURNALMODIF"
+          ></app-technical-file-document>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

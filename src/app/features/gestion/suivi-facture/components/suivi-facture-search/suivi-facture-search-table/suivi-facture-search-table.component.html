@@ -1,0 +1,388 @@
+<ng-container
+  *ngIf="{
+    factures: dataSource$ | async,
+    page: page$ | async,
+    sort: sort$ | async,
+    isReadOnly: isReadOnly$ | async
+  } as _"
+>
+  <ng-container *ngIf="!_.factures?.data?.length; else table">
+    <app-no-data-search
+      [message]="'commun.noResultsFound' | translate"
+      [image]="'assets/images/not_found.svg'"
+    ></app-no-data-search>
+  </ng-container>
+  <ng-template #table>
+    <mat-card>
+      <mat-card-content>
+        <div class="mb-2 flex flex-1 justify-end lg:hidden">
+          <button mat-raised-button color="primary">
+            {{ 'commun.selectAll' | translate }}
+            <mat-checkbox
+              (change)="$event ? toggleFactures(_.factures.data, $event) : null"
+              [checked]="
+                selection.hasValue() && isAllSelected(_.factures.data?.length)
+              "
+              [indeterminate]="
+                selection.hasValue() && !isAllSelected(_.factures.data?.length)
+              "
+            ></mat-checkbox>
+          </button>
+        </div>
+        <div class="responsive-table">
+          <mat-table
+            [dataSource]="_.factures.data"
+            matSort
+            [matSortActive]="_.sort?.active"
+            [matSortDirection]="_.sort?.direction"
+            (matSortChange)="sortChange($event)"
+          >
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox
+                  (change)="
+                    $event ? toggleFactures(_.factures.data, $event) : null
+                  "
+                  [checked]="
+                    selection.hasValue() &&
+                    isAllSelected(_.factures.data?.length)
+                  "
+                  [indeterminate]="
+                    selection.hasValue() &&
+                    !isAllSelected(_.factures.data?.length)
+                  "
+                ></mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span class="header-label"></span>
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? toggleFactures([row], $event) : null"
+                  [checked]="selection.isSelected(row?.id)"
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="nom_client">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_8%]"
+              >
+                {{ 'commun.nomClient' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'commun.nomClient' | translate }}
+                </span>
+                {{ element.nom_client }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="reglement_negocie">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_7%]"
+              >
+                {{ 'gestion.factures.regltNegocie' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_7%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.regltNegocie' | translate }}
+                </span>
+                {{
+                  (
+                    modesReglementsNegocieSelector
+                    | getElementFromResource : element.reglement_negocie
+                    | async
+                  )?.libelle
+                }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="mandant">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_7%]">
+                {{ 'gestion.factures.mandant' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_7%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.mandant' | translate }}
+                </span>
+                {{ element.mandant }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="facture_type">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_8%]">
+                {{ 'commun.typeFacture' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'commun.typeFacture' | translate }}
+                </span>
+                {{
+                  'resource.' + typeFacture(element.facture_type) | translate
+                }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="numero_facture">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_8%]"
+              >
+                {{ 'gestion.factures.numFact' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.numFact' | translate }}
+                </span>
+                {{ element.numero_facture }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="cloture_caisse_id">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_8%]"
+              >
+                {{ 'gestion.factures.numCaisse' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.numCaisse' | translate }}
+                </span>
+                {{ element.numero_cloture_caisse }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="date_facture">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_8%]"
+              >
+                {{ 'gestion.factures.dateFact' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.dateFact' | translate }}
+                </span>
+                {{ element.date_facture | date : 'dd/MM/yyyy' }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="montant_ttc">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_7%]"
+              >
+                {{ 'gestion.factures.mtTtc' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_7%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.mtTtc' | translate }}
+                </span>
+                {{
+                  element.montant_ttc ?? 0 | number : DECIMAL_NUMBER_PIPE_FORMAT
+                }}
+                €
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="type_reglement">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_8%]">
+                {{ 'gestion.factures.typeReglt' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_8%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.typeReglt' | translate }}
+                </span>
+                {{
+                  (
+                    modesReglementsSelector
+                    | getElementFromResource : element.type_reglement
+                    | async
+                  )?.libelle
+                }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="montant_regle">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header="total_regle"
+                class="flex-[1_1_7%]"
+              >
+                {{ 'gestion.factures.mtRegle' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_7%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.mtRegle' | translate }}
+                </span>
+                {{
+                  element.montant_regle ?? 0
+                    | number : DECIMAL_NUMBER_PIPE_FORMAT
+                }}
+                €
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="solde">
+              <mat-header-cell *matHeaderCellDef class="flex-[1_1_7%]">
+                {{ 'gestion.factures.mtDu' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_7%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.mtDu' | translate }}
+                </span>
+                {{ element.solde ?? 0 | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.actions' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="hidden lg:max-[1931px]:block">
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    color="primary"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" class="min-w-0">
+                    <button mat-menu-item (click)="goToDetails(element)">
+                      <mat-icon color="primary">visibility</mat-icon>
+                    </button>
+                    <ng-container *ngIf="!_.isReadOnly">
+                      <button mat-menu-item>
+                        <mat-icon
+                          color="primary"
+                          [matTooltip]="'commun.download' | translate"
+                          (click)="download(element.id)"
+                        >
+                          get_app
+                        </mat-icon>
+                      </button>
+                      <button
+                        *ngIf="
+                          (!element.avoir &&
+                            !element.avoir_id &&
+                            element.numero_facture
+                              ?.toLowerCase()
+                              .startsWith('g')) ||
+                          (!!element.avoir && !element.refacturation_id)
+                        "
+                        mat-menu-item
+                        [matTooltip]="
+                          (element.facture_type.toString() === avoirType
+                            ? 'commun.reInvoice'
+                            : 'commun.createAvoir'
+                          ) | translate
+                        "
+                        (click)="
+                          showConfirmationDialog(
+                            element.facture_type,
+                            element.numero_facture,
+                            element.id
+                          )
+                        "
+                      >
+                        <mat-icon color="warn">receipt</mat-icon>
+                      </button>
+                      <button mat-menu-item>
+                        <mat-icon
+                          color="primary"
+                          [matTooltip]="'commun.email' | translate"
+                          (click)="
+                            sendEmail(element.id, element.numero_facture)
+                          "
+                        >
+                          email
+                        </mat-icon>
+                      </button>
+                    </ng-container>
+                  </mat-menu>
+                </div>
+                <div class="block flex flex-nowrap lg:max-[1931px]:hidden">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="goToDetails(element)"
+                  >
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <ng-container *ngIf="!_.isReadOnly">
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      [matTooltip]="'commun.download' | translate"
+                      (click)="download(element.id)"
+                    >
+                      <mat-icon>get_app</mat-icon>
+                    </button>
+                    <button
+                      *ngIf="
+                        (!element.avoir &&
+                          element.numero_facture
+                            ?.toLowerCase()
+                            .startsWith('g')) ||
+                        (!!element.avoir && !element.refacturation_id)
+                      "
+                      mat-icon-button
+                      color="warn"
+                      [matTooltip]="
+                        (element.facture_type.toString() === avoirType
+                          ? 'commun.reInvoice'
+                          : 'commun.createAvoir'
+                        ) | translate
+                      "
+                      (click)="
+                        showConfirmationDialog(
+                          element.facture_type,
+                          element.numero_facture,
+                          element.id
+                        )
+                      "
+                    >
+                      <mat-icon>receipt</mat-icon>
+                    </button>
+                    <button mat-icon-button>
+                      <mat-icon
+                        color="primary"
+                        [matTooltip]="'commun.email' | translate"
+                        (click)="sendEmail(element.id, element.numero_facture)"
+                      >
+                        email
+                      </mat-icon>
+                    </button>
+                  </ng-container>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            *ngIf="_.factures.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+            [length]="_.factures.meta?.total"
+            [pageSize]="_.page.pageSize"
+            [pageIndex]="_.page.pageIndex"
+            (page)="pageChange($event)"
+          ></mat-paginator>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</ng-container>

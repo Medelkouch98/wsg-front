@@ -1,0 +1,79 @@
+<mat-expansion-panel class="my-4 w-full">
+  <mat-expansion-panel-header>
+    <mat-panel-title class="justify-center">
+      <h5 class="font-medium">
+        {{
+          title | translate
+        }}
+      </h5>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="responsive-table pt-4">
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="date_facture">
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.date' | translate }}
+          </span>
+          {{ element.date_facture | date : 'dd/MM/yyyy' }}
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="font-medium">
+          {{
+            footerTitle | translate
+          }}
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ht">
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.HT' | translate }}
+          </span>
+          {{ element.total_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+
+        <mat-footer-cell *matFooterCellDef class="font-medium">
+          {{
+            getTotal(facturesClients, 'total_ht')
+              | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          €
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_tva">
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.TVA' | translate }}
+          </span>
+          {{ element.total_tva | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="font-medium">
+          {{
+            getTotal(facturesClients, 'total_tva')
+              | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          €
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container matColumnDef="total_ttc">
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.TTC' | translate }}
+          </span>
+          {{ element.total_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="font-medium">
+          {{
+            getTotal(facturesClients, 'total_ttc')
+              | number : DECIMAL_NUMBER_PIPE_FORMAT
+          }}
+          €
+        </mat-footer-cell>
+      </ng-container>
+      <mat-row *matRowDef="let row; columns: columns"></mat-row>
+      <mat-footer-row *matFooterRowDef="columns"></mat-footer-row>
+    </mat-table>
+    <mat-paginator
+      *ngIf="dataSource?.data.length > MIN_PAGE_SIZE_OPTIONS"
+    ></mat-paginator>
+  </div>
+</mat-expansion-panel>

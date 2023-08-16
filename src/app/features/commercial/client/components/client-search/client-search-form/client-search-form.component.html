@@ -1,0 +1,69 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="searchForm" class="flex flex-col">
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.typeClient' | translate }}</mat-label>
+          <mat-select
+            formControlName="type"
+            (selectionChange)="selectTypeClientChange($event)"
+          >
+            <mat-option *ngFor="let type of typeClient" [value]="type.code">
+              {{ type.libelle }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.status' | translate }}</mat-label>
+          <mat-select formControlName="actif">
+            <mat-option *ngFor="let etat of etat" [value]="etat.code">
+              {{ etat.libelle }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.nomClient' | translate }}</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel *ngIf="!!showCodeClient">
+          <mat-label>{{ 'client.codeClient' | translate }}</mat-label>
+          <input matInput formControlName="code" appFormControlNumberOnly />
+          <mat-error>
+            {{ searchForm.controls.code.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'client.villeClient' | translate }}
+          </mat-label>
+          <input matInput formControlName="ville" />
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>{{ 'commun.cp' | translate }}</mat-label>
+          <input matInput formControlName="cp" appFormControlNumberOnly />
+          <mat-error>
+            {{ searchForm.controls.cp.errors | error }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

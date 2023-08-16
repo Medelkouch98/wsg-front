@@ -1,0 +1,128 @@
+@use 'variable' as *;
+
+/*******************
+Chartistt chart css
+******************/
+
+.barchrt {
+  .ct-series-a .ct-bar {
+    stroke: $success;
+  }
+
+  .ct-series-b .ct-bar {
+    stroke: $info;
+  }
+}
+
+.linearea {
+  height: 280px;
+
+  .ct-series-a .ct-area {
+    fill-opacity: 0.05;
+    fill: $success;
+  }
+
+  .ct-series-a .ct-line,
+  .ct-series-a .ct-point {
+    stroke: $success;
+    stroke-width: 2px;
+  }
+
+  .ct-series-b .ct-area {
+    fill: $info;
+    fill-opacity: 0.1;
+  }
+
+  .ct-series-b .ct-line,
+  .ct-series-b .ct-point {
+    stroke: $info;
+    stroke-width: 2px;
+  }
+
+  .ct-series-c .ct-area {
+    fill: $danger;
+    fill-opacity: 0.1;
+  }
+
+  .ct-series-c .ct-line,
+  .ct-series-c .ct-point {
+    stroke: $danger;
+    stroke-width: 2px;
+  }
+
+  .ct-series-a .ct-point,
+  .ct-series-b .ct-point,
+  .ct-series-c .ct-point {
+    stroke-width: 6px;
+  }
+}
+
+.piechart {
+  .ct-series-a .ct-slice-donut {
+    stroke: $info;
+  }
+
+  .ct-series-b .ct-slice-donut {
+    stroke: $success;
+  }
+
+  .ct-series-c .ct-slice-donut {
+    stroke: $purple;
+  }
+
+  .ct-series-d .ct-slice-donut {
+    stroke: $light;
+  }
+
+  .ct-series-e .ct-slice-donut {
+    stroke: $warning;
+  }
+}
+
+/*******************
+Chartis tooltip scss
+******************/
+
+.chartist-tooltip {
+  position: absolute;
+  display: inline-block;
+  opacity: 0;
+  min-width: 50px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: #313131;
+  color: $white;
+  font-weight: 500;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.2s linear;
+}
+
+.chartist-tooltip:before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: #313131;
+}
+
+.chartist-tooltip.tooltip-show {
+  opacity: 1;
+}
+
+.ct-area,
+.ct-line {
+  pointer-events: none;
+}
+
+.no-wrap {
+  td,
+  .ng-star-inserted {
+    white-space: nowrap;
+  }
+}

@@ -1,0 +1,120 @@
+<div class="my-5" *ngIf="dataSourceLiasse?.length">
+  <mat-table
+    class="responsive-table"
+    [dataSource]="dataSourceLiasse"
+    matSort
+    [matSortActive]="sort?.active"
+    [matSortDirection]="sort?.direction"
+    (matSortChange)="sortChange($event)"
+  >
+    <ng-container matColumnDef="premier_numero">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'qualite.imprimes.premierNumImprimes' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'qualite.imprimes.premierNumImprimes' | translate }}
+        </span>
+        {{ element.premier_numero }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="dernier_numero">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'qualite.imprimes.dernierNumImprimes' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'qualite.imprimes.dernierNumImprimes' | translate }}
+        </span>
+        {{ element.dernier_numero }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="date">
+        {{ 'qualite.imprimes.date' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'qualite.imprimes.date' | translate }}
+        </span>
+        {{ element.date | date : 'dd/MM/yyyy' }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="commentaire">
+      <mat-header-cell *matHeaderCellDef class="flex-[1_1_10%]" mat-sort-header>
+        {{ 'qualite.imprimes.commentaire' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="flex-[1_1_10%]">
+        <span class="header-label">
+          {{ 'qualite.imprimes.commentaire' | translate }}
+        </span>
+        {{ element.commentaire }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="type_liasse">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'qualite.imprimes.etat' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'qualite.imprimes.etat' | translate }}
+        </span>
+        {{ element.type_liasse }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="etat">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'commun.status' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'commun.status' | translate }}
+        </span>
+        <div *ngIf="!element.id; else other">
+          <mat-icon color="warn">clear</mat-icon>
+        </div>
+        <ng-template #other>
+          {{ element.etat }}
+        </ng-template>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="controle">
+      <mat-header-cell *matHeaderCellDef>
+        {{ 'qualite.imprimes.controleTechnique' | translate }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="header-label">
+          {{ 'qualite.imprimes.controleTechnique' | translate }}
+        </span>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="goToFicheControle(element.controle_id)"
+          *ngIf="!!element.controle_id"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="columnsLiasse"></mat-header-row>
+    <mat-row
+      *matRowDef="let row; columns: columnsLiasse"
+      (click)="!!row.controle_id ? goToFicheControle(row.controle_id) : false"
+      [ngClass]="{ 'bg-inactif': !row.id }"
+    ></mat-row>
+  </mat-table>
+  <mat-paginator
+    *ngIf="pageEvent.length > MIN_PAGE_SIZE_OPTIONS"
+    [length]="pageEvent.length"
+    [pageIndex]="pageEvent.pageIndex"
+    [pageSize]="pageEvent.pageSize"
+    (page)="pageChange($event)"
+  ></mat-paginator>
+</div>

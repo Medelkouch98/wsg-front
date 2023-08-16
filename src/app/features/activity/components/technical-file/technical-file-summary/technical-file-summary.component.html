@@ -1,0 +1,47 @@
+<div
+  class="mt-2 grid grid-cols-1 place-items-stretch md:grid-cols-2 2xl:grid-cols-4"
+>
+  <ng-container *ngFor="let row of ficheBloc">
+    <mat-card class="flex flex-col rounded-md border-2 border-primary">
+      <mat-card-header
+        class="justify-center whitespace-nowrap bg-primary text-white"
+      >
+        <mat-card-title>{{ row.title }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="flex flex-1 flex-col">
+        <ul class="flex-1 text-sm">
+          <ng-container *ngFor="let item of getBlocKeys(row.bloc)">
+            <li
+              class="block p-1.5 font-bold"
+              *ngIf="controle && controle[item] !== 0"
+            >
+              <span class="text-bodytext">
+                {{ 'control.' + item | translate }}
+                <strong
+                  class="text-primary"
+                  [ngClass]="{
+                    'text-warn':
+                      item === 'facture_numero_facture' &&
+                      !controle.facture_date_facture
+                  }"
+                >
+                  &nbsp; {{ controle ? controle[item] : '' }}
+                </strong>
+              </span>
+            </li>
+          </ng-container>
+        </ul>
+        <mat-card-actions *ngIf="row.button.show">
+          <button
+            mat-raised-button
+            color="primary"
+            class="w-full"
+            (click)="handleAction(row.button.action)"
+          >
+            {{ row.button.label }}
+          </button>
+        </mat-card-actions>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

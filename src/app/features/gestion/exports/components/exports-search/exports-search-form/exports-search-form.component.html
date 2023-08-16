@@ -1,0 +1,324 @@
+<mat-card>
+  <mat-card-content>
+    <form
+      [formGroup]="searchForm"
+      appMarkRequiredFormControlAsDirty
+      class="flex flex-col"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <!-- etat -->
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'commun.state' | translate }}
+          </mat-label>
+          <mat-select formControlName="type_etat">
+            <mat-option
+              *ngFor="let typeEtatExport of exportEtatTypes"
+              [value]="typeEtatExport"
+            >
+              {{
+                'gestion.exportEtats.typeExport.' + typeEtatExport | translate
+              }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.type_etat.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- période -->
+        <mat-form-field class="lg:basis-1/2" subscriptSizing="dynamic">
+          <mat-label>{{ 'commun.searchPeriod' | translate }}</mat-label>
+          <mat-date-range-input
+            [rangePicker]="picker"
+            [min]="minStartDate"
+            [max]="maxEndDate"
+          >
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              formControlName="date_debut"
+              [placeholder]="'commun.du' | translate"
+              (dateChange)="updateEndDateMin($event)"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              formControlName="date_fin"
+              [placeholder]="'commun.au' | translate"
+              (dateChange)="updateStartDateMax($event)"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="searchForm.errors">
+            {{ searchForm.errors | error : 'emptyInterval' }}
+          </mat-error>
+          <mat-error
+            *ngIf="
+              searchForm.controls.date_debut.errors &&
+              !searchForm.controls.date_debut.errors['matDatepickerMin']
+            "
+          >
+            {{
+              searchForm.controls.date_debut.errors | error : '' : 'startDate'
+            }}
+          </mat-error>
+          <mat-error
+            *ngIf="
+              searchForm.controls.date_fin.errors &&
+              !searchForm.controls.date_fin.errors['matDatepickerMax']
+            "
+            class="pb-2"
+          >
+            {{ searchForm.controls.date_fin.errors | error : '' : 'endDate' }}
+          </mat-error>
+          <mat-error
+            *ngIf="
+              (searchForm.controls.date_debut.errors &&
+                searchForm.controls.date_debut.errors['matDatepickerMin']) ||
+              (searchForm.controls.date_fin.errors &&
+                searchForm.controls.date_fin.errors['matDatepickerMax'])
+            "
+          >
+            {{ 'gestion.exportEtats.searchPeriodError' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <!-- type controle -->
+        <mat-form-field
+          *ngIf="searchForm.get('type_controle_id')"
+          appFieldControlLabel
+        >
+          <mat-label>
+            {{ 'control.type_controle_libelle' | translate }}
+          </mat-label>
+          <mat-select formControlName="type_controle_id">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option
+              *ngFor="let typeControle of typesControle$ | async"
+              [value]="typeControle.id"
+            >
+              {{ typeControle.code }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- catégorie -->
+        <mat-form-field
+          *ngIf="searchForm.get('categorie_id')"
+          appFieldControlLabel
+        >
+          <mat-label>
+            {{ 'commun.categorie_ct' | translate }}
+          </mat-label>
+          <mat-select formControlName="categorie_id">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option
+              *ngFor="let categorie of categories$ | async"
+              [value]="categorie.id"
+            >
+              {{ categorie.libelle_reduit }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- client -->
+        <app-client-autocomplete
+          *ngIf="searchForm.get('client')"
+          label="{{ 'commun.nomClient' | translate }}"
+          [typePersonne]="
+            ExportEtatEnum.EtatActiviteGlobaleDesClientsPro ===
+            searchForm.value?.type_etat
+              ? TypePersonneEnum.COMPTE
+              : TypePersonneEnum.ALL
+          "
+          formControlName="client"
+        ></app-client-autocomplete>
+        <!-- numero facture -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('numero_facture')"
+        >
+          <mat-label>
+            {{ 'commun.numFacture' | translate }}
+            {{
+              ExportEtatEnum.EtatJournalDesModificationsDesReglements ===
+              searchForm.value?.type_etat
+                ? '/' + ('commun.avoir' | translate)
+                : ''
+            }}
+          </mat-label>
+          <input formControlName="numero_facture" matInput />
+          <mat-error>
+            {{ searchForm.controls.numero_facture.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- libellé prestation -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('libelle_prestation')"
+        >
+          <mat-label>
+            {{ 'commercial.prestations.labelPrestation' | translate }}
+          </mat-label>
+          <input formControlName="libelle_prestation" matInput />
+          <mat-error>
+            {{ searchForm.controls.libelle_prestation.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- partenaire -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('code_partenaire')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.numeroPartenaire' | translate }}
+          </mat-label>
+          <input formControlName="code_partenaire" matInput />
+          <mat-error>
+            {{ searchForm.controls.code_partenaire.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('nom_partenaire')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.nomPartenaire' | translate }}
+          </mat-label>
+          <input formControlName="nom_partenaire" matInput />
+          <mat-error>
+            {{ searchForm.controls.nom_partenaire.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- numero PV -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('numero_rapport')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.numeroPV' | translate }}
+          </mat-label>
+          <input formControlName="numero_rapport" matInput />
+          <mat-error>
+            {{ searchForm.controls.numero_rapport.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- mandat -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('numero_mandat')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.numeroMandat' | translate }}
+          </mat-label>
+          <input formControlName="numero_mandat" matInput />
+          <mat-error>
+            {{ searchForm.controls.numero_mandat.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('nom_mandat')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.nomMandat' | translate }}
+          </mat-label>
+          <input formControlName="nom_mandat" matInput />
+          <mat-error>
+            {{ searchForm.controls.nom_mandat.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- recherche par -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('search_by')"
+        >
+          <mat-label>
+            {{ 'commun.rechercherPar' | translate }}
+          </mat-label>
+          <mat-select formControlName="search_by">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option *ngFor="let item of searchByList" [value]="item.code">
+              {{ item.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.file_type.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- plaier kilometrage -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('kilometrage')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.palierKilometrage' | translate }}
+          </mat-label>
+          <mat-select formControlName="kilometrage">
+            <mat-option [value]="-1">{{ 'commun.all' | translate }}</mat-option>
+            <mat-option
+              *ngFor="let item of palierKilometrage"
+              [value]="item.code"
+            >
+              {{ item.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.file_type.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- numero caisse -->
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="searchForm.get('numero_caisse')"
+        >
+          <mat-label>
+            {{ 'gestion.exportEtats.numeroCaisse' | translate }}
+          </mat-label>
+          <input formControlName="numero_caisse" matInput />
+          <mat-error>
+            {{ searchForm.controls.numero_caisse.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <!-- type fichier -->
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'commun.fileType' | translate }}
+          </mat-label>
+          <mat-select formControlName="file_type">
+            <mat-option
+              *ngFor="let typeExport of exportFileTypes"
+              [value]="typeExport"
+            >
+              {{ typeExport }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ searchForm.controls.file_type.errors | error }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="exportEtat()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.exporter' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.reinitialiseRecherche' | translate"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

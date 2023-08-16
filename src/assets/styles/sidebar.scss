@@ -1,0 +1,137 @@
+@use 'variable' as *;
+
+#snav {
+  box-shadow: 1px 0 20px rgb(0 0 0 / 8%);
+
+  /* Change the default padding-x value of 15 in Angular Material */
+  .mdc-list-item {
+    padding: 0;
+  }
+
+  .mat-mdc-nav-list .mat-mdc-list-item {
+    height: auto;
+
+    .mdc-list-item__content {
+      display: block;
+      padding: 0;
+
+      &:hover {
+        > span > a {
+          color: $primary;
+          background-color: transparent;
+
+          mat-icon:not(.favorite) {
+            color: $primary;
+          }
+        }
+      }
+    }
+
+    a {
+      height: fit-content;
+      padding: 12px 8px 8px;
+      align-items: center;
+      display: block;
+      font-size: 15px;
+      white-space: normal;
+      color: $sidebar-text;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      mat-icon {
+        color: $sidebar-icons;
+
+        &:not(.dd-icon) {
+          margin-right: 8px;
+          padding-bottom: 4px;
+        }
+      }
+
+      /* Drop-down icon */
+      .dd-icon {
+        font-size: 16px;
+        width: 16px;
+        transition: 0.2s ease-in;
+        margin: 5px 0 5px 5px;
+        height: 16px;
+      }
+
+      .badge {
+        padding: 3px 10px;
+        line-height: 13px;
+        color: $white;
+        font-weight: 400;
+        border-radius: $radius;
+        font-size: 75%;
+        background-color: $primary;
+      }
+    }
+
+    /* Highlight the selected parent item */
+    &.selected > .mdc-list-item__content > span > a {
+      background: $secondary;
+      border-radius: $radius;
+      color: $sidebar-selected-text;
+
+      mat-icon:not(.favorite) {
+        color: $sidebar-selected-text;
+      }
+
+      .dd-icon {
+        transform: rotate(-180deg);
+      }
+    }
+
+    /* Highlight Selected sub-item (child) */
+    .sub-item .mdc-list-item__content a > .badge {
+      background-color: #ffb22b;
+    }
+
+    &.selected .sub-item .mdc-list-item__content a.selected {
+      background: $menu-selected-bg;
+      color: $menu-selected-text;
+      font-weight: 500;
+      border-radius: $radius;
+    }
+  }
+
+  /* Sub-items (children) */
+  .mat-mdc-nav-list .sub-item {
+    display: none;
+    margin-top: -15px;
+    padding-bottom: 0;
+
+    a {
+      padding-left: 25px;
+      height: 50px;
+      margin-bottom: 0;
+    }
+
+    /* Sub-item child (level 2 sub-item of type sub) */
+    .child-sub-item {
+      display: none;
+      margin-top: -15px;
+
+      a {
+        padding: 0 0 0 55px;
+        height: 50px;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  /* Display sub-items of the selected Item (display:none by default -see above-) */
+  .selected {
+    .sub-item {
+      display: block;
+
+      .selected + {
+        .child-sub-item {
+          display: block;
+        }
+      }
+    }
+  }
+}

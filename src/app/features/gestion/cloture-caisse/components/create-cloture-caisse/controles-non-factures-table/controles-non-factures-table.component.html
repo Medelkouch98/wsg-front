@@ -1,0 +1,101 @@
+<ng-container
+  *ngIf="{
+    controles: getControlesNonFacturesByType(typePersonne) | async
+  } as _"
+>
+  <div *ngIf="_.controles.length; else pasDeControleNonFacturePourClient">
+    {{
+      (typePersonne === TypePersonneEnum.PASSAGE
+        ? 'gestion.clotureCaisse.clientsPassageControlesNonFactures'
+        : 'gestion.clotureCaisse.clientsCompteControlesNonFactures'
+      ) | translate
+    }}
+    <div class="responsive-table my-2">
+      <mat-table [dataSource]="_.controles">
+        <ng-container matColumnDef="nom_client">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.nomClient' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="header-label">
+              {{ 'commun.nomClient' | translate }}
+            </span>
+            {{ element?.nom_client }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="numero_rapport">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.numPV' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="header-label">
+              {{ 'commun.numPV' | translate }}
+            </span>
+            {{ element?.numero_rapport }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="montant_ht">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.HT' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="header-label">
+              {{ 'commun.HT' | translate }}
+            </span>
+            {{ element?.montant_ht | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="montant_tva">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.TVA' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="header-label">
+              {{ 'commun.TVA' | translate }}
+            </span>
+            {{ element?.montant_tva | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="montant_ttc">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.TTC' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="header-label">
+              {{ 'commun.TTC' | translate }}
+            </span>
+            {{ element?.montant_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'commun.actions' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="goToFicheControle(element)"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+        <mat-row
+          class="cursor-default"
+          *matRowDef="let row; columns: columns"
+        ></mat-row>
+      </mat-table>
+    </div>
+  </div>
+</ng-container>
+<ng-template #pasDeControleNonFacturePourClient>
+  {{
+    (typePersonne === TypePersonneEnum.PASSAGE
+      ? 'gestion.clotureCaisse.pasDeControleNonFacturePourClientsPassage'
+      : 'gestion.clotureCaisse.pasDeControleNonFacturePourClientsCompte'
+    ) | translate
+  }}
+</ng-template>

@@ -1,0 +1,85 @@
+<div class="flex">
+  <mat-accordion class="flex w-full flex-col flex-wrap gap-2.5">
+    <!-- Identification -->
+    <mat-expansion-panel
+      class="w-full"
+      #panel
+      (opened)="identificationPanelExpanded = true"
+      (closed)="identificationPanelExpanded = false"
+      [expanded]="identificationPanelExpanded"
+      (click)="!!addMode ? panel.open() : null"
+      [hideToggle]="!!addMode"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h5 class="font-medium">
+            {{ 'commun.identification' | translate | uppercase }}
+          </h5>
+        </mat-panel-title>
+
+        <mat-panel-description *ngIf="!identificationPanelExpanded">
+          <p>{{ identificationTitle }}</p>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-prestation-identification
+        [addMode]="addMode"
+        [isReadOnly$]="isReadOnly$"
+        (title)="identificationTitle = $event"
+        #prestationIdentification
+      ></app-prestation-identification>
+    </mat-expansion-panel>
+
+    <!-- Tarification client -->
+    <mat-expansion-panel class="w-full" *ngIf="!addMode">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h5 class="font-medium">
+            {{
+              'commercial.prestations.tarificationClient'
+                | translate
+                | uppercase
+            }}
+          </h5>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-tarification-table
+        [tarifications$]="tarificationClient$"
+        [page$]="clientPageEvent$"
+        (changePageEvent)="clientPageChange($event)"
+        (sortEvent)="clientSortChange($event)"
+      ></app-tarification-table>
+    </mat-expansion-panel>
+
+    <!-- Tarification apporteur d'affaires -->
+    <mat-expansion-panel class="w-full" *ngIf="!addMode">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h5 class="font-medium">
+            {{
+              'commercial.prestations.tarificationApporteurAffaires'
+                | translate
+                | uppercase
+            }}
+          </h5>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-tarification-table
+        [tarifications$]="tarificationApporteurAffaires$"
+        [page$]="apporteurAffairePageEvent$"
+        (changePageEvent)="apporteurAffairePageChange($event)"
+        (sortEvent)="apporteurAffaireSortChange($event)"
+      ></app-tarification-table>
+    </mat-expansion-panel>
+
+    <div class="flex justify-center" *ngIf="addMode">
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="!isValid()"
+        (click)="savePrestation()"
+      >
+        {{ 'commun.ajouter' | translate }}
+      </button>
+    </div>
+  </mat-accordion>
+</div>

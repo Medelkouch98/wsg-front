@@ -1,0 +1,39 @@
+<mat-form-field appFieldControlLabel>
+  <mat-label>
+    {{ label }}
+  </mat-label>
+  <input
+    type="text"
+    matInput
+    [matAutocomplete]="groupedAutoComplete ? autoGroup : auto"
+    [formControl]="apporteurControl"
+    (input)="onInputChange($event.target.value)"
+  />
+  <mat-autocomplete
+    #autoGroup="matAutocomplete"
+    [displayWith]="displayTextAutoCompleteApporteur"
+    (optionSelected)="selectedOption($event.option.value)"
+  >
+    <mat-optgroup
+      *ngFor="let apporteur of apporteurAffaireGroupOptions$ | async"
+      [label]="apporteur.group"
+    >
+      <mat-option *ngFor="let item of apporteur.names" [value]="item">
+        {{ displayFnDefaultValues(item) }}
+      </mat-option>
+    </mat-optgroup>
+  </mat-autocomplete>
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    [displayWith]="displayFnDefaultValues"
+    (opened)="onOpenAutoComplete()"
+  >
+    <mat-option *ngIf="message?.length > 0">{{ message }}</mat-option>
+    <mat-option *ngIf="isLoading">
+      {{ 'commun.loading' | translate }}
+    </mat-option>
+    <mat-option *ngFor="let option of filtredApporteursList" [value]="option">
+      {{ displayFnDefaultValues(option) }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

@@ -1,0 +1,158 @@
+<mat-card>
+  <mat-card-header class="justify-center p-0">
+    <mat-card-title class="text-base">
+      {{ subType.libelle }}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="p-0">
+    <div *ngIf="materials?.data?.length as dataLength" class="overflow-x-auto">
+      <table
+        mat-table
+        [dataSource]="materials"
+        matSort
+        aria-describedby="materials-by-subtype"
+      >
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              (change)="$event && toggleAllRows($event.checked)"
+              [checked]="selection.hasValue() && isAllSelected"
+              [indeterminate]="selection.hasValue() && !isAllSelected"
+            />
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event && toggleRow(row, $event.checked)"
+              [checked]="selection.isSelected(row)"
+            />
+          </td>
+        </ng-container>
+
+        <!-- Error -->
+        <ng-container matColumnDef="has_error">
+          <th
+            scope="col"
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+          ></th>
+          <td mat-cell *matCellDef="let element">
+            <mat-icon *ngIf="element.has_error" fontIcon="error" color="warn" />
+          </td>
+        </ng-container>
+
+        <!-- Numéro de serie -->
+        <ng-container matColumnDef="numero_serie">
+          <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'qualite.material.numero_serie' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.numero_serie }}
+          </td>
+        </ng-container>
+
+        <!-- Marque -->
+        <ng-container matColumnDef="marque">
+          <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'commun.marque' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.marque }}
+          </td>
+        </ng-container>
+
+        <!-- Modele -->
+        <ng-container matColumnDef="modele">
+          <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'commun.modele' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.modele }}
+          </td>
+        </ng-container>
+
+        <!-- Numero certificat otclan -->
+        <ng-container matColumnDef="numero_certificat_otclan">
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ 'qualite.material.numero_certificat_otclan' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.numero_certificat_otclan }}
+          </td>
+        </ng-container>
+
+        <!-- Numero certificat de qualification -->
+        <ng-container matColumnDef="numero_certificat_qualification">
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ 'qualite.material.numero_certificat_qualification' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.numero_certificat_qualification }}
+          </td>
+        </ng-container>
+
+        <!-- Version logiciel -->
+        <ng-container matColumnDef="banc_version_specification">
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ 'qualite.material.banc_version_specification' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.banc_version_specification }}
+          </td>
+        </ng-container>
+
+        <!-- Materiel caracteristiques -->
+        <ng-container
+          *ngFor="let caracteristique of subType.materiel_caracteristiques"
+          [matColumnDef]="caracteristique.libelle"
+        >
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ caracteristique.libelle }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ getCharacteristicValue(element, caracteristique.libelle) }}
+          </td>
+        </ng-container>
+
+        <!-- Materiel evenements  -->
+        <ng-container
+          *ngFor="let event of subType.materiel_evenement_types"
+          [matColumnDef]="event.libelle"
+        >
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ event.libelle }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ getEventValue(element, event.id) | date : 'dd/MM/yyyy' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th scope="col" mat-header-cell *matHeaderCellDef>
+            {{ 'commun.actions' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="goToDetails(element); $event.stopPropagation()"
+            >
+              <mat-icon fontIcon="visibility" />
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="goToDetails(row)"
+        ></tr>
+      </table>
+      <mat-paginator *ngIf="dataLength > MIN_PAGE_SIZE_OPTIONS" />
+    </div>
+  </mat-card-content>
+</mat-card>

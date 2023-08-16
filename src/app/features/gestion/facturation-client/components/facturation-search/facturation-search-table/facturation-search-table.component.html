@@ -1,0 +1,260 @@
+<ng-container
+  *ngIf="{
+    dataSource: dataSource$ | async,
+    page: page$ | async,
+    sort: sort$ | async,
+    controleSelection: controleSelection$ | async
+  } as _"
+>
+  <ng-container *ngIf="!_.dataSource?.data?.length; else table">
+    <app-no-data-search
+      [message]="'commun.noResultsFound' | translate"
+      [image]="'assets/images/not_found.svg'"
+    ></app-no-data-search>
+  </ng-container>
+  <ng-template #table>
+    <mat-card>
+      <mat-card-content>
+        <div class="mb-5 flex flex-1 justify-end gap-2.5">
+          <button
+            *ngIf="_.controleSelection.length"
+            mat-raised-button
+            color="accent"
+            (click)="openFactureGenerateFacture()"
+          >
+            {{ 'commun.facturer' | translate }}
+          </button>
+          <button mat-raised-button class="lg:hidden" color="primary">
+            {{ 'commun.selectAll' | translate }}
+            <mat-checkbox
+              (change)="
+                $event ? toggleClients(_.dataSource?.data, $event) : null
+              "
+              [checked]="
+                clientsSelection.hasValue() &&
+                isAllSelected(_.dataSource?.data?.length)
+              "
+              [indeterminate]="
+                clientsSelection.hasValue() &&
+                !isAllSelected(_.dataSource?.data?.length)
+              "
+            ></mat-checkbox>
+          </button>
+        </div>
+        <div class="responsive-table expanded-table">
+          <mat-table
+            [dataSource]="_.dataSource.data"
+            multiTemplateDataRows
+            matSort
+            [matSortActive]="_.sort?.active"
+            [matSortDirection]="_.sort?.direction"
+            (matSortChange)="sortChange($event)"
+          >
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox
+                  (change)="
+                    $event ? toggleClients(_.dataSource?.data, $event) : null
+                  "
+                  [checked]="
+                    clientsSelection.hasValue() &&
+                    isAllSelected(_.dataSource?.data?.length)
+                  "
+                  [indeterminate]="
+                    clientsSelection.hasValue() &&
+                    !isAllSelected(_.dataSource?.data?.length)
+                  "
+                ></mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span class="header-label"></span>
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? toggleClients([row], $event) : null"
+                  [checked]="clientsSelection.isSelected(row.id)"
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="nom">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_10%]"
+              >
+                {{ 'commun.codeNomClient' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_10%]">
+                <span class="header-label">
+                  {{ 'commun.codeNomClient' | translate }}
+                </span>
+                {{ element.code }} - {{ element.nom }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="cp">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{ 'commun.cp' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.cp' | translate }}
+                </span>
+                {{ element.cp ?? '--' }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="ville">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{ 'commun.ville' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.ville' | translate }}
+                </span>
+                {{ element.ville }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="date_premier_controle">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_6%]"
+              >
+                {{ 'gestion.factures.premierContrôle' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_6%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.premierContrôle' | translate }}
+                </span>
+                {{ element.date_premier_controle }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="date_dernier_controle">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="flex-[1_1_6%]"
+              >
+                {{ 'gestion.factures.dernierContrôle' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element" class="flex-[1_1_6%]">
+                <span class="header-label">
+                  {{ 'gestion.factures.dernierContrôle' | translate }}
+                </span>
+                {{ element.date_dernier_controle }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="nb_controles">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{ 'gestion.factures.nbControl' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'gestion.factures.nbControl' | translate }}
+                </span>
+                {{ element.nb_controles }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="total_ttc">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'gestion.factures.montantTtcOtcInclus' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'gestion.factures.montantTtcOtcInclus' | translate }}
+                </span>
+                {{ element.total_ttc | number : DECIMAL_NUMBER_PIPE_FORMAT }} €
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.sendByEmail' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.sendByEmail' | translate }}
+                </span>
+                <mat-checkbox
+                  (change)="changeMultiPvOrEmail('email', element.id)"
+                  [checked]="element?.email"
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="multi_pv">
+              <mat-header-cell *matHeaderCellDef>
+                {{ 'commun.factMultiPv' | translate }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">
+                  {{ 'commun.factMultiPv' | translate }}
+                </span>
+                <mat-checkbox
+                  (change)="changeMultiPvOrEmail('multi_pv', element.id)"
+                  [checked]="element?.multi_pv"
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="expand">
+              <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <button
+                  mat-icon-button
+                  (click)="
+                    expandedElement =
+                      expandedElement === element ? null : element;
+                    $event.stopPropagation()
+                  "
+                >
+                  <mat-icon *ngIf="expandedElement !== element">
+                    keyboard_arrow_down
+                  </mat-icon>
+                  <mat-icon *ngIf="expandedElement === element">
+                    keyboard_arrow_up
+                  </mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+            <ng-container matColumnDef="expandedDetail">
+              <mat-cell *matCellDef="let element">
+                <div
+                  class="my-3 w-full"
+                  [@detailExpand]="expandedElement"
+                  *ngIf="expandedElement === element"
+                >
+                  <app-facturation-search-table-details
+                    [controleNonFacturer]="element"
+                  ></app-facturation-search-table-details>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+            <mat-row *matRowDef="let element; columns: columns"></mat-row>
+            <mat-row
+              *matRowDef="let row; columns: ['expandedDetail']"
+              [ngClass]="{ hidden: row !== expandedElement }"
+            ></mat-row>
+          </mat-table>
+          <mat-paginator
+            *ngIf="_.dataSource.meta?.total > MIN_PAGE_SIZE_OPTIONS"
+            [length]="_.dataSource.meta?.total"
+            [pageSize]="_.page.pageSize"
+            [pageIndex]="_.page.pageIndex"
+            (page)="pageChange($event)"
+          ></mat-paginator>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</ng-container>

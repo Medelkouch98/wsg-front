@@ -1,0 +1,67 @@
+<mat-card>
+  <mat-card-content>
+    <form
+      [formGroup]="addEventForm"
+      appMarkRequiredFormControlAsDirty
+      class="grid grid-cols-1 gap-x-5 lg:grid-cols-2 2xl:grid-cols-3"
+    >
+      <!-- Event Date Field -->
+      <mat-form-field appFieldControlLabel>
+        <mat-label>{{ eventLabel | translate }}</mat-label>
+        <input
+          matInput
+          appCustomDateMaskDirective
+          [matDatepicker]="picker"
+          placeholder="jj/mm/aaaa"
+          formControlName="date"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker" />
+        <mat-datepicker #picker />
+        <mat-error
+          appFormControlError
+          [errors]="addEventForm.controls.date.errors"
+        />
+      </mat-form-field>
+
+      <!-- Upload Files Component -->
+      <app-upload-files formControlName="materiel_evenement_fichiers" />
+    </form>
+
+    <!-- Selected Materials List -->
+    <mat-list *ngIf="selectedMaterials.length; else selectMaterialsMessage">
+      <h5 mat-subheader class="pb-1 font-medium">
+        {{ 'qualite.material.selectedMaterials' | translate }}
+      </h5>
+      <div class="grid grid-cols-1 gap-x-5 lg:grid-cols-2 2xl:grid-cols-3">
+        <mat-list-item *ngFor="let material of selectedMaterials">
+          <mat-icon matListItemIcon fontIcon="check" class="text-success" />
+          <div matListItemTitle>
+            {{ material.materiel_sous_type_id | subType | async }}
+          </div>
+          <div matListItemLine>
+            {{ material.modele }}
+            <span
+              *ngIf="material.modele && material.numero_serie"
+              class="font-semibold text-success"
+            >
+              |
+            </span>
+            {{ material.numero_serie }}
+          </div>
+        </mat-list-item>
+      </div>
+    </mat-list>
+
+    <!-- Select Materials Message -->
+    <ng-template #selectMaterialsMessage>
+      <h5 class="flex items-center justify-center gap-1 pb-1 font-medium">
+        <mat-icon
+          fontIcon="info"
+          fontSet="material-icons-outlined"
+          class="text-cyan-600"
+        />
+        {{ 'qualite.material.selectMaterialsMessage' | translate }}
+      </h5>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

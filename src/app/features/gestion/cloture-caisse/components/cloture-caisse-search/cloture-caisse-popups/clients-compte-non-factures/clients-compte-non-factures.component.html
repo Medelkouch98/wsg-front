@@ -1,0 +1,23 @@
+<h1 mat-dialog-title class="text-center">
+  {{
+    'gestion.clotureCaisse.clientsComptePVNonFactures'
+      | translate : { count: data.count }
+  }}
+  <button mat-raised-button color="accent" (click)="facturerClientsCompte()">
+    {{ 'gestion.clotureCaisse.facturerClientsCompte' | translate }}
+  </button>
+</h1>
+<div mat-dialog-content
+  class="text-center"
+  [innerHTML]="
+    'gestion.clotureCaisse.clientsComptePVNonFacturesDetails' | translate
+  "
+></div>
+<div mat-dialog-actions class="justify-center p-1">
+  <button mat-raised-button color="primary" (click)="emitAction(true)">
+    {{ 'commun.retour' | translate }}
+  </button>
+  <button mat-raised-button color="accent" (click)="continuer()">
+    {{ 'commun.continuer' | translate }}
+  </button>
+</div>

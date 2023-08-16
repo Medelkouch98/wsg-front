@@ -1,0 +1,70 @@
+<mat-card>
+  <mat-card-content>
+    <form
+      [formGroup]="searchForm"
+      appMarkRequiredFormControlAsDirty
+      class="flex flex-col"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-5 2xl:grid-cols-3">
+        <mat-form-field class="lg:basis-1/2" subscriptSizing="dynamic">
+          <mat-label>{{ 'commun.searchPeriod' | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              appCustomDateMaskDirective
+              formControlName="date_debut"
+              [placeholder]="'commun.du' | translate"
+            />
+            <input
+              matEndDate
+              appCustomDateMaskDirective
+              formControlName="date_fin"
+              [placeholder]="'commun.au' | translate"
+            />
+          </mat-date-range-input>
+          <mat-hint>{{ 'commun.dateFormatHint' | translate }}</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="searchForm.errors">
+            {{ searchForm.errors | error : 'emptyInterval' }}
+          </mat-error>
+          <mat-error *ngIf="searchForm.controls.date_debut.errors">
+            {{ searchForm.controls.date_debut.errors | error : 'startDate' }}
+          </mat-error>
+          <mat-error *ngIf="searchForm.controls.date_fin.errors" class="pb-2">
+            {{ searchForm.controls.date_fin.errors | error : 'endDate' }}
+          </mat-error>
+        </mat-form-field>
+        <mat-slide-toggle
+          color="primary"
+          formControlName="fin_mois"
+          class="mt-4"
+        >
+          {{ 'gestion.clotureCaisse.finMoisSeulement' | translate }}
+        </mat-slide-toggle>
+      </div>
+
+      <div class="flex flex-1 items-center justify-end gap-2.5">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="search()"
+          [disabled]="searchForm.invalid"
+        >
+          {{ 'commun.search' | translate }}
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          [matTooltip]="'commun.search' | translate"
+          (click)="resetSearchForm()"
+        >
+          <mat-icon>autorenew</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,38 @@
+/*
+  This is a "Solution Style" tsconfig.json file, and is used by editors and TypeScript’s language server to improve development experience.
+  It is not intended to be used to perform a compilation.
+
+  To learn more about this file see: https://angular.io/config/solution-tsconfig.
+*/
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@app/services": ["app/shared/services/index.ts"],
+      "@app/components": ["app/shared/components/index.ts"],
+      "@app/directives": ["app/shared/directives/index.ts"],
+      "@app/pipes": ["app/shared/pipes/index.ts"],
+      "@app/models": ["app/shared/models/index.ts"],
+      "@app/enums": ["app/shared/enums/index.ts"],
+      "@app/helpers": ["app/shared/helpers/index.ts"],
+      "@app/types": ["app/shared/types/index.ts"],
+      "@app/config": ["app/config/index.ts"]
+    },
+    "downlevelIteration": true,
+    "module": "ESNext",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "target": "ES2022",
+    "strict": true,
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["ESNext", "dom"],
+    "useDefineForClassFields": false
+  }
+}

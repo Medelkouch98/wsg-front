@@ -1,0 +1,70 @@
+<ng-container
+  *ngIf="{
+    dataSource: dataSource$ | async
+  } as _"
+>
+  <div class="responsive-table">
+    <mat-table [dataSource]="_.dataSource" matSort>
+      <ng-container matColumnDef="type_controle">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="type_controle">
+          {{ 'commun.typeControle' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.typeControle' | translate }}
+          </span>
+          <span>{{ element.type_controle }}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="energie">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="energie">
+          {{ 'commun.energy' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.energy' | translate }}
+          </span>
+          <span>{{ element.energie }}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="categorie_ct">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="categorie_ct">
+          {{ 'commun.categorie_ct' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.categorie_ct' | translate }}
+          </span>
+          <span>{{ element.categorie_ct }}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="type">
+          {{ 'commun.type' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.type' | translate }}
+          </span>
+          <span>{{ element.type }}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="valeur">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="valeur">
+          {{ 'commun.value' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.value' | translate }}
+          </span>
+          <span>{{ element.valeur }}</span>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns"></mat-row>
+    </mat-table>
+    <mat-paginator
+      *ngIf="_.dataSource?.data.length > MIN_PAGE_SIZE_OPTIONS"
+    ></mat-paginator>
+  </div>
+</ng-container>

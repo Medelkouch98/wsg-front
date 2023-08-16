@@ -1,0 +1,25 @@
+<app-actions-buttons
+  [actionButtons]="buttons"
+  (action)="handleActions($event)"
+></app-actions-buttons>
+<ng-container
+  *ngIf="{
+    facture: facture$ | async,
+    facturePdf: facturePdf$ | async
+  } as _"
+>
+  <mat-card>
+    <mat-card-content>
+      <h4 class="mb-5 font-bold text-primary" *ngIf="_.facture">
+        {{ 'resource.' + typeFacture(_.facture.facture_type) | translate }} N°
+        {{ _.facture.numero_facture }}
+      </h4>
+      <iframe
+        *ngIf="_.facturePdf"
+        class="h-screen w-full"
+        [src]="_.facturePdf | sanitizeResourceUrl"
+        allowfullscreen
+      ></iframe>
+    </mat-card-content>
+  </mat-card>
+</ng-container>

@@ -1,0 +1,378 @@
+<div class="flex flex-col gap-y-2.5">
+  <div class="flex justify-end">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="addForm.controls.isNewRow.value"
+      (click)="addNewRow()"
+    >
+      {{ 'client.addProspectVehicule' | translate }}
+    </button>
+  </div>
+  <div class="responsive-table editable-table expanded-table">
+    <mat-table
+      [dataSource]="dataSource"
+      multiTemplateDataRows
+      matSort
+      class="mat-elevation-z8"
+      [formGroup]="addForm"
+    >
+      <ng-container matColumnDef="immatriculation">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="immatriculation">
+          {{ 'client.immatriculation' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'client.immatriculation' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{ element.immatriculation }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input matInput type="text" formControlName="immatriculation" />
+              <mat-error>
+                {{ addForm.controls.immatriculation.errors | error }}
+              </mat-error>
+            </mat-form-field>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="marque">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="marque">
+          {{ 'commun.marque' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.marque' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{ element.marque }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input
+                type="text"
+                matInput
+                formControlName="marque"
+                [matAutocomplete]="auto"
+              />
+              <mat-autocomplete
+                [panelWidth]="'auto'"
+                #auto="matAutocomplete"
+                (optionSelected)="onSelectionChanged($event)"
+              >
+                <mat-option
+                  *ngFor="let option of filteredMarques$ | async"
+                  [value]="option.libelle"
+                >
+                  {{ option.libelle }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>
+                {{ addForm.controls.marque.errors | error }}
+              </mat-error>
+            </mat-form-field>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="modele">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="modele">
+          {{ 'commun.modele' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.modele' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{ element.modele }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input
+                type="text"
+                matInput
+                formControlName="modele"
+                [matAutocomplete]="auto"
+              />
+              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'auto'">
+                <mat-option
+                  *ngFor="let option of filteredModeles$ | async"
+                  [value]="option.libelle"
+                >
+                  {{ option.libelle }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>
+                {{ addForm.controls.modele.errors | error }}
+              </mat-error>
+            </mat-form-field>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="numero_serie">
+        <mat-header-cell
+          *matHeaderCellDef
+          class="flex-[1_1_10%]"
+          mat-sort-header="numero_serie"
+        >
+          {{ 'client.numSerie' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="flex-[1_1_10%]">
+          <span class="header-label">
+            {{ 'client.numSerie' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{ element.numero_serie }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="numero_serie"
+                maxlength="17"
+              />
+            </mat-form-field>
+            <mat-error>
+              {{ addForm.controls.numero_serie.errors | error }}
+            </mat-error>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="date_validite_vtp">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_5%]">
+          {{ 'client.dateProchainVTP' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="flex-[1_1_5%]">
+          <span class="header-label">
+            {{ 'client.dateProchainVTP' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{
+              element.historiques[0]?.date_validite_vtp | date : 'dd/MM/yyyy'
+            }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input
+                matInput
+                appCustomDateMaskDirective
+                [matDatepicker]="picker"
+                placeholder="jj/mm/aaaa"
+                formControlName="date_validite_vtp"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error>
+                {{ addForm.controls.date_validite_vtp.errors | error }}
+              </mat-error>
+            </mat-form-field>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="date_validite_vtc">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_5%]">
+          {{ 'client.dateProchainVTC' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="flex-[1_1_5%]">
+          <span class="header-label">
+            {{ 'client.dateProchainVTC' | translate }}
+          </span>
+          <span *ngIf="!element.isNewRow; else isNewRow">
+            {{
+              element.historiques[0]?.date_validite_vtc | date : 'dd/MM/yyyy'
+            }}
+          </span>
+          <ng-template #isNewRow>
+            <mat-form-field>
+              <input
+                matInput
+                appCustomDateMaskDirective
+                [matDatepicker]="picker1"
+                placeholder="jj/mm/aaaa"
+                formControlName="date_validite_vtc"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+              <mat-error>
+                <mat-error>
+                  {{ addForm.controls.date_validite_vtc.errors | error }}
+                </mat-error>
+              </mat-error>
+            </mat-form-field>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="relancer">
+        <mat-header-cell *matHeaderCellDef class="flex-[1_1_15%]">
+          {{ 'client.relancer' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="flex-[1_1_15%]">
+          <span class="header-label">
+            {{ 'client.relancer' | translate }}
+          </span>
+          <div>
+            <mat-button-toggle-group
+              class="my-2.5"
+              [value]="
+                element.historiques[0].parametre_relance === 1
+                  ? element.historiques[0].relance_sur
+                  : 0
+              "
+              (change)="changeRelance($event, element.historiques[0])"
+              *ngIf="!element.isNewRow; else isNewRow"
+            >
+              <mat-button-toggle [value]="0">
+                {{ 'commun.non' | translate }}
+              </mat-button-toggle>
+              <mat-button-toggle [value]="1">
+                {{ 'commun.billed' | translate }}
+              </mat-button-toggle>
+              <mat-button-toggle
+                [value]="2"
+                *ngIf="
+                  element.historiques &&
+                  element.historiques[0].type === typeHistoriqueEnum.controle
+                "
+              >
+                {{ 'commun.proprietaire' | translate }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+            <ng-template #isNewRow>
+              <mat-button-toggle-group
+                class="my-2.5"
+                formControlName="parametre_relance"
+              >
+                <mat-button-toggle [value]="0">
+                  {{ 'commun.non' | translate }}
+                </mat-button-toggle>
+                <mat-button-toggle [value]="1">
+                  {{ 'commun.client' | translate }}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+              <mat-error>
+                {{ addForm.controls.parametre_relance.errors | error }}
+              </mat-error>
+            </ng-template>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = dataIndex">
+          <ng-container
+            *ngIf="
+              !element.isNewRow &&
+              element.historiques &&
+              element.historiques[0].type === typeHistoriqueEnum.controle
+            "
+          >
+            <button
+              mat-icon-button
+              (click)="
+                expandedElement = expandedElement === element ? null : element;
+                $event.stopPropagation()
+              "
+            >
+              <mat-icon *ngIf="expandedElement !== element">
+                keyboard_arrow_down
+              </mat-icon>
+              <mat-icon *ngIf="expandedElement === element">
+                keyboard_arrow_up
+              </mat-icon>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="element.isNewRow">
+            <button
+              mat-icon-button
+              color="primary"
+              [disabled]="addForm.invalid"
+              (click)="save()"
+            >
+              <mat-icon>check_circle</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="cancel(i)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              !element.isNewRow &&
+              element.historiques &&
+              element.historiques[0].type ===
+                typeHistoriqueEnum.prospectVehicule
+            "
+          >
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteProspect(element.historiques[0].id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <mat-cell *matCellDef="let element">
+          <div [@detailExpand]="expandedElement">
+            <table class="table-details-card">
+              <tr
+                *ngFor="let row of element.historiques"
+                (click)="goToFicheControle(row.controle_id)"
+              >
+                <th *ngIf="row.date_validation">
+                  {{ row.date_validation | date : 'dd/MM/yyyy' }}
+                </th>
+                <th *ngIf="row.type_controle_libelle">
+                  {{ 'commun.typeControle' | translate }}:
+                  {{ row.type_controle_libelle }}
+                </th>
+                <th *ngIf="row.type_prochain_controle_libelle">
+                  {{ 'client.typeProchainControle' | translate }}:
+                  {{ row.type_prochain_controle_libelle }}
+                </th>
+                <th *ngIf="row.date_validite_vtp">
+                  {{ 'client.prochaineVtp' | translate }}:
+                  {{ row.date_validite_vtp | date : 'dd/MM/yyyy' }}
+                </th>
+                <th *ngIf="row.date_validite_vtc">
+                  {{ 'client.prochaineVtc' | translate }}:
+                  {{ row.date_validite_vtc | date : 'dd/MM/yyyy' }}
+                </th>
+                <th>
+                  <button mat-icon-button color="primary">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </th>
+              </tr>
+            </table>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let element; columns: columns"></mat-row>
+
+      <mat-row
+        *matRowDef="let row; columns: ['expandedDetail']"
+        [ngClass]="{ hidden: row !== expandedElement }"
+      ></mat-row>
+    </mat-table>
+    <mat-paginator
+      *ngIf="dataSource.data?.length > MIN_PAGE_SIZE_OPTIONS"
+      [length]="dataSource.data?.length"
+    ></mat-paginator>
+  </div>
+</div>

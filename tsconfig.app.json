@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "baseUrl": "src",
+    "strictNullChecks": false,
+    "paths": {
+      "@app/services": ["app/shared/services/index.ts"],
+      "@app/components": ["app/shared/components/index.ts"],
+      "@app/directives": ["app/shared/directives/index.ts"],
+      "@app/pipes": ["app/shared/pipes/index.ts"],
+      "@app/models": ["app/shared/models/index.ts"],
+      "@app/enums": ["app/shared/enums/index.ts"],
+      "@app/helpers": ["app/shared/helpers/index.ts"],
+      "@app/types": ["app/shared/types/index.ts"],
+      "@app/config": ["app/config/index.ts"]
+    }
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"],
+  "angularCompilerOptions": {
+    "enableIvy": true
+  }
+}

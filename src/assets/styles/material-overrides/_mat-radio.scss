@@ -1,0 +1,14 @@
+@use '../variable' as *;
+
+.mat-mdc-radio-group {
+  height: 3rem;
+  display: flex !important;
+  align-items: center;
+  mat-label {
+    color: $primary;
+    flex: 1 1 0%;
+  }
+  .mat-mdc-radio-button {
+    margin-right: 0.625rem /* 10px */ !important;
+  }
+}

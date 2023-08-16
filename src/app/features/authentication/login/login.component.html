@@ -1,0 +1,51 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="flex flex-col">
+    <mat-form-field appFieldControlLabel>
+      <mat-label>
+        {{ 'authentication.identifier' | translate }}
+      </mat-label>
+      <input matInput formControlName="login" autocomplete="username" />
+    </mat-form-field>
+    <mat-form-field appFieldControlLabel>
+      <mat-label>{{ 'commun.password' | translate }}</mat-label>
+      <input
+        matInput
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+      />
+    </mat-form-field>
+    <div class="flex items-center justify-center">
+      <a [routerLink]="['/forgot']" class="link">
+        {{ 'authentication.forgottenPassword' | translate }}
+      </a>
+    </div>
+    <button
+      class="my-5"
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="!form.valid"
+    >
+      {{ 'authentication.login' | translate }}
+    </button>
+    <div
+      class="bg-warn text-center text-white"
+      *ngIf="(error$ | async)?.messageToShow as messageToShow"
+    >
+      {{ messageToShow }}
+    </div>
+    <div class="text-center">
+      <span>
+        <a
+          href="https://www.autosur.fr"
+          target="_blank"
+          rel="noopener"
+          class="link text-link"
+        >
+          www.autosur.fr
+        </a>
+      </span>
+    </div>
+  </div>
+</form>

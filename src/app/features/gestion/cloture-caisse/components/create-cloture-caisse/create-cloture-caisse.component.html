@@ -1,0 +1,292 @@
+<mat-card
+  class="mx-0"
+  *ngIf="{
+    clotureCaisseRequest: clotureCaisseRequest$ | async,
+    currentUser: currentUser$ | async
+  } as _"
+>
+  <mat-card-header class="justify-center">
+    <mat-card-title>
+      {{
+        'gestion.clotureCaisse.clotureDuCaisseDuAu'
+          | translate
+            : {
+                date_debut:
+                  _.clotureCaisseRequest.date_debut | date : 'dd/MM/yyyy',
+                date_fin: _.clotureCaisseRequest.date_fin | date : 'dd/MM/yyyy'
+              }
+      }}
+    </mat-card-title>
+  </mat-card-header>
+
+  <div class="text-center">
+    {{ 'gestion.clotureCaisse.realisePar' | translate }}&nbsp;{{
+      _.currentUser?.prenom
+    }}&nbsp;{{ _.currentUser?.nom }}
+  </div>
+</mat-card>
+<mat-accordion
+  *ngIf="{
+    totalEspeces: totalEspeces$ | async,
+    fondDeCaisseEtEncaissementDuJour: fondDeCaisseEtEncaissementDuJour$ | async,
+    clotureCaisseRequest: clotureCaisseRequest$ | async
+  } as _"
+>
+  <!--saisi-->
+  <mat-expansion-panel class="my-4 w-full" expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="justify-center">
+        {{
+          'gestion.clotureCaisse.saisiDeClotureDeCaisse' | translate | uppercase
+        }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <!--Contrôles non facturés-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.controlesNonFactures' | translate | uppercase
+          }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <!--les contrôles non facturés pour les clients en compte-->
+      <app-controles-non-factures-table
+        [typePersonne]="TypePersonneEnum.COMPTE"
+      ></app-controles-non-factures-table>
+      <mat-divider class="my-2"></mat-divider>
+      <!--les contrôles non facturés pour les clients de passage-->
+      <app-controles-non-factures-table
+        [typePersonne]="TypePersonneEnum.PASSAGE"
+      ></app-controles-non-factures-table>
+    </mat-expansion-panel>
+    <!--Comptage des espèces-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesEspeces' | translate | uppercase
+          }}
+          <span
+            *ngIf="
+              clotureForm.controls.comptageDesEspecesPieces.invalid ||
+              clotureForm.controls.comptageDesEspecesBillets.invalid
+            "
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="flex gap-x-2.5">
+        <!--Tableau des billets-->
+        <app-comptage-des-especes
+          class="w-1/2"
+          [typeEspece]="TypeComptageEnum.TYPE_ESPECE_BILLET"
+          [form]="clotureForm.controls?.comptageDesEspecesBillets"
+        ></app-comptage-des-especes>
+        <!--Tableau des pièces-->
+        <app-comptage-des-especes
+          class="w-1/2"
+          [typeEspece]="TypeComptageEnum.TYPE_ESPECE_PIECE"
+          [form]="clotureForm.controls?.comptageDesEspecesPieces"
+        ></app-comptage-des-especes>
+      </div>
+      <!--récapitulatif des espèces-->
+      <div class="flex">
+        <div class="w-1/3">
+          <div>
+            {{ 'gestion.clotureCaisse.fondDeCaisse' | translate | uppercase }} :
+            {{
+              _.clotureCaisseRequest?.fond_caisse_initial
+                | number : DECIMAL_NUMBER_PIPE_FORMAT
+            }}
+            €
+          </div>
+        </div>
+        <div class="w-1/3">
+          <div>
+            {{ 'gestion.clotureCaisse.totalEspeces' | translate | uppercase }} :
+            {{ _.totalEspeces | number : DECIMAL_NUMBER_PIPE_FORMAT }}
+            €
+          </div>
+        </div>
+        <div class="w-1/3">
+          <div>
+            {{
+              'gestion.clotureCaisse.fondDeCaisseEtEncaissementDuJour'
+                | translate
+                | uppercase
+            }}
+            :
+            {{
+              _.fondDeCaisseEtEncaissementDuJour
+                | number : DECIMAL_NUMBER_PIPE_FORMAT
+            }}
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <!--Comptage des sorties de caisses-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesSortiesDeCaisses'
+              | translate
+              | uppercase
+          }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesSortiesDeCaisse.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_SORTIE_CAISSE"
+        [form]="clotureForm.controls?.comptageDesSortiesDeCaisse"
+        [columnsMap]="getColumnsAndHeaders(TypeComptageEnum.TYPE_SORTIE_CAISSE)"
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <!--Comptage des chèques-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesCheques' | translate | uppercase
+          }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesCheques.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_CHEQUE"
+        [form]="clotureForm.controls?.comptageDesCheques"
+        [columnsMap]="getColumnsAndHeaders(TypeComptageEnum.TYPE_CHEQUE)"
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <!--Comptage des CB-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{ 'gestion.clotureCaisse.comptageDesCB' | translate | uppercase }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesCarteBancaire.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_CARTE_BANCAIRE"
+        [form]="clotureForm.controls?.comptageDesCarteBancaire"
+        [columnsMap]="
+          getColumnsAndHeaders(TypeComptageEnum.TYPE_CARTE_BANCAIRE)
+        "
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <!--Comptage des paiements internet-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesPaiementsInternet'
+              | translate
+              | uppercase
+          }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesPaiementsInternet.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_INTERNET"
+        [form]="clotureForm.controls?.comptageDesPaiementsInternet"
+        [columnsMap]="getColumnsAndHeaders(TypeComptageEnum.TYPE_INTERNET)"
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <!--Comptage des virements-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesVirements' | translate | uppercase
+          }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesVirements.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_VIREMENT"
+        [form]="clotureForm.controls?.comptageDesVirements"
+        [columnsMap]="getColumnsAndHeaders(TypeComptageEnum.TYPE_VIREMENT)"
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <!--Comptage des coupons-->
+    <mat-expansion-panel class="my-4 w-full">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="justify-center">
+          {{
+            'gestion.clotureCaisse.comptageDesCoupons' | translate | uppercase
+          }}
+          <span
+            *ngIf="clotureForm.controls?.comptageDesCoupons.invalid"
+            class="text-warn"
+          >
+            *
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-generic-comptage-form
+        [typeComptage]="TypeComptageEnum.TYPE_COUPON"
+        [form]="clotureForm.controls?.comptageDesCoupons"
+        [columnsMap]="getColumnsAndHeaders(TypeComptageEnum.TYPE_COUPON)"
+      ></app-generic-comptage-form>
+    </mat-expansion-panel>
+    <div class="flex justify-end">
+      <button
+        [disabled]="!isValid()"
+        mat-raised-button
+        color="accent"
+        (click)="showRecap = true"
+      >
+        {{ 'commun.next' | translate }}
+      </button>
+    </div>
+  </mat-expansion-panel>
+
+  <!--Récapitulatif des comptages-->
+  <mat-expansion-panel
+    *ngIf="showRecap"
+    class="my-4 w-full"
+    [expanded]="showRecap"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title class="justify-center">
+        {{
+          'gestion.clotureCaisse.recapitulatifDesComptages'
+            | translate
+            | uppercase
+        }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-recapitulatif-des-comptages
+      [isValid]="isValid()"
+      (validerLaCloture)="valider()"
+    ></app-recapitulatif-des-comptages>
+  </mat-expansion-panel>
+</mat-accordion>

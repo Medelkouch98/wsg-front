@@ -1,0 +1,120 @@
+<mat-card>
+  <mat-card-content>
+    <div class="mb-4 pb-2.5">
+      <h5 class="font-medium uppercase">
+        {{ 'qualite.imprimes.' + imprimesTypeForm | translate }}
+      </h5>
+    </div>
+    <form
+      [formGroup]="imprimesForm"
+      class="flex flex-col"
+      appMarkRequiredFormControlAsDirty
+    >
+      <div class="grid grid-cols-1 gap-x-5 gap-y-1 lg:grid-cols-2">
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="imprimesTypeForm === ImprimesTypeFormEnum.pret"
+        >
+          <mat-label>
+            {{ 'qualite.imprimes.agrementCentreDestinataire' | translate }}
+          </mat-label>
+          <input matInput formControlName="agrement" />
+          <mat-error>
+            {{
+              imprimesForm.controls.agrement.errors | error : 'agrementCentre'
+            }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.premierNumImprime' | translate }}
+          </mat-label>
+          <input
+            matInput
+            formControlName="premier_numero"
+            appFormControlNumberOnly
+            (blur)="preFilledAuto('dernier_numero', 'premier_numero')"
+          />
+          <mat-error>
+            {{
+              imprimesForm.controls.premier_numero.errors | error : 'numLiasse'
+            }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.dernierNumImprime' | translate }}
+          </mat-label>
+          <input
+            matInput
+            appFormControlNumberOnly
+            formControlName="dernier_numero"
+            (blur)="preFilledAuto('premier_numero', 'dernier_numero')"
+          />
+          <mat-error>
+            {{
+              imprimesForm.controls.dernier_numero.errors | error : 'numLiasse'
+            }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field
+          appFieldControlLabel="jj/mm/aaaa"
+          *ngIf="imprimesTypeForm === ImprimesTypeFormEnum.pret"
+        >
+          <mat-label>{{ 'qualite.imprimes.datePret' | translate }}</mat-label>
+          <input
+            matInput
+            appCustomDateMaskDirective
+            [matDatepicker]="picker"
+            formControlName="date"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error>
+            {{ imprimesForm.controls.date.errors | error }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field
+          appFieldControlLabel
+          *ngIf="imprimesTypeForm === ImprimesTypeFormEnum.cancel"
+        >
+          <mat-label>{{ 'qualite.imprimes.raison' | translate }}</mat-label>
+          <mat-select formControlName="type_liasse_id">
+            <mat-option
+              *ngFor="let row of typeLiasses$ | async"
+              [value]="row.id"
+            >
+              {{ row.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            {{ imprimesForm.controls.type_liasse_id.errors | error }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appFieldControlLabel>
+          <mat-label>
+            {{ 'qualite.imprimes.commentaire' | translate }}
+          </mat-label>
+          <textarea matInput formControlName="commentaire"></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+<div class="flex justify-center">
+  <button
+    mat-raised-button
+    color="accent"
+    [disabled]="imprimesForm.invalid"
+    (click)="save()"
+  >
+    {{ 'commun.save' | translate }}
+  </button>
+</div>

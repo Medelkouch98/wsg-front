@@ -1,0 +1,19 @@
+<h1 mat-dialog-title class="text-center">
+  {{ 'gestion.clotureCaisse.listeDesFacturesAssociees' | translate }}
+</h1>
+<div class="text-center">
+  <ul>
+    <li
+      *ngFor="let facture of data"
+      (click)="openFactureDetails(facture)"
+      class="cursor-pointer"
+    >
+      {{ facture?.numero_facture }}
+    </li>
+  </ul>
+</div>
+<div mat-dialog-actions class="justify-center">
+  <button mat-raised-button color="primary" (click)="close()">
+    {{ 'commun.close' | translate }}
+  </button>
+</div>

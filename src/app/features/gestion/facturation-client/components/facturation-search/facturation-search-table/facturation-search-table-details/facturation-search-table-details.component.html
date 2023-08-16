@@ -1,0 +1,136 @@
+<ng-container *ngIf="controleNonFacturer">
+  <div class="responsive-table expanded-table">
+    <mat-table
+      [dataSource]="controleNonFacturer.controles"
+      multiTemplateDataRows
+    >
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span class="header-label"></span>
+          <mat-checkbox
+            color="warn"
+            (click)="$event.stopPropagation()"
+            (change)="
+              $event ? toggleControl($event, controleNonFacturer, row.id) : null
+            "
+            [checked]="checkIsSelectedRow(row.id, controleNonFacturer.id)"
+          ></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="immatriculation">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.immatriculation' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.immatriculation' | translate }}
+          </span>
+          {{ element.immatriculation }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="proprietaire">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'commun.proprietaire' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'commun.proprietaire' | translate }}
+          </span>
+          {{ element.proprietaire }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="date_edition">
+        <mat-header-cell *matHeaderCellDef>
+          {{ 'gestion.factures.date_edition' | translate }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span class="header-label">
+            {{ 'gestion.factures.date_edition' | translate }}
+          </span>
+          {{ element.date_edition | date : 'dd/MM/yyyy' }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <button
+            mat-icon-button
+            (click)="
+              expandedElement = expandedElement === element ? null : element;
+              $event.stopPropagation()
+            "
+          >
+            <mat-icon *ngIf="expandedElement !== element">
+              keyboard_arrow_down
+            </mat-icon>
+            <mat-icon *ngIf="expandedElement === element">
+              keyboard_arrow_up
+            </mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <mat-cell *matCellDef="let element">
+          <div
+            class="w-full"
+            [@detailExpand]="expandedElement"
+            *ngIf="expandedElement === element"
+          >
+            <div class="responsive-table m-5">
+              <mat-table [dataSource]="element.prestations">
+                <ng-container matColumnDef="libelle">
+                  <mat-header-cell *matHeaderCellDef>
+                    {{ 'commun.prestation' | translate }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">
+                      {{ 'commun.prestation' | translate }}
+                    </span>
+                    {{ element.libelle }} {{ element.code }}
+                  </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="montant_ttc">
+                  <mat-header-cell *matHeaderCellDef>
+                    {{ 'gestion.factures.montantTtc' | translate }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">
+                      {{ 'gestion.factures.montantTtc' | translate }}
+                    </span>
+                    {{
+                      element.montant_ttc ?? 0
+                        | number : DECIMAL_NUMBER_PIPE_FORMAT
+                    }}
+                    €
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row
+                  *matHeaderRowDef="columnsPrestations"
+                ></mat-header-row>
+                <mat-row
+                  *matRowDef="let element; columns: columnsPrestations"
+                ></mat-row>
+              </mat-table>
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-row *matRowDef="let element; columns: columns"></mat-row>
+      <mat-row
+        *matRowDef="let row; columns: ['expandedDetail']"
+        [ngClass]="{ hidden: row !== expandedElement }"
+      ></mat-row>
+    </mat-table>
+  </div>
+</ng-container>

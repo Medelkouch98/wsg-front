@@ -1,0 +1,14 @@
+<h1 mat-dialog-title class="text-center">{{ data.message }}</h1>
+<div mat-dialog-actions class="justify-center">
+  <button
+    mat-raised-button
+    *ngIf="data.confirm"
+    color="primary"
+    (click)="emitAction(true)"
+  >
+    {{ data.confirm }}
+  </button>
+  <button mat-raised-button *ngIf="data.deny" (click)="emitAction(false)">
+    {{ data.deny }}
+  </button>
+</div>

@@ -1,0 +1,228 @@
+@use '../variable' as *;
+
+.editable-table {
+  .mat-mdc-cell {
+    padding: 0 10px; // Override default padding-x 16px of Angular Material.
+    word-break: break-word;
+    .mat-mdc-form-field {
+      margin-top: 10px;
+    }
+    .mat-mdc-form-field-infix {
+      min-height: 44px !important;
+    }
+    .mat-mdc-text-field-wrapper.mdc-text-field--outlined
+      .mat-mdc-form-field-infix {
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper,
+    .mat-mdc-form-field-bottom-align::before {
+      font-size: 10.5px;
+      line-height: 12px;
+      display: inline-flex;
+    }
+
+    .mat-mdc-form-field-hint-wrapper,
+    .mat-mdc-form-field-error-wrapper {
+      position: unset !important;
+      padding: 0;
+    }
+  }
+  .mat-mdc-header-cell {
+    padding: 0 10px; // Override default padding-x 16px of Angular Material.
+    word-break: break-word;
+  }
+}
+
+/* Center the content of mat-header-cell, mat-cell and mat-footer-cell */
+.mat-mdc-header-cell,
+.mat-mdc-cell,
+.mat-mdc-footer-cell {
+  justify-content: center;
+  text-align: center;
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+
+  /* For visual separation */
+  &:nth-child(even) {
+    background-color: #f6f6f6;
+  }
+  /* Add hover effect on rows */
+  &:hover {
+    background-color: #e2e2e2 !important;
+  }
+}
+
+.mat-mdc-header-row {
+  background-color: $primary !important;
+  .mat-mdc-header-cell,
+  .mat-sort-header-arrow {
+    color: white !important;
+  }
+}
+
+/* Adjust expanded table style and layout */
+.expanded-table {
+  .mat-column-expandedDetail {
+    grid-template-columns: 100% !important;
+  }
+
+  .mat-column-expand {
+    padding-right: 5px;
+    text-align: end;
+  }
+
+  .table-details-card {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: separate;
+    color: #0a4189;
+    margin-bottom: 10px;
+    border-spacing: 0 10px;
+
+    tr {
+      height: 45px;
+      cursor: pointer;
+    }
+
+    th {
+      border-width: 2px 0;
+      border-color: #0a4189;
+      border-style: solid;
+      text-align: center;
+
+      &:first-child {
+        border-left-width: 2px;
+      }
+
+      &:last-child {
+        border-right-width: 2px;
+      }
+    }
+  }
+
+  /* Expanded table customization */
+  .mat-mdc-row {
+    .mat-mdc-header-row {
+      background-color: $nested-table-bg;
+
+      .mat-mdc-header-cell {
+        color: $nested-table-text;
+      }
+      .mat-mdc-cell {
+        word-break: break-word;
+      }
+    }
+
+    .mat-mdc-icon-button {
+      justify-self: end;
+    }
+  }
+}
+
+/* Remove border for mtx grid tables */
+.mtx-grid {
+  border-style: none !important;
+  .mat-sort-header-content svg {
+    display: none;
+  }
+}
+
+/**********************
+Overall Responsive table
+***********************/
+.responsive-table {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+
+  .header-label {
+    display: none;
+  }
+
+  .mat-mdc-table {
+    overflow: auto;
+    max-height: 100%;
+
+    .mat-mdc-header-cell {
+      text-align: center;
+      font-size: 12px;
+    }
+    .mat-mdc-cell {
+      text-align: center;
+      word-break: break-word;
+      &:last-of-type {
+        padding-right: 24px;
+      }
+    }
+    .mat-column-select,
+    .mat-column-expand {
+      flex: 0 0 5%;
+    }
+  }
+}
+/* -- ==============================================================
+ Ipad & above all(1023px)
+ ============================================================== */
+@media (max-width: 1024px) {
+  .responsive-table {
+    /* Display label (display:none by default -see above-) */
+    .header-label {
+      display: inline-block;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    /* Hide the header row */
+    .mat-mdc-header-row {
+      display: none;
+    }
+
+    /* Change the layout of the rows to stack vertically */
+    .mat-mdc-row,
+    .mat-mdc-footer-row {
+      padding: 8px 15px;
+      display: block;
+
+      /* Override the after pseudo-element to occupy the entire height */
+      &::after {
+        min-height: unset;
+      }
+    }
+
+    /* Adjust the layout and styling of the cells to display label-value in each row */
+    .mat-mdc-cell,
+    .mat-mdc-footer-cell {
+      display: grid;
+      padding: 0.1rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+
+      &:has(.header-label) {
+        grid-template-columns: 50% 50%;
+        text-align: right;
+      }
+
+      &:last-of-type {
+        border-bottom: none;
+        padding-right: 0.5rem !important;
+      }
+    }
+
+    .mat-mdc-table-sticky {
+      position: unset !important;
+    }
+
+    /* Action columns must be named (action or actions) */
+    .mat-column-expand,
+    .mat-column-action,
+    .mat-column-actions {
+      display: flex !important;
+      justify-content: flex-end !important;
+      padding-right: 0 !important;
+    }
+  }
+}

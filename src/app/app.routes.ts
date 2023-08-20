@@ -8,7 +8,7 @@ export const AppRoutes: Routes = [
   {
     path: '',
     component: PublicLayoutComponent,
-    // canActivate: [UnAuthGuard],
+    canActivate: [UnAuthGuard],
     children: [
       {
         path: '',
@@ -20,7 +20,7 @@ export const AppRoutes: Routes = [
   {
     path: 'p',
     component: PrivateLayoutComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
